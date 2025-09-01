@@ -9,3 +9,196 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Custom theme enhancements */
+:root {
+    --primary-gradient: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+    --primary-hover: #047857;
+    --secondary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --accent-color: #f59e0b;
+}
+
+/* Enhanced navigation hover effects */
+.nav-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-item:hover {
+    transform: translateX(2px);
+}
+
+/* Logo gradient enhancement */
+.logo-gradient {
+    background: var(--primary-gradient);
+    box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.25);
+}
+
+/* Active state enhancement */
+.nav-active {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+    border-left: 3px solid #059669;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+}
+
+/* Dark mode active state */
+.dark .nav-active {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(13, 148, 136, 0.1) 100%);
+    border-left: 3px solid #10b981;
+}
+
+/* Smooth transitions for theme changes */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Login page specific enhancements */
+.login-container {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, rgba(13, 148, 136, 0.05) 100%);
+}
+
+.login-form {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(5, 150, 105, 0.1);
+}
+
+.dark .login-form {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* Enhanced input focus effects */
+.login-input:focus {
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Button hover effects */
+.login-button:hover {
+    box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+}
+
+/* Logo animation */
+.logo-container {
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+/* Enhanced logo styling */
+.logo-enhanced {
+    background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Large logo styling */
+.logo-large {
+    box-shadow: 0 12px 35px rgba(5, 150, 105, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.logo-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 45px rgba(5, 150, 105, 0.5);
+}
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 640px) {
+
+    /* Ensure proper touch targets */
+    .login-input {
+        min-height: 48px;
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+
+    .login-button {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    /* Optimize spacing for mobile */
+    .login-form {
+        margin: 0 1rem;
+        border-radius: 0.75rem;
+    }
+
+    /* Better mobile logo sizing */
+    .logo-container {
+        animation: none;
+        /* Disable animation on mobile for better performance */
+    }
+
+    /* Mobile logo enhancement */
+    .logo-enhanced {
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.2);
+    }
+
+    /* Mobile large logo styling */
+    .logo-large {
+        box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+    }
+
+    /* Mobile-friendly message styling */
+    #errorMessage,
+    #successMessage {
+        margin: 0 -0.5rem;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 640px) and (orientation: landscape) {
+    .login-form {
+        padding: 1rem;
+    }
+
+    .space-y-5>*+* {
+        margin-top: 0.75rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 375px) {
+    .login-form {
+        margin: 0 0.5rem;
+        padding: 1rem;
+    }
+
+    .flex-col.items-center.space-y-3 {
+        gap: 0.5rem;
+    }
+
+    /* Ensure logo fits well on very small screens */
+    .logo-enhanced {
+        height: 4rem;
+        width: 4rem;
+    }
+
+    .logo-enhanced img {
+        height: 2.5rem;
+        width: 2.5rem;
+    }
+
+    /* Large logo on very small screens */
+    .logo-large {
+        height: 6rem;
+        width: 6rem;
+    }
+
+    .logo-large img {
+        height: 4rem;
+        width: 4rem;
+    }
+}
