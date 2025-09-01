@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-class WebController extends Controller
+class DashboardController extends Controller
 {
     public function Dashboard()
     {

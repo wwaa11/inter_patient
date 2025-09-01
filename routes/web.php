@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
-use App\Http\Controllers\WebController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -39,12 +40,25 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Patient Notes Routes (admin only)
         Route::post('/patients/{hn}/notes/{id}', [PatientController::class, 'destroyNote'])->name('patients.notes.destroy');
+        
+        // Settings Routes (admin only)
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        
+        // Embassy Routes
+        Route::post('/settings/embassies', [SettingsController::class, 'storeEmbassy'])->name('settings.embassies.store');
+        Route::put('/settings/embassies/{id}', [SettingsController::class, 'updateEmbassy'])->name('settings.embassies.update');
+        Route::delete('/settings/embassies/{id}', [SettingsController::class, 'destroyEmbassy'])->name('settings.embassies.destroy');
+        
+        // Guarantee Case Routes
+        Route::post('/settings/guarantee-cases', [SettingsController::class, 'storeGuaranteeCase'])->name('settings.guarantee-cases.store');
+        Route::put('/settings/guarantee-cases/{id}', [SettingsController::class, 'updateGuaranteeCase'])->name('settings.guarantee-cases.update');
+        Route::delete('/settings/guarantee-cases/{id}', [SettingsController::class, 'destroyGuaranteeCase'])->name('settings.guarantee-cases.destroy');
     });
 
     // File viewing routes
     Route::get('/files/{hn}/{filename}', [PatientController::class, 'viewFile'])->name('files.view');
 
     // Dashboard Routes
-    Route::get('/dashboard', [WebController::class, 'Dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'Dashboard'])->name('dashboard');
 
 });

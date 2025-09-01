@@ -1,4 +1,4 @@
-@extends("layouts.management")
+@extends("layouts.app")
 
 @section("title", "Patient Details")
 

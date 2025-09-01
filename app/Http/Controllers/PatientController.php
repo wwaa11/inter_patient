@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PatientController extends Controller
 {
-    /**
-     * Log patient action
-     */
+
     private function logAction($hn, $action)
     {
         PatientLog::create([
@@ -24,6 +22,7 @@ class PatientController extends Controller
             'action_by' => auth()->user()->userid,
         ]);
     }
+
     public function index()
     {
         $patients = Patient::with(['notes', 'passports', 'medicalReports'])

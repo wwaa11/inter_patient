@@ -34,7 +34,15 @@
                             </a>
                         </li>
                         
-
+                        @if(auth()->user()->role === 'admin')
+                        <!-- Settings -->
+                        <li>
+                            <a class="{{ request()->routeIs("settings*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("settings.index") }}">
+                                <i class="fa-solid fa-cog h-6 w-6 text-lg"></i>
+                                Settings
+                            </a>
+                        </li>
+                        @endif
 
                     </ul>
                 </li>
