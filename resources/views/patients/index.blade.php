@@ -38,10 +38,12 @@
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage all patient records and information</p>
             </div>
             <div class="mt-4 sm:mt-0">
-                <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" href="{{ route("patients.create") }}">
-                    <i class="fa-solid fa-plus mr-2"></i>
-                    Add New Patient
-                </a>
+                @if (auth()->user()->role === "admin")
+                    <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" href="{{ route("patients.create") }}">
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Add New Patient
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -99,10 +101,9 @@
                 const name = row.find('td:first-child .text-sm.font-medium').text().toLowerCase() || '';
                 const hn = row.find('td:nth-child(2)').text().toLowerCase() || '';
                 const qid = row.find('td:first-child .text-slate-500').text().toLowerCase() || '';
-                const gender = row.find('td:nth-child(4) span').text() || '';
-                const type = row.find('td:nth-child(6) span').text() || '';
+                const gender = row.find('td:nth-child(4) span').text().replace(/\s/g, "") || '';
+                const type = row.find('td:nth-child(6) span').text().replace(/\s/g, "") || '';
                 const nationality = row.find('td:nth-child(3) span').text() || '';
-
                 const matchesSearch = name.includes(searchTerm) || hn.includes(searchTerm) || qid.includes(searchTerm);
                 const matchesType = !typeFilter || type === typeFilter;
                 const matchesNationality = !nationalityFilter || nationality === nationalityFilter;

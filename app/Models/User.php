@@ -20,13 +20,4 @@ class User extends Authenticatable
         'role',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
 }

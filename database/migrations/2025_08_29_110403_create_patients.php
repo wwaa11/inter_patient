@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::create('patient_notes', function (Blueprint $table) {
             $table->id();
             $table->string("hn")->references("hn")->on("patients");
-            $table->string("note");
+            $table->text("note");
             $table->timestamps();
         });
 

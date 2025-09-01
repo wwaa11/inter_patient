@@ -103,9 +103,9 @@
                                 <select class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="type" name="type">
                                     <option value="">Select Type</option>
                                     <option value="OPD" {{ old("type") == "OPD" ? "selected" : "" }}>OPD</option>
-                                    <option value="IPD" {{ old("status") == "IPD" ? "selected" : "" }}>IPD</option>
+                                    <option value="IPD" {{ old("type") == "IPD" ? "selected" : "" }}>IPD</option>
                                 </select>
-                                @error("status")
+                                @error("type")
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -123,8 +123,7 @@
 
                 <div class="bg-slate-50 px-6 py-3 sm:flex sm:flex-row-reverse dark:bg-slate-700">
                     <button class="inline-flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" id="submitBtn" type="submit">
-                        <span id="submitBtnText">Create Patient</span>
-                        <i class="fa-solid fa-spinner fa-spin ml-2 hidden" id="submitBtnSpinner"></i>
+                        Create Patient
                     </button>
                     <a class="mt-3 inline-flex w-full justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-base font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm dark:border-slate-500 dark:bg-slate-600 dark:text-slate-200 dark:hover:bg-slate-500" href="{{ route("patients.index") }}">
                         Cancel
@@ -140,13 +139,10 @@
         // Form submission with loading state
         $('#patientForm').on('submit', function(e) {
             const submitBtn = $('#submitBtn');
-            const submitBtnText = $('#submitBtnText');
-            const submitBtnSpinner = $('#submitBtnSpinner');
 
             // Show loading state
             submitBtn.prop('disabled', true);
-            submitBtnText.text('Creating...');
-            submitBtnSpinner.removeClass('hidden');
+            submitBtn.html('Creating...');
         });
 
         // Get Patient Data functionality
@@ -206,9 +202,8 @@
                                 if ($(this).val().toLowerCase() === patient.status.toLowerCase()) {
                                     $('#status').val($(this).val());
                                     return false; // break the loop
-                                });
-                            }
-                            }
+                                }
+                            });
                         }
 
                         // Set location if available

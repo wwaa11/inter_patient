@@ -25,9 +25,9 @@
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Update patient information for {{ $patient->name }}</p>
             </div>
             <div class="mt-4 sm:mt-0">
-                <a class="inline-flex items-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2" href="{{ route("patients.index") }}">
+                <a class="inline-flex items-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2" href="{{ route("patients.show", $patient->hn) }}">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
-                    Back to Patients
+                    Back to Patient {{ $patient->name }}
                 </a>
             </div>
         </div>
@@ -99,7 +99,6 @@
                                     <option value="">Select Type</option>
                                     <option value="OPD" {{ old("type", $patient->type) == "OPD" ? "selected" : "" }}>OPD</option>
                                     <option value="IPD" {{ old("type", $patient->type) == "IPD" ? "selected" : "" }}>IPD</option>
-                                    <option value="Discharged" {{ old("type", $patient->type) == "Discharged" ? "selected" : "" }}>Discharged</option>
                                 </select>
                                 @error("type")
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -119,8 +118,7 @@
 
                 <div class="bg-slate-50 px-6 py-3 sm:flex sm:flex-row-reverse dark:bg-slate-700">
                     <button class="inline-flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" id="submitBtn" type="submit">
-                        <span id="submitBtnText">Update Patient</span>
-                        <i class="fa-solid fa-spinner fa-spin ml-2 hidden" id="submitBtnSpinner"></i>
+                        Update Patient
                     </button>
                     <a class="mt-3 inline-flex w-full justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-base font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm dark:border-slate-500 dark:bg-slate-600 dark:text-slate-200 dark:hover:bg-slate-500" href="{{ route("patients.index") }}">
                         Cancel
@@ -136,13 +134,10 @@
         // Form submission with loading state
         $('#patientForm').on('submit', function(e) {
             const submitBtn = $('#submitBtn');
-            const submitBtnText = $('#submitBtnText');
-            const submitBtnSpinner = $('#submitBtnSpinner');
 
             // Show loading state
             submitBtn.prop('disabled', true);
-            submitBtnText.text('Updating...');
-            submitBtnSpinner.removeClass('hidden');
+            submitBtn.html('Updating...');
         });
     </script>
 @endpush

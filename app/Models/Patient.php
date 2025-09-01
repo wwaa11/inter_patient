@@ -38,8 +38,8 @@ class Patient extends Model
         return $this->hasMany(PatientPassport::class, 'hn', 'hn');
     }
 
-    public function medicalRecords()
+    public function medicalReports()
     {
-        return $this->hasMany(PatientMedicalRecord::class, 'hn', 'hn');
+        return $this->hasMany(PatientMedicalReport::class, 'hn', 'hn');
     }
 }
