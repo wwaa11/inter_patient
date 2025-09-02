@@ -40,15 +40,23 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Patient Notes Routes (admin only)
         Route::post('/patients/{hn}/notes/{id}', [PatientController::class, 'destroyNote'])->name('patients.notes.destroy');
-        
+
+        // Guarantee routes
+        Route::get('/patients/{hn}/guarantees/main/create', [PatientController::class, 'createMainGuarantee'])->name('patients.guarantees.main.create');
+        Route::get('/patients/{hn}/guarantees/additional/create', [PatientController::class, 'createAdditionalGuarantee'])->name('patients.guarantees.additional.create');
+        Route::post('/patients/{hn}/guarantees/main', [PatientController::class, 'storeGuaranteeMain'])->name('patients.guarantees.main.store');
+        Route::post('/patients/{hn}/guarantees/additional', [PatientController::class, 'storeGuaranteeAdditional'])->name('patients.guarantees.additional.store');
+        Route::delete('/patients/{hn}/guarantees/main/{id}', [PatientController::class, 'destroyGuaranteeMain'])->name('patients.guarantees.main.destroy');
+        Route::delete('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'destroyGuaranteeAdditional'])->name('patients.guarantees.additional.destroy');
+
         // Settings Routes (admin only)
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-        
+
         // Embassy Routes
         Route::post('/settings/embassies', [SettingsController::class, 'storeEmbassy'])->name('settings.embassies.store');
         Route::put('/settings/embassies/{id}', [SettingsController::class, 'updateEmbassy'])->name('settings.embassies.update');
         Route::delete('/settings/embassies/{id}', [SettingsController::class, 'destroyEmbassy'])->name('settings.embassies.destroy');
-        
+
         // Guarantee Case Routes
         Route::post('/settings/guarantee-cases', [SettingsController::class, 'storeGuaranteeCase'])->name('settings.guarantee-cases.store');
         Route::put('/settings/guarantee-cases/{id}', [SettingsController::class, 'updateGuaranteeCase'])->name('settings.guarantee-cases.update');

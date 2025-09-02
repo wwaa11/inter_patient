@@ -1,19 +1,24 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Embassy;
+use App\Models\GuaranteeAdditionalCase;
+use App\Models\GuaranteeMainCase;
 use App\Models\Patient;
+use App\Models\PatientAdditionalDetail;
+use App\Models\PatientAdditionalHeader;
+use App\Models\PatientAdditionalType;
 use App\Models\PatientLog;
+use App\Models\PatientMainGuarantee;
 use App\Models\PatientMedicalReport;
 use App\Models\PatientNote;
 use App\Models\PatientPassport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class PatientController extends Controller
 {
-
     private function logAction($hn, $action)
     {
         PatientLog::create([
@@ -28,6 +33,7 @@ class PatientController extends Controller
         $patients = Patient::with(['notes', 'passports', 'medicalReports'])
             ->orderBy('created_at', 'desc')
             ->paginate(50);
+
         $nationalities = Patient::distinct('nationality')->pluck('nationality');
 
         return view('patients.index', compact('patients', 'nationalities'));
@@ -35,7 +41,6 @@ class PatientController extends Controller
 
     public function create()
     {
-
         return view('patients.create');
     }
 
@@ -45,7 +50,7 @@ class PatientController extends Controller
 
         try {
             $response = Http::withHeaders(['key' => env('API_SSB_KEY')])
-                ->timeout(5)
+                ->timeout(30)
                 ->post('http://172.20.1.22/w_phr/api/patient/info', [
                     'hn' => $hn,
                 ]);
@@ -112,8 +117,7 @@ class PatientController extends Controller
         try {
             $patient = Patient::create($request->all());
 
-            // Log the action
-            $this->logAction($patient->hn, 'Patient created');
+            $this->logAction($patient->hn, 'created');
 
             return redirect()->route('patients.show', $patient->hn)
                 ->with('success', 'Patient created successfully');
@@ -126,8 +130,7 @@ class PatientController extends Controller
 
     public function show($hn)
     {
-        $patient = Patient::with(['notes', 'passports', 'medicalReports'])->find($hn);
-
+        $patient = Patient::with(['notes', 'passports', 'medicalReports', 'guaranteeMains'])->find($hn);
         if (! $patient) {
             return redirect()->route('patients.index')
                 ->with('error', 'Patient not found');
@@ -139,7 +142,7 @@ class PatientController extends Controller
 
         if ($patient->passports->count() > 0) {
             // Sort passports by issue date descending
-            $sortedPassports = $patient->passports->sortByDesc('issue_date');
+            $sortedPassports = $patient->passports;
             $latestPassport  = $sortedPassports->first();
 
             // Add status to each passport
@@ -227,9 +230,7 @@ class PatientController extends Controller
             'issue_date'  => $request->issue_date,
             'expiry_date' => $request->expiry_date,
         ]);
-
-        // Log the action
-        $this->logAction($hn, 'Passport added');
+        $this->logAction($hn, 'added passport');
 
         return redirect()->route('patients.show', $hn)->with('success', 'Passport added successfully');
     }
@@ -261,17 +262,15 @@ class PatientController extends Controller
         $filename = 'medical_' . time() . '_' . $file->getClientOriginalName();
         $file->move($directory, $filename);
 
-        // Store medical record
+        // Store medical report
         PatientMedicalReport::create([
             'hn'   => $hn,
             'file' => $filename,
             'date' => $request->date,
         ]);
+        $this->logAction($hn, 'added medical report');
 
-        // Log the action
-        $this->logAction($hn, 'Medical record added');
-
-        return redirect()->route('patients.show', $hn)->with('success', 'Medical record added successfully');
+        return redirect()->route('patients.show', $hn)->with('success', 'Medical report added successfully');
     }
 
     public function storeNote(Request $request, $hn)
@@ -297,74 +296,9 @@ class PatientController extends Controller
             'hn'   => $hn,
             'note' => $noteWithUser,
         ]);
-
-        // Log the action
-        $this->logAction($hn, 'Note added');
+        $this->logAction($hn, 'added note');
 
         return redirect()->route('patients.show', $hn)->with('success', 'Note added successfully');
-    }
-
-    public function destroyNote($hn, $id)
-    {
-        try {
-            $note = PatientNote::where('hn', $hn)->where('id', $id)->firstOrFail();
-            $note->delete();
-
-            // Log the action
-            $this->logAction($hn, 'Note deleted');
-
-            return redirect()->route('patients.show', $hn)
-                ->with('success', 'Note deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
-                ->with('error', 'Failed to delete note: ' . $e->getMessage());
-        }
-    }
-
-    public function destroyPassport($hn, $id)
-    {
-        try {
-            $passport = PatientPassport::where('hn', $hn)->where('id', $id)->firstOrFail();
-
-            // Delete the file if it exists
-            if ($passport->file_path && Storage::exists($passport->file_path)) {
-                Storage::delete($passport->file_path);
-            }
-
-            $passport->delete();
-
-            // Log the action
-            $this->logAction($hn, 'Passport deleted');
-
-            return redirect()->route('patients.show', $hn)
-                ->with('success', 'Passport deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
-                ->with('error', 'Failed to delete passport: ' . $e->getMessage());
-        }
-    }
-
-    public function destroyMedicalReport($hn, $id)
-    {
-        try {
-            $record = PatientMedicalReport::where('hn', $hn)->where('id', $id)->firstOrFail();
-
-            // Delete the file if it exists
-            if ($record->file_path && Storage::exists($record->file_path)) {
-                Storage::delete($record->file_path);
-            }
-
-            $record->delete();
-
-            // Log the action
-            $this->logAction($hn, 'Medical record deleted');
-
-            return redirect()->route('patients.show', $hn)
-                ->with('success', 'Medical record deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
-                ->with('error', 'Failed to delete medical record: ' . $e->getMessage());
-        }
     }
 
     public function viewFile($hn, $filename)
@@ -423,9 +357,7 @@ class PatientController extends Controller
 
         try {
             $patient->update($request->all());
-
-            // Log the action
-            $this->logAction($patient->hn, 'Patient updated');
+            $this->logAction($hn, 'updated');
 
             return redirect()->route('patients.show', $patient->hn)
                 ->with('success', 'Patient updated successfully');
@@ -446,19 +378,252 @@ class PatientController extends Controller
         }
 
         try {
-            // Log the action before deletion
-            $this->logAction($patient->hn, 'Patient deleted');
-
             $patient->delete();
-            $patient->patientNotes()->delete();
-            $patient->patientPassports()->delete();
-            $patient->patientMedicalReports()->delete();
+            $this->logAction($hn, 'deleted');
 
             return redirect()->route('patients.index')
                 ->with('success', 'Patient deleted successfully');
         } catch (\Exception $e) {
             return redirect()->route('patients.index')
                 ->with('error', 'Failed to delete patient: ' . $e->getMessage());
+        }
+    }
+
+    public function createMainGuarantee($hn)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $embassies      = Embassy::all();
+        $guaranteeCases = GuaranteeMainCase::all();
+
+        return view('patients.add_main_guarantee', compact('patient', 'embassies', 'guaranteeCases'));
+    }
+
+    public function createAdditionalGuarantee($hn)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $embassies       = Embassy::all();
+        $additionalTypes = PatientAdditionalType::all();
+        $additionalCases = GuaranteeAdditionalCase::all();
+
+        return view('patients.add_additional_guarantee', compact('patient', 'embassies', 'additionalTypes', 'additionalCases'));
+    }
+
+    public function storeGuaranteeMain(Request $request, $hn)
+    {
+        $validator = Validator::make($request->all(), [
+            'embassy'          => 'required|string|max:255',
+            'embassy_ref'      => 'nullable|string|max:255',
+            'number'           => 'nullable|string|max:255',
+            'mb'               => 'nullable|string|max:255',
+            'issue_date'       => 'required|date',
+            'cover_start_date' => 'required|date',
+            'cover_end_date'   => 'required|date',
+            'guarantee_cases'  => 'required|array|min:1',
+            'file.*'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $patient = Patient::find($hn);
+        if (! $patient) {
+
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        try {
+            // Handle file uploads
+            $uploadedFiles = [];
+            if ($request->hasFile('file')) {
+                $directory = public_path('hn/' . $hn);
+                if (! file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $filename = 'main_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
+                $request->file('file')->move($directory, $filename);
+                $uploadedFiles[] = $filename;
+            }
+            // Create main guarantee record
+            foreach ($request->guarantee_cases as $case) {
+                PatientMainGuarantee::create([
+                    'hn'               => $hn,
+                    'embassy'          => $request->embassy,
+                    'embassy_ref'      => $request->embassy_ref,
+                    'number'           => $request->number,
+                    'mb'               => $request->mb,
+                    'issue_date'       => $request->issue_date,
+                    'cover_start_date' => $request->cover_start_date,
+                    'cover_end_date'   => $request->cover_end_date,
+                    'case'             => $case,
+                    'file'             => $uploadedFiles,
+                ]);
+            }
+
+            return redirect()->route('patients.show', $hn)->with('success', 'Main guarantee added successfully');
+        } catch (\Exception $e) {
+
+            return redirect()->back()->with('error', 'Failed to add main guarantee: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function storeGuaranteeAdditional(Request $request, $hn)
+    {
+        $validator = Validator::make($request->all(), [
+            'embassy'                 => 'required|string|max:255',
+            'type'                    => 'required|string|max:255',
+            'embassy_ref'             => 'nullable|string|max:255',
+            'mb'                      => 'nullable|string|max:255',
+            'issue_date'              => 'required|date',
+            'cover_start_date'        => 'required|date',
+            'cover_end_date'          => 'required|date|after:cover_start_date',
+            'total_price'             => 'required|numeric|min:0',
+            'details'                 => 'required|array|min:1',
+            'details.*.case'          => 'required|string',
+            'details.*.specific_date' => 'nullable|date',
+            'details.*.details'       => 'nullable|string',
+            'details.*.definition'    => 'nullable|string',
+            'details.*.amount'        => 'nullable|numeric|min:0',
+            'details.*.price'         => 'nullable|numeric|min:0',
+            'file.*'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        try {
+            // Handle file uploads
+            $uploadedFiles = [];
+            if ($request->hasFile('file')) {
+                $directory = public_path('hn/' . $hn);
+                if (! file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                foreach ($request->file('file') as $file) {
+                    $filename = 'additional_guarantee_' . time() . '_' . $file->getClientOriginalName();
+                    $file->move($directory, $filename);
+                    $uploadedFiles[] = $filename;
+                }
+            }
+
+            // Create additional guarantee header
+            $header = PatientAdditionalHeader::create([
+                'hn'               => $hn,
+                'type'             => $request->type,
+                'embassy_ref'      => $request->embassy_ref,
+                'mb'               => $request->mb,
+                'issue_date'       => $request->issue_date,
+                'cover_start_date' => $request->cover_start_date,
+                'cover_end_date'   => $request->cover_end_date,
+                'total_price'      => $request->total_price,
+                'file'             => json_encode($uploadedFiles),
+            ]);
+
+            // Create additional guarantee details
+            foreach ($request->details as $detail) {
+                PatientAdditionalDetail::create([
+                    'guarantee_header_id' => $header->id,
+                    'case'                => $detail['case'],
+                    'specific_date'       => $detail['specific_date'] ?? null,
+                    'details'             => $detail['details'] ?? null,
+                    'definition'          => $detail['definition'] ?? null,
+                    'amount'              => $detail['amount'] ?? null,
+                    'price'               => $detail['price'] ?? null,
+                ]);
+            }
+
+            return redirect()->route('patients.show', $hn)->with('success', 'Additional guarantee added successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to add additional guarantee: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function destroyPassport($hn, $id)
+    {
+        $passport = PatientPassport::where('hn', $hn)->find($id);
+
+        if (! $passport) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Passport not found');
+        }
+
+        try {
+            // Delete the file if it exists
+            $filePath = public_path('hn/' . $hn . '/' . $passport->file);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $passport->delete();
+            $this->logAction($hn, 'deleted passport');
+
+            return redirect()->route('patients.show', $hn)
+                ->with('success', 'Passport deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Failed to delete passport: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyMedicalReport($hn, $id)
+    {
+        $report = PatientMedicalReport::where('hn', $hn)->find($id);
+
+        if (! $report) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Medical report not found');
+        }
+
+        try {
+            // Delete the file if it exists
+            $filePath = public_path('hn/' . $hn . '/' . $report->file);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $report->delete();
+            $this->logAction($hn, 'deleted medical report');
+
+            return redirect()->route('patients.show', $hn)
+                ->with('success', 'Medical report deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Failed to delete medical report: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyNote($hn, $id)
+    {
+        $note = PatientNote::where('hn', $hn)->find($id);
+
+        if (! $note) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Note not found');
+        }
+
+        try {
+            $note->delete();
+            $this->logAction($hn, 'deleted note');
+
+            return redirect()->route('patients.show', $hn)
+                ->with('success', 'Note deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Failed to delete note: ' . $e->getMessage());
         }
     }
 }

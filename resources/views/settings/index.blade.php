@@ -85,7 +85,7 @@
                                 <tr>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $case->id }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $case->case }}</td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->case_for_staff ?? "N/A" }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->definition ?? "N/A" }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
                                         <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->case }}', '{{ $case->case_for_staff }}')">
@@ -117,7 +117,10 @@
                 <input id="embassyMethod" type="hidden" name="_method" value="">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="embassyName">Embassy Name</label>
-                    <input class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="embassyName" type="text" name="name" required>
+                    <input class="@error("name") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="embassyName" type="text" name="name" value="{{ old("name") }}" required>
+                    @error("name")
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeEmbassyModal()">Cancel</button>
@@ -136,11 +139,17 @@
                 <input id="guaranteeCaseMethod" type="hidden" name="_method" value="">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCase">Case</label>
-                    <input class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCase" type="text" name="case" required>
+                    <input class="@error("case") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCase" type="text" name="case" value="{{ old("case") }}" required>
+                    @error("case")
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCaseForStaff">Case for Staff (Optional)</label>
-                    <input class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCaseForStaff" type="text" name="case_for_staff">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCaseDefinition">Definition (Optional)</label>
+                    <input class="@error("definition") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCaseDefinition" type="text" name="definition" value="{{ old("definition") }}">
+                    @error("definition")
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeGuaranteeCaseModal()">Cancel</button>
@@ -192,17 +201,17 @@
             document.getElementById('guaranteeCaseForm').action = '{{ route("settings.guarantee-cases.store") }}';
             document.getElementById('guaranteeCaseMethod').value = '';
             document.getElementById('guaranteeCase').value = '';
-            document.getElementById('guaranteeCaseForStaff').value = '';
+            document.getElementById('guaranteeCaseDefinition').value = '';
             document.getElementById('guaranteeCaseModal').classList.remove('hidden');
             document.getElementById('guaranteeCaseModal').classList.add('flex');
         }
 
-        function editGuaranteeCase(id, caseName, caseForStaff) {
+        function editGuaranteeCase(id, caseName, definition) {
             document.getElementById('guaranteeCaseModalTitle').textContent = 'Edit Guarantee Case';
             document.getElementById('guaranteeCaseForm').action = '{{ route("settings.guarantee-cases.update", "__ID__") }}'.replace('__ID__', id);
             document.getElementById('guaranteeCaseMethod').value = 'PUT';
             document.getElementById('guaranteeCase').value = caseName;
-            document.getElementById('guaranteeCaseForStaff').value = caseForStaff || '';
+            document.getElementById('guaranteeCaseDefinition').value = definition || '';
             document.getElementById('guaranteeCaseModal').classList.remove('hidden');
             document.getElementById('guaranteeCaseModal').classList.add('flex');
         }

@@ -64,10 +64,12 @@
                                     <i class="fa-solid fa-users mb-4 text-4xl text-slate-400"></i>
                                     <h3 class="mb-2 text-lg font-medium text-slate-900 dark:text-white">No patients found</h3>
                                     <p class="mb-4 text-slate-500 dark:text-slate-400">Get started by adding your first patient.</p>
-                                    <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-emerald-700 hover:to-teal-700" href="{{ route("patients.create") }}">
-                                        <i class="fa-solid fa-plus mr-2"></i>
-                                        Add Patient
-                                    </a>
+                                    @if (auth()->user()->role === "admin")
+                                        <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-emerald-700 hover:to-teal-700" href="{{ route("patients.create") }}">
+                                            <i class="fa-solid fa-plus mr-2"></i>
+                                            Add Patient
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

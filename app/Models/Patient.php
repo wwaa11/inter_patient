@@ -42,4 +42,14 @@ class Patient extends Model
     {
         return $this->hasMany(PatientMedicalReport::class, 'hn', 'hn');
     }
+
+    public function guaranteeMains()
+    {
+        return $this->hasMany(PatientMainGuarantee::class, 'hn', 'hn');
+    }
+
+    public function guaranteeAdditionals()
+    {
+        return $this->hasMany(PatientAdditionalHeader::class, 'hn', 'hn');
+    }
 }

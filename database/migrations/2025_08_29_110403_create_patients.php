@@ -40,12 +40,23 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('patient_medical_records', function (Blueprint $table) {
+        Schema::create('patient_medical_reports', function (Blueprint $table) {
             $table->id();
             $table->string("hn")->references("hn")->on("patients");
             $table->date("date");
             $table->string("file");
             $table->timestamps();
+        });
+
+        Schema::create('patient_logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('hn');
+            $table->text('action');
+            $table->string('action_by');
+            $table->timestamps();
+
+            $table->foreign('hn')->references('hn')->on('patients')->onDelete('cascade');
+            $table->foreign('action_by')->references('userid')->on('users')->onDelete('cascade');
         });
 
     }
@@ -55,9 +66,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patients');
+        Schema::dropIfExists('patient_logs');
+        Schema::dropIfExists('patient_medical_reports');
         Schema::dropIfExists('patient_passports');
-        Schema::dropIfExists('patient_medical_records');
         Schema::dropIfExists('patient_notes');
+        Schema::dropIfExists('patients');
     }
 };

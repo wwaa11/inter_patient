@@ -180,6 +180,134 @@
             </div>
         </div>
 
+        <!-- Guarantees Section -->
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
+            <div class="px-6 py-6">
+                <div class="mb-4 flex items-center justify-between">
+                    <h3 class="text-lg font-medium text-slate-900 dark:text-white">Guarantees</h3>
+                    @if (auth()->user()->role === "admin")
+                        <div class="flex space-x-2">
+                            <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
+                                <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
+                            </a>
+                            <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
+                                <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
+                            </a>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Main Guarantees -->
+                <div class="mb-6">
+                    <h4 class="text-md mb-3 font-medium text-slate-800 dark:text-slate-200">Main Guarantees</h4>
+                    @if ($patient->guaranteeMains && $patient->guaranteeMains->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-600">
+                                <thead class="bg-slate-50 dark:bg-slate-700">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Number</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Case</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Issue Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Cover Period</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">File</th>
+                                        @if (auth()->user()->role === "admin")
+                                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Actions</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-600 dark:bg-slate-800">
+                                    @foreach ($patient->guaranteeMains as $guarantee)
+                                        <tr>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->number }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->guaranteeCaseName->case }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->issueDate() }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->coverStartDate() }} to {{ $guarantee->coverEndDate() }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                @if ($guarantee->file)
+                                                    @foreach ($guarantee->file as $file)
+                                                        <span class="mr-1 text-blue-600 hover:text-blue-800" onclick="viewFile('{{ $patient->hn }}', '{{ $file }}')">
+                                                            <i class="fa-solid fa-file"></i>
+                                                        </span>
+                                                    @endforeach
+                                                @endif
+                                            </td>
+                                            @if (auth()->user()->role === "admin")
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                                                    <button class="text-red-600 hover:text-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-sm text-slate-500 dark:text-slate-400">No main guarantees found.</p>
+                    @endif
+                </div>
+
+                <!-- Additional Guarantees -->
+                <div>
+                    <h4 class="text-md mb-3 font-medium text-slate-800 dark:text-slate-200">Additional Guarantees</h4>
+                    @if ($patient->guaranteeAdditionals && $patient->guaranteeAdditionals->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-600">
+                                <thead class="bg-slate-50 dark:bg-slate-700">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy Ref</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Issue Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Cover Period</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Details</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">File</th>
+                                        @if (auth()->user()->role === "admin")
+                                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Actions</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-600 dark:bg-slate-800">
+                                    @foreach ($patient->guaranteeAdditionals as $guarantee)
+                                        <tr>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy_ref }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->issue_date }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->cover_start_date }} to {{ $guarantee->cover_end_date }}</td>
+                                            <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <div>{{ $guarantee->details }}</div>
+                                                @if ($guarantee->details_for_staff)
+                                                    <div class="mt-1 text-xs text-slate-600 dark:text-slate-400">Staff: {{ $guarantee->details_for_staff }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                @if ($guarantee->file)
+                                                    <button class="text-blue-600 hover:text-blue-800" onclick="viewFile('{{ $patient->hn }}', '{{ $guarantee->file }}')">
+                                                        View File
+                                                    </button>
+                                                @else
+                                                    No file
+                                                @endif
+                                            </td>
+                                            @if (auth()->user()->role === "admin")
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                                                    <button class="text-red-600 hover:text-red-900" onclick="deleteAdditionalGuarantee({{ $guarantee->id }})">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-sm text-slate-500 dark:text-slate-400">No additional guarantees found.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
         <!-- Additional Information -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Patient Passports -->
@@ -627,6 +755,151 @@
             }
         }
 
+        function deleteMainGuarantee(guaranteeId) {
+            if (confirm('Are you sure you want to delete this main guarantee? This will also delete the associated file. This action cannot be undone.')) {
+                axios.delete('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                    .then(response => {
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting main guarantee:', error);
+                        alert('Failed to delete main guarantee. Please try again.');
+                    });
+            }
+        }
+
+        function deleteAdditionalGuarantee(guaranteeId) {
+            if (confirm('Are you sure you want to delete this additional guarantee? This will also delete the associated file. This action cannot be undone.')) {
+                axios.delete('{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                    .then(response => {
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting additional guarantee:', error);
+                        alert('Failed to delete additional guarantee. Please try again.');
+                    });
+            }
+        }
+
+        let selectedGuaranteeCases = [];
+
+        function openAddMainGuaranteeModal() {
+            document.getElementById('addMainGuaranteeModal').classList.remove('hidden');
+            selectedGuaranteeCases = [];
+            updateSelectedCasesDisplay();
+        }
+
+        function closeAddMainGuaranteeModal() {
+            document.getElementById('addMainGuaranteeModal').classList.add('hidden');
+            document.getElementById('addMainGuaranteeForm').reset();
+            document.getElementById('mainGuaranteePreview').innerHTML = '<div class="text-center"><i class="fas fa-file-upload text-4xl text-gray-400 mb-3"></i><p class="text-gray-500">No file selected</p><p class="text-sm text-gray-400 mt-1">Upload a file to see preview</p></div>';
+            selectedGuaranteeCases = [];
+            updateSelectedCasesDisplay();
+        }
+
+        function addGuaranteeCase(caseId, caseName) {
+            if (!selectedGuaranteeCases.find(c => c.id === caseId)) {
+                selectedGuaranteeCases.push({
+                    id: caseId,
+                    name: caseName
+                });
+                updateSelectedCasesDisplay();
+            }
+        }
+
+        function removeGuaranteeCase(caseId) {
+            selectedGuaranteeCases = selectedGuaranteeCases.filter(c => c.id !== caseId);
+            updateSelectedCasesDisplay();
+        }
+
+        function updateSelectedCasesDisplay() {
+            const container = document.getElementById('selectedCases');
+
+            if (selectedGuaranteeCases.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500 text-center" id="noCasesMessage">No cases selected</p>';
+            } else {
+                let html = '';
+                selectedGuaranteeCases.forEach(guaranteeCase => {
+                    html += `
+                        <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                            <span class="text-sm text-blue-800 font-medium">${guaranteeCase.name}</span>
+                            <button type="button" onclick="removeGuaranteeCase(${guaranteeCase.id})" class="text-red-500 hover:text-red-700 transition-colors">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <input type="hidden" name="guarantee_cases[]" value="${guaranteeCase.id}">
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        }
+
+        function openAddAdditionalGuaranteeModal() {
+            document.getElementById('addAdditionalGuaranteeModal').classList.remove('hidden');
+        }
+
+        function closeAddAdditionalGuaranteeModal() {
+            document.getElementById('addAdditionalGuaranteeModal').classList.add('hidden');
+            document.getElementById('addAdditionalGuaranteeForm').reset();
+            document.getElementById('additionalGuaranteePreview').innerHTML = '';
+        }
+
+        function previewMainGuaranteeFile(input) {
+            const file = input.files[0];
+            const preview = document.getElementById('mainGuaranteePreview');
+
+            if (file) {
+                const fileType = file.type;
+                const fileName = file.name;
+
+                if (fileType.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" class="max-w-full h-auto rounded-lg" alt="Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" class="rounded-lg" />`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.innerHTML = `<div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg"><i class="fas fa-file text-6xl text-gray-500"></i><div class="ml-4"><p class="font-medium">${fileName}</p><p class="text-sm text-gray-600">Document</p></div></div>`;
+                }
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        function previewAdditionalGuaranteeFile(input) {
+            const file = input.files[0];
+            const preview = document.getElementById('additionalGuaranteePreview');
+
+            if (file) {
+                const fileType = file.type;
+                const fileName = file.name;
+
+                if (fileType.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" class="max-w-full h-auto rounded-lg" alt="Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" class="rounded-lg" />`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.innerHTML = `<div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg"><i class="fas fa-file text-6xl text-gray-500"></i><div class="ml-4"><p class="font-medium">${fileName}</p><p class="text-sm text-gray-600">Document</p></div></div>`;
+                }
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
         // Close modal on Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
@@ -634,7 +907,32 @@
                 closeAddNoteModal();
                 closeAddPassportModal();
                 closeAddMedicalReportModal();
+                closeAddMainGuaranteeModal();
+                closeAddAdditionalGuaranteeModal();
+            }
+        });
+
+        // Close modal when clicking outside (for full-screen modals)
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainGuaranteeModal = document.getElementById('addMainGuaranteeModal');
+            const additionalGuaranteeModal = document.getElementById('addAdditionalGuaranteeModal');
+
+            if (mainGuaranteeModal) {
+                mainGuaranteeModal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeAddMainGuaranteeModal();
+                    }
+                });
+            }
+
+            if (additionalGuaranteeModal) {
+                additionalGuaranteeModal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeAddAdditionalGuaranteeModal();
+                    }
+                });
             }
         });
     </script>
+
 @endsection

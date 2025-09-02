@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Embassy;
@@ -10,9 +9,9 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $embassies = Embassy::all();
+        $embassies      = Embassy::all();
         $guaranteeCases = GuaranteeMainCase::all();
-        
+
         return view('settings.index', compact('embassies', 'guaranteeCases'));
     }
 
@@ -20,11 +19,11 @@ class SettingsController extends Controller
     public function storeEmbassy(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
         ]);
 
         Embassy::create([
-            'name' => $request->name
+            'name' => $request->name,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Embassy added successfully!');
@@ -33,12 +32,12 @@ class SettingsController extends Controller
     public function updateEmbassy(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
         ]);
 
         $embassy = Embassy::findOrFail($id);
         $embassy->update([
-            'name' => $request->name
+            'name' => $request->name,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Embassy updated successfully!');
@@ -56,13 +55,13 @@ class SettingsController extends Controller
     public function storeGuaranteeCase(Request $request)
     {
         $request->validate([
-            'case' => 'required|string|max:255',
-            'case_for_staff' => 'nullable|string|max:255'
+            'case'       => 'required|string|max:255',
+            'definition' => 'nullable|string|max:255',
         ]);
 
         GuaranteeMainCase::create([
-            'case' => $request->case,
-            'case_for_staff' => $request->case_for_staff
+            'case'       => $request->case,
+            'definition' => $request->definition,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case added successfully!');
@@ -71,14 +70,14 @@ class SettingsController extends Controller
     public function updateGuaranteeCase(Request $request, $id)
     {
         $request->validate([
-            'case' => 'required|string|max:255',
-            'case_for_staff' => 'nullable|string|max:255'
+            'case'       => 'required|string|max:255',
+            'definition' => 'nullable|string|max:255',
         ]);
 
         $guaranteeCase = GuaranteeMainCase::findOrFail($id);
         $guaranteeCase->update([
-            'case' => $request->case,
-            'case_for_staff' => $request->case_for_staff
+            'case'       => $request->case,
+            'definition' => $request->definition,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case updated successfully!');
