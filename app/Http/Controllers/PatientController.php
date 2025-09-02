@@ -462,7 +462,7 @@ class PatientController extends Controller
         }
     }
 
-    // Guarantee Management
+    // Guarantee Main Management
     public function createMainGuarantee($hn)
     {
         $patient = Patient::find($hn);
@@ -476,21 +476,7 @@ class PatientController extends Controller
         return view('patients.add_main_guarantee', compact('patient', 'embassies', 'guaranteeCases'));
     }
 
-    public function createAdditionalGuarantee($hn)
-    {
-        $patient = Patient::find($hn);
-        if (! $patient) {
-            return redirect()->route('patients.index')->with('error', 'Patient not found');
-        }
-
-        $embassies       = Embassy::all();
-        $additionalTypes = PatientAdditionalType::all();
-        $additionalCases = GuaranteeAdditionalCase::all();
-
-        return view('patients.add_additional_guarantee', compact('patient', 'embassies', 'additionalTypes', 'additionalCases'));
-    }
-
-    public function storeGuaranteeMain(Request $request, $hn)
+    public function storeMainGuarantee(Request $request, $hn)
     {
         $validator = Validator::make($request->all(), [
             'embassy'          => 'required|string|max:255',
@@ -547,6 +533,42 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to add main guarantee: ' . $e->getMessage())->withInput();
         }
+    }
+
+    public function destroyMainGuarantee($hn, $id)
+    {
+        $guarantee = PatientMainGuarantee::where('hn', $hn)->find($id);
+
+        if (! $guarantee) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Guarantee not found');
+        }
+
+        try {
+            $guarantee->delete();
+            $this->logAction($hn, 'deleted main guarantee');
+
+            return redirect()->route('patients.show', $hn)
+                ->with('success', 'Main guarantee deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('patients.show', $hn)
+                ->with('error', 'Failed to delete main guarantee: ' . $e->getMessage());
+        }
+    }
+
+    // Guarantee Additional Management
+    public function createAdditionalGuarantee($hn)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $embassies       = Embassy::all();
+        $additionalTypes = PatientAdditionalType::all();
+        $additionalCases = GuaranteeAdditionalCase::all();
+
+        return view('patients.add_additional_guarantee', compact('patient', 'embassies', 'additionalTypes', 'additionalCases'));
     }
 
     public function storeGuaranteeAdditional(Request $request, $hn)
