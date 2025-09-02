@@ -757,7 +757,7 @@
 
         function deleteMainGuarantee(guaranteeId) {
             if (confirm('Are you sure you want to delete this main guarantee? This will also delete the associated file. This action cannot be undone.')) {
-                axios.delete('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
                     .then(response => {
                         location.reload();
                     })
@@ -770,7 +770,7 @@
 
         function deleteAdditionalGuarantee(guaranteeId) {
             if (confirm('Are you sure you want to delete this additional guarantee? This will also delete the associated file. This action cannot be undone.')) {
-                axios.delete('{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                axios.post('{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
                     .then(response => {
                         location.reload();
                     })

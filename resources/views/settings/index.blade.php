@@ -88,7 +88,7 @@
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->definition ?? "N/A" }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->case }}', '{{ $case->case_for_staff }}')">
+                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->case }}', '{{ $case->definition }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
                                         <button class="text-red-600 hover:text-red-900" onclick="deleteGuaranteeCase({{ $case->id }})">
@@ -189,7 +189,7 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '{{ route("settings.embassies.destroy", "__ID__") }}'.replace('__ID__', id);
-                form.innerHTML = '@csrf @method("DELETE")';
+                form.innerHTML = '@csrf';
                 document.body.appendChild(form);
                 form.submit();
             }
@@ -226,7 +226,7 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '{{ route("settings.guarantee-cases.destroy", "__ID__") }}'.replace('__ID__', id);
-                form.innerHTML = '@csrf @method("DELETE")';
+                form.innerHTML = '@csrf';
                 document.body.appendChild(form);
                 form.submit();
             }
