@@ -62,7 +62,7 @@ class PatientMainGuarantee extends Model
         return $this->belongsTo(Patient::class, 'hn', 'hn');
     }
 
-    public function guaranteeCaseName()
+    public function guaranteeCase()
     {
         return $this->hasOne(GuaranteeMainCase::class, 'id', 'case');
     }

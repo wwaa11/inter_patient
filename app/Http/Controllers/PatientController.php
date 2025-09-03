@@ -79,6 +79,23 @@ class PatientController extends Controller
                 ->with('error', 'Patient not found');
         }
 
+        // Add status to main guarantees
+        $patient->guaranteeMains->each(function ($guarantee) {
+            $endDate         = \Carbon\Carbon::parse($guarantee->extension_cover_end_date ?? $guarantee->cover_end_date);
+            $now             = \Carbon\Carbon::now();
+            $daysUntilExpiry = $now->diffInDays($endDate, false);
+
+            if ($daysUntilExpiry < 0) {
+                $guarantee->status       = 'expired';
+                $guarantee->status_class = 'bg-red-100 text-red-800';
+                $guarantee->status_text  = 'Expired';
+            } else {
+                $guarantee->status       = 'valid';
+                $guarantee->status_class = 'bg-green-100 text-green-800';
+                $guarantee->status_text  = 'Valid';
+            }
+        });
+
         // Calculate passport status and get latest passport
         $latestPassport      = null;
         $passportsWithStatus = collect();
@@ -199,6 +216,7 @@ class PatientController extends Controller
 
         try {
             $patient->delete();
+            
             $this->logAction($hn, 'deleted');
 
             return redirect()->route('patients.index')
@@ -474,6 +492,54 @@ class PatientController extends Controller
         $guaranteeCases = GuaranteeMainCase::all();
 
         return view('patients.add_main_guarantee', compact('patient', 'embassies', 'guaranteeCases'));
+    }
+
+    public function extendMainGuarantee(Request $request, $hn, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'cover_end_date' => 'required|date',
+            'file'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $guarantee = PatientMainGuarantee::where('hn', $hn)->find($id);
+        if (! $guarantee) {
+            return redirect()->route('patients.show', $hn)->with('error', 'Guarantee not found');
+        }
+
+        try {
+            // Handle file upload
+            $directory = public_path('hn/' . $hn);
+            if (! file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $file     = $request->file('file');
+            $filename = 'main_guarantee_extension_' . time() . '_' . $file->getClientOriginalName();
+            $file->move($directory, $filename);
+
+            // Update guarantee
+            $files   = $guarantee->file ?? [];
+            $files[] = $filename;
+
+            $guarantee->update([
+                'extension'                => true,
+                'extension_cover_end_date' => $request->cover_end_date,
+                'file'                     => $files,
+            ]);
+
+            $this->logAction($hn, 'extended main guarantee');
+
+            return redirect()->route('patients.show', $hn)
+                ->with('success', 'Main guarantee extended successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to extend main guarantee: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function storeMainGuarantee(Request $request, $hn)

@@ -34,7 +34,7 @@
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Patients Management</h1>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Patients</h1>
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage all patient records and information</p>
             </div>
             <div class="mt-4 sm:mt-0">

@@ -207,6 +207,7 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Number</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy Ref</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Case</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Issue Date</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Cover Period</th>
@@ -221,9 +222,24 @@
                                         <tr>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy }}</td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->number }}</td>
-                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->guaranteeCaseName->case }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassyRef }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style="background-color: {{ $guarantee->guaranteeCase->color }}">
+                                                    {{ $guarantee->guaranteeCase->case }}
+                                                </span>
+                                            </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->issueDate() }}</td>
-                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->coverStartDate() }} to {{ $guarantee->coverEndDate() }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <div>
+                                                    {{ $guarantee->coverStartDate() }} to {{ $guarantee->coverEndDate() }}
+                                                    @if ($guarantee->extension && $guarantee->extensionCoverEndDate())
+                                                        <div class="mt-1 text-xs font-medium text-green-600">
+                                                            <i class="fa-solid fa-calendar-plus mr-1"></i>
+                                                            Extended to: {{ $guarantee->extensionCoverEndDate() }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
                                                 @if ($guarantee->file)
                                                     @foreach ($guarantee->file as $file)
@@ -235,9 +251,14 @@
                                             </td>
                                             @if (auth()->user()->role === "admin")
                                                 <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                                    <button class="text-red-600 hover:text-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-blue-600 hover:text-blue-900" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->number }}')" title="Extend Guarantee">
+                                                            <i class="fa-solid fa-calendar-plus"></i>
+                                                        </button>
+                                                        <button class="text-red-600 hover:text-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})" title="Delete Guarantee">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
@@ -273,7 +294,17 @@
                                         <tr>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy_ref }}</td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->issue_date }}</td>
-                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->cover_start_date }} to {{ $guarantee->cover_end_date }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <div>
+                                                    {{ $guarantee->coverStartDate() }} to {{ $guarantee->coverEndDate() }}
+                                                    @if ($guarantee->extension && $guarantee->extensionCoverEndDate())
+                                                        <div class="mt-1 text-xs font-medium text-green-600">
+                                                            <i class="fa-solid fa-calendar-plus mr-1"></i>
+                                                            Extended to: {{ $guarantee->extensionCoverEndDate() }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
                                                 <div>{{ $guarantee->details }}</div>
                                                 @if ($guarantee->details_for_staff)
@@ -569,6 +600,61 @@
         </div>
     </div>
 
+    <!-- Extend Main Guarantee Modal -->
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4" id="extendMainGuaranteeModal">
+        <div class="w-full max-w-xl transform rounded-xl bg-white shadow-2xl transition-all">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-gray-200 p-6">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                        <i class="fa-solid fa-calendar-plus text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900">Extend Main Guarantee</h3>
+                </div>
+                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" onclick="closeExtendMainGuaranteeModal()">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            <!-- Form -->
+            <form class="p-6" id="extendMainGuaranteeForm" method="POST" enctype="multipart/form-data" action="{{ route("patients.guarantees.main.extend", ["hn" => $patient->hn, "id" => "__GUARANTEE_ID__"]) }}">
+                @csrf
+                <div class="space-y-6">
+                    <!-- Guarantee Info -->
+                    <div class="rounded-lg bg-blue-50 p-4">
+                        <h4 class="mb-2 text-sm font-medium text-blue-800">Guarantee Information</h4>
+                        <p class="text-sm text-blue-600" id="guaranteeInfo">Guarantee #: <span id="guaranteeNumber"></span></p>
+                    </div>
+
+                    <!-- New End Date -->
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="extend_cover_end_date">New Cover End Date *</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="extend_cover_end_date" type="date" name="cover_end_date" required>
+                        <p class="mt-2 text-xs text-gray-500">Select the new end date for the guarantee coverage.</p>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="extend_file">Extension Document *</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="extend_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <p class="mt-2 text-xs text-gray-500">Upload the extension document (PDF, JPG, JPEG, PNG - Max 10MB).</p>
+                        <div class="mt-2 hidden text-xs text-blue-600" id="extend-filename"></div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200" type="button" onclick="closeExtendMainGuaranteeModal()">
+                        Cancel
+                    </button>
+                    <button class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" type="submit">
+                        <i class="fa-solid fa-calendar-plus mr-2"></i>
+                        Extend Guarantee
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- File Viewer Modal - Full Screen -->
     <div class="fixed inset-0 z-50 hidden bg-black bg-opacity-95" id="fileModal">
         <div class="relative flex h-full w-full flex-col">
@@ -716,6 +802,16 @@
             }
         }
 
+        // Add event listener for extend guarantee file input
+        document.addEventListener('DOMContentLoaded', function() {
+            const extendFileInput = document.getElementById('extend_file');
+            if (extendFileInput) {
+                extendFileInput.addEventListener('change', function() {
+                    updateFileName(this, 'extend-filename');
+                });
+            }
+        });
+
         function deleteNote(hn, noteId) {
             if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
                 axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId))
@@ -779,6 +875,38 @@
                         alert('Failed to delete additional guarantee. Please try again.');
                     });
             }
+        }
+
+        function openExtendMainGuaranteeModal(guaranteeId, guaranteeNumber) {
+            const modal = document.getElementById('extendMainGuaranteeModal');
+            const form = document.getElementById('extendMainGuaranteeForm');
+            const guaranteeNumberSpan = document.getElementById('guaranteeNumber');
+
+            // Set the guarantee number in the modal
+            guaranteeNumberSpan.textContent = guaranteeNumber;
+
+            // Set the form action URL
+            form.action = '{{ route("patients.guarantees.main.extend", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId);
+
+            // Show the modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExtendMainGuaranteeModal() {
+            const modal = document.getElementById('extendMainGuaranteeModal');
+            const form = document.getElementById('extendMainGuaranteeForm');
+
+            // Hide the modal
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+            // Reset the form
+            form.reset();
+            document.getElementById('extend-filename').classList.add('hidden');
+
+            document.body.style.overflow = 'auto';
         }
 
         let selectedGuaranteeCases = [];
@@ -909,6 +1037,7 @@
                 closeAddMedicalReportModal();
                 closeAddMainGuaranteeModal();
                 closeAddAdditionalGuaranteeModal();
+                closeExtendMainGuaranteeModal();
             }
         });
 
@@ -916,6 +1045,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const mainGuaranteeModal = document.getElementById('addMainGuaranteeModal');
             const additionalGuaranteeModal = document.getElementById('addAdditionalGuaranteeModal');
+            const extendMainGuaranteeModal = document.getElementById('extendMainGuaranteeModal');
 
             if (mainGuaranteeModal) {
                 mainGuaranteeModal.addEventListener('click', function(event) {
@@ -929,6 +1059,14 @@
                 additionalGuaranteeModal.addEventListener('click', function(event) {
                     if (event.target === this) {
                         closeAddAdditionalGuaranteeModal();
+                    }
+                });
+            }
+
+            if (extendMainGuaranteeModal) {
+                extendMainGuaranteeModal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeExtendMainGuaranteeModal();
                     }
                 });
             }
