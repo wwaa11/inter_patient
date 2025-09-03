@@ -25,7 +25,7 @@
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Update patient information for {{ $patient->name }}</p>
             </div>
             <div class="mt-4 sm:mt-0">
-                <a class="inline-flex items-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2" href="{{ route("patients.show", $patient->hn) }}">
+                <a class="inline-flex items-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2" href="{{ route("patients.view", $patient->hn) }}">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     Back to Patient {{ $patient->name }}
                 </a>

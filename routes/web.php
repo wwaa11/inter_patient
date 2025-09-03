@@ -16,7 +16,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Patient Management Routes (accessible to all authenticated users)
     Route::get('/', [PatientController::class, 'index'])->name('patients');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
-    Route::get('/patients/{hn}', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('/patients/{hn}', [PatientController::class, 'view'])->name('patients.view');
 
     // Patient Notes Routes (accessible to all authenticated users)
     Route::post('/patients/{hn}/notes', [PatientController::class, 'storeNote'])->name('patients.notes.store');

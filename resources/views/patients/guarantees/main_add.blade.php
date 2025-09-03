@@ -8,7 +8,7 @@
                 <div class="border-b border-gray-200 px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <a class="mr-4 text-gray-500 hover:text-gray-700" href="{{ route("patients.show", $patient->hn) }}">
+                            <a class="mr-4 text-gray-500 hover:text-gray-700" href="{{ route("patients.view", $patient->hn) }}">
                                 <i class="fas fa-arrow-left text-lg"></i>
                             </a>
                             <div>
@@ -91,7 +91,7 @@
                                 @enderror
                             </div>
 
-                            <!-- MB -->
+                            {{-- <!-- MB -->
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-700" for="mb">
                                     <i class="fas fa-hashtag mr-2 text-purple-500"></i>MB
@@ -100,7 +100,7 @@
                                 @error("mb")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             <!-- Issue Date -->
                             <div>
@@ -175,7 +175,7 @@
 
                             <!-- Action Buttons -->
                             <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6">
-                                <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="{{ route("patients.show", $patient->hn) }}">
+                                <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="{{ route("patients.view", $patient->hn) }}">
                                     <i class="fas fa-times mr-2"></i>Cancel
                                 </a>
                                 <button class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800" type="submit">

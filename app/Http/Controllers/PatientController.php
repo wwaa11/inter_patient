@@ -21,10 +21,17 @@ class PatientController extends Controller
 {
     // Utility Functions
     // Core Patient CRUD Operations
-    public function index()
+    public function index(Request $request)
     {
         $patients = Patient::with(['notes', 'passports', 'medicalReports'])
             ->orderBy('created_at', 'desc')
+            ->where(function ($query) use ($request) {
+                if ($request->has('search')) {
+                    $query->where('hn', 'like', '%' . $request->search . '%')
+                        ->orWhere('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('qid', 'like', '%' . $request->search . '%');
+                }
+            })
             ->paginate(50);
 
         $nationalities = Patient::distinct('nationality')->pluck('nationality');
@@ -62,7 +69,7 @@ class PatientController extends Controller
 
             $this->logAction($patient->hn, 'created');
 
-            return redirect()->route('patients.show', $patient->hn)
+            return redirect()->route('patients.view', $patient->hn)
                 ->with('success', 'Patient created successfully');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -71,7 +78,7 @@ class PatientController extends Controller
         }
     }
 
-    public function show($hn)
+    public function view($hn)
     {
         $patient = Patient::with(['notes', 'passports', 'medicalReports', 'guaranteeMains'])->find($hn);
         if (! $patient) {
@@ -150,7 +157,7 @@ class PatientController extends Controller
             }
         }
 
-        return view('patients.show', compact('patient', 'latestPassport', 'passportsWithStatus'));
+        return view('patients.view', compact('patient', 'latestPassport', 'passportsWithStatus'));
     }
 
     public function edit($hn)
@@ -196,7 +203,7 @@ class PatientController extends Controller
             $patient->update($request->all());
             $this->logAction($hn, 'updated');
 
-            return redirect()->route('patients.show', $patient->hn)
+            return redirect()->route('patients.view', $patient->hn)
                 ->with('success', 'Patient updated successfully');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -215,9 +222,14 @@ class PatientController extends Controller
         }
 
         try {
-            $patient->delete();
-            
             $this->logAction($hn, 'deleted');
+
+            $patient->delete();
+            $patient->passports()->delete();
+            $patient->notes()->delete();
+            $patient->medicalReports()->delete();
+            $patient->guaranteeMains()->delete();
+            $patient->guaranteeAdditionals()->delete();
 
             return redirect()->route('patients.index')
                 ->with('success', 'Patient deleted successfully');
@@ -334,7 +346,7 @@ class PatientController extends Controller
         ]);
         $this->logAction($hn, 'added passport');
 
-        return redirect()->route('patients.show', $hn)->with('success', 'Passport added successfully');
+        return redirect()->route('patients.view', $hn)->with('success', 'Passport added successfully');
     }
 
     public function destroyPassport($hn, $id)
@@ -342,7 +354,7 @@ class PatientController extends Controller
         $passport = PatientPassport::where('hn', $hn)->find($id);
 
         if (! $passport) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Passport not found');
         }
 
@@ -356,10 +368,10 @@ class PatientController extends Controller
             $passport->delete();
             $this->logAction($hn, 'deleted passport');
 
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('success', 'Passport deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete passport: ' . $e->getMessage());
         }
     }
@@ -400,7 +412,7 @@ class PatientController extends Controller
         ]);
         $this->logAction($hn, 'added medical report');
 
-        return redirect()->route('patients.show', $hn)->with('success', 'Medical report added successfully');
+        return redirect()->route('patients.view', $hn)->with('success', 'Medical report added successfully');
     }
 
     public function destroyMedicalReport($hn, $id)
@@ -408,7 +420,7 @@ class PatientController extends Controller
         $report = PatientMedicalReport::where('hn', $hn)->find($id);
 
         if (! $report) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Medical report not found');
         }
 
@@ -422,10 +434,10 @@ class PatientController extends Controller
             $report->delete();
             $this->logAction($hn, 'deleted medical report');
 
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('success', 'Medical report deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete medical report: ' . $e->getMessage());
         }
     }
@@ -456,7 +468,7 @@ class PatientController extends Controller
         ]);
         $this->logAction($hn, 'added note');
 
-        return redirect()->route('patients.show', $hn)->with('success', 'Note added successfully');
+        return redirect()->route('patients.view', $hn)->with('success', 'Note added successfully');
     }
 
     public function destroyNote($hn, $id)
@@ -464,7 +476,7 @@ class PatientController extends Controller
         $note = PatientNote::where('hn', $hn)->find($id);
 
         if (! $note) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Note not found');
         }
 
@@ -472,10 +484,10 @@ class PatientController extends Controller
             $note->delete();
             $this->logAction($hn, 'deleted note');
 
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('success', 'Note deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete note: ' . $e->getMessage());
         }
     }
@@ -491,7 +503,7 @@ class PatientController extends Controller
         $embassies      = Embassy::all();
         $guaranteeCases = GuaranteeMainCase::all();
 
-        return view('patients.add_main_guarantee', compact('patient', 'embassies', 'guaranteeCases'));
+        return view('patients.guarantees.main_add', compact('patient', 'embassies', 'guaranteeCases'));
     }
 
     public function extendMainGuarantee(Request $request, $hn, $id)
@@ -507,7 +519,7 @@ class PatientController extends Controller
 
         $guarantee = PatientMainGuarantee::where('hn', $hn)->find($id);
         if (! $guarantee) {
-            return redirect()->route('patients.show', $hn)->with('error', 'Guarantee not found');
+            return redirect()->route('patients.view', $hn)->with('error', 'Guarantee not found');
         }
 
         try {
@@ -533,7 +545,7 @@ class PatientController extends Controller
 
             $this->logAction($hn, 'extended main guarantee');
 
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('success', 'Main guarantee extended successfully');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -595,7 +607,7 @@ class PatientController extends Controller
                 ]);
             }
 
-            return redirect()->route('patients.show', $hn)->with('success', 'Main guarantee added successfully');
+            return redirect()->route('patients.view', $hn)->with('success', 'Main guarantee added successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to add main guarantee: ' . $e->getMessage())->withInput();
         }
@@ -606,7 +618,7 @@ class PatientController extends Controller
         $guarantee = PatientMainGuarantee::where('hn', $hn)->find($id);
 
         if (! $guarantee) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Guarantee not found');
         }
 
@@ -614,10 +626,10 @@ class PatientController extends Controller
             $guarantee->delete();
             $this->logAction($hn, 'deleted main guarantee');
 
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('success', 'Main guarantee deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->route('patients.show', $hn)
+            return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete main guarantee: ' . $e->getMessage());
         }
     }
@@ -709,7 +721,7 @@ class PatientController extends Controller
                 ]);
             }
 
-            return redirect()->route('patients.show', $hn)->with('success', 'Additional guarantee added successfully');
+            return redirect()->route('patients.view', $hn)->with('success', 'Additional guarantee added successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to add additional guarantee: ' . $e->getMessage())->withInput();
         }
