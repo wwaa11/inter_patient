@@ -208,6 +208,7 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Number</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Embassy Ref</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Valid</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Case</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Issue Date</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-300">Cover Period</th>
@@ -222,10 +223,18 @@
                                         <tr>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy }}</td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->number }}</td>
-                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassyRef }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy_ref }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <span class="{{ $guarantee->status_class }} inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
+                                                    {{ $guarantee->status_text }}
+                                                </span>
+                                            </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
                                                 <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style="background-color: {{ $guarantee->guaranteeCase->color }}">
                                                     {{ $guarantee->guaranteeCase->case }}
+                                                </span>
+                                                <span class="main-defination hidden text-xs font-medium text-slate-500 dark:text-slate-300">
+                                                    {{ $guarantee->guaranteeCase->definition }}
                                                 </span>
                                             </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->issueDate() }}</td>
@@ -252,7 +261,7 @@
                                             @if (auth()->user()->role === "admin")
                                                 <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
                                                     <div class="flex space-x-2">
-                                                        <button class="text-blue-600 hover:text-blue-900" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->number }}')" title="Extend Guarantee">
+                                                        <button class="text-blue-600 hover:text-blue-900" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->embassy_ref }}')" title="Extend Guarantee">
                                                             <i class="fa-solid fa-calendar-plus"></i>
                                                         </button>
                                                         <button class="text-red-600 hover:text-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})" title="Delete Guarantee">

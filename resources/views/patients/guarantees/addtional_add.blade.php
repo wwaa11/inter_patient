@@ -25,301 +25,176 @@
                 </div>
             </div>
 
-            <form class="space-y-8" action="{{ route("patients.guarantees.additional.store", $patient->hn) }}" method="POST" enctype="multipart/form-data">
-                @csrf
+            <!-- Main Content -->
+            <div class="flex flex-col gap-6 lg:flex-row">
+                <!-- Left Panel - Form -->
+                <div class="rounded-lg bg-white shadow-sm">
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Guarantee Information</h2>
+                    </div>
 
-                <!-- Two Panel Layout -->
-                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <!-- Left Panel: Form Fields -->
-                    <div class="rounded-xl bg-white p-8 shadow-lg">
-                        <h2 class="mb-6 text-2xl font-bold text-gray-800">
-                            <i class="fas fa-edit mr-2 text-green-500"></i>
-                            Guarantee Information
-                        </h2>
-
+                    <form class="p-6" action="{{ route("patients.guarantees.additional.store", $patient->hn) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
                         <div class="space-y-6">
-                            <!-- Embassy -->
+
+                            <!-- File Upload -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="embassy">
-                                    <i class="fas fa-building mr-2 text-blue-500"></i>Embassy *
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="guarantee_file">
+                                    <i class="fas fa-cloud-upload-alt mr-2 text-orange-500"></i>Upload File *
                                 </label>
-                                <select class="@error("embassy") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="embassy" name="embassy" required>
-                                    <option value="">Select Embassy</option>
-                                    @foreach ($embassies as $embassy)
-                                        <option value="{{ $embassy->name }}" {{ old("embassy") == $embassy->name ? "selected" : "" }}>{{ $embassy->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error("embassy")
+                                <div class="relative">
+                                    <input class="@error("file") border-red-500 @enderror w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 transition-all file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500" id="guarantee_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required onchange="previewFile(this)">
+                                    @error("file")
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <p class="mt-2 text-xs text-gray-500">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Accepted formats: PDF, JPG, JPEG, PNG (Max: 10MB)
+                                </p>
+                            </div>
+
+                            <!-- Embassy Reference -->
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="embassy_ref">
+                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference
+                                </label>
+                                <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="embassy_ref" type="text" name="embassy_ref" required placeholder="Enter embassy reference" value="{{ old("embassy_ref") }}">
+                                @error("embassy_ref")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
-                                </select>
                             </div>
 
-                            <!-- Upload File Section -->
+                            <!-- Number -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="file">
-                                    <i class="fas fa-upload mr-2 text-purple-500"></i>Upload Files
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="number">
+                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Number
                                 </label>
-                                <input class="@error("file") border-red-500 @enderror w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 transition-all file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500" id="file" type="file" name="file[]" multiple accept=".pdf,.jpg,.jpeg,.png">
-                                @error("file")
+                                <input class="@error("number") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="number" type="text" name="number" placeholder="Enter Number" value="{{ old("number") }}">
+                                @error("number")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
-                                <p class="mt-1 text-sm text-gray-500">Supported formats: PDF, JPG, JPEG, PNG (Max: 10MB each)</p>
                             </div>
 
-                            <!-- Type -->
+                            {{-- <!-- MB -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="type">
-                                    <i class="fas fa-tag mr-2 text-indigo-500"></i>Type *
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="mb">
+                                    <i class="fas fa-hashtag mr-2 text-purple-500"></i>MB
                                 </label>
-                                <select class="@error("type") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="type" name="type" required>
-                                    <option value="">Select Type</option>
-                                    @foreach ($additionalTypes as $type)
-                                        <option value="{{ $type->type }}" {{ old("type") == $type->type ? "selected" : "" }}>{{ $type->type }}</option>
-                                    @endforeach
-                                </select>
-                                @error("type")
+                                <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb") }}">
+                                @error("mb")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
-                                </select>
-                            </div>
+                            </div> --}}
 
-                            <!-- Embassy Reference and MB -->
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="embassy_ref">
-                                        <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference
-                                    </label>
-                                    <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="embassy_ref" type="text" name="embassy_ref" placeholder="Enter embassy reference" value="{{ old("embassy_ref") }}">
-                                    @error("embassy_ref")
-                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="mb">
-                                        <i class="fas fa-hashtag mr-2 text-purple-500"></i>MB
-                                    </label>
-                                    <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb") }}">
-                                    @error("mb")
-                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Dates -->
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="issue_date">
-                                        <i class="fas fa-calendar-plus mr-2 text-green-500"></i>Issue Date *
-                                    </label>
-                                    <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date") }}">
-                                    @error("issue_date")
-                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_start_date">
-                                        <i class="fas fa-calendar-check mr-2 text-blue-500"></i>Cover Start Date *
-                                    </label>
-                                    <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_start_date" type="date" name="cover_start_date" required value="{{ old("cover_start_date") }}">
-                                    @error("cover_start_date")
-                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_end_date">
-                                        <i class="fas fa-calendar-times mr-2 text-red-500"></i>Cover End Date *
-                                    </label>
-                                    <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_end_date" type="date" name="cover_end_date" required value="{{ old("cover_end_date") }}">
-                                    @error("cover_end_date")
-                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Total Price -->
+                            <!-- Issue Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="total_price">
-                                    <i class="fas fa-dollar-sign mr-2 text-green-500"></i>Total Price *
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="issue_date">
+                                    <i class="fas fa-calendar-plus mr-2 text-purple-500"></i>Issue Date *
                                 </label>
-                                <input class="@error("total_price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="total_price" type="number" name="total_price" step="0.01" min="0" required placeholder="Enter total price" value="{{ old("total_price") }}">
-                                @error("total_price")
+                                <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date") }}">
+                                @error("issue_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            <!-- Cover Start Date -->
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_start_date">
+                                    <i class="fas fa-calendar-check mr-2 text-green-500"></i>Cover Start *
+                                </label>
+                                <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_start_date" type="date" name="cover_start_date" required value="{{ old("cover_start_date") }}">
+                                @error("cover_start_date")
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Cover End Date -->
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_end_date">
+                                    <i class="fas fa-calendar-times mr-2 text-red-500"></i>Cover End *
+                                </label>
+                                <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_end_date" type="date" name="cover_end_date" required value="{{ old("cover_end_date") }}">
+                                @error("cover_end_date")
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6">
+                                <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="{{ route("patients.view", $patient->hn) }}">
+                                    <i class="fas fa-times mr-2"></i>Cancel
+                                </a>
+                                <button class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800" type="submit">
+                                    <i class="fas fa-save mr-2"></i>Add Main Guarantee
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
+                </div>
 
-                    <!-- Right Panel: Guarantee Details -->
-                    <div class="rounded-xl bg-white p-8 shadow-lg">
-                        <h2 class="mb-6 text-2xl font-bold text-gray-800">
-                            <i class="fas fa-list mr-2 text-purple-500"></i>
-                            Guarantee Details
+                <!-- Right Panel - File Preview -->
+                <div class="relative flex-1 rounded-lg bg-white shadow-sm">
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h2 class="flex items-center text-lg font-semibold text-gray-900">
+                            <i class="fas fa-eye mr-2 text-blue-500"></i>File Preview
                         </h2>
-
-                        <div class="space-y-4" id="guarantee-details-container">
-                            <!-- Initial Detail Row -->
-                            <div class="guarantee-detail-row rounded-lg border border-gray-200 p-4">
-                                <div class="mb-4 flex items-center justify-between">
-                                    <h4 class="font-semibold text-gray-700">Detail #1</h4>
-                                    <button class="remove-detail-btn hidden rounded-full bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600" type="button" onclick="removeDetailRow(this)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="mb-1 block text-sm font-medium text-gray-600">Case *</label>
-                                        <select class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[0][case]" required>
-                                            <option value="">Select Case</option>
-                                            @foreach ($additionalCases as $case)
-                                                <option value="{{ $case->case }}">{{ $case->case }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                        <div>
-                                            <label class="mb-1 block text-sm font-medium text-gray-600">Specific Date</label>
-                                            <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="date" name="details[0][specific_date]">
-                                        </div>
-                                        <div>
-                                            <label class="mb-1 block text-sm font-medium text-gray-600">Amount</label>
-                                            <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="number" name="details[0][amount]" step="0.01" min="0" placeholder="0.00">
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                        <div>
-                                            <label class="mb-1 block text-sm font-medium text-gray-600">Details</label>
-                                            <textarea class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[0][details]" rows="2" placeholder="Enter details"></textarea>
-                                        </div>
-                                        <div>
-                                            <label class="mb-1 block text-sm font-medium text-gray-600">Definition</label>
-                                            <textarea class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[0][definition]" rows="2" placeholder="Enter definition"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="mb-1 block text-sm font-medium text-gray-600">Price</label>
-                                        <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="number" name="details[0][price]" step="0.01" min="0" placeholder="0.00">
-                                    </div>
-                                </div>
+                    </div>
+                    <div class="m-auto p-6">
+                        <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6" id="filePreview">
+                            <div class="text-center">
+                                <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
+                                <p class="text-gray-500">No file selected</p>
+                                <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
                             </div>
                         </div>
-
-                        <button class="mt-4 w-full rounded-lg bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600" id="add-detail-btn" type="button">
-                            <i class="fas fa-plus mr-2"></i>Add Another Detail
-                        </button>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
-                <div class="flex justify-center space-x-4">
-                    <a class="rounded-lg bg-gray-500 px-8 py-3 text-white transition-colors hover:bg-gray-600" href="{{ route("patients.view", $patient->hn) }}">
-                        <i class="fas fa-arrow-left mr-2"></i>Cancel
-                    </a>
-                    <button class="rounded-lg bg-blue-600 px-8 py-3 text-white transition-colors hover:bg-blue-700" type="submit">
-                        <i class="fas fa-save mr-2"></i>Save Additional Guarantee
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 @endsection
 @push("scripts")
     <script>
-        let detailIndex = 1;
+        // File preview functionality
+        function previewFile(input) {
+            const file = input.files[0];
+            const preview = document.getElementById('filePreview');
 
-        document.getElementById('add-detail-btn').addEventListener('click', function() {
-            addDetailRow();
-        });
+            if (file) {
+                const fileType = file.type;
+                const fileName = file.name;
 
-        function addDetailRow() {
-            const container = document.getElementById('guarantee-details-container');
-            const newRow = document.createElement('div');
-            newRow.className = 'guarantee-detail-row rounded-lg border border-gray-200 p-4';
-
-            newRow.innerHTML = `
-            <div class="mb-4 flex items-center justify-between">
-                <h4 class="font-semibold text-gray-700">Detail #${detailIndex + 1}</h4>
-                <button type="button" class="remove-detail-btn rounded-full bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600" onclick="removeDetailRow(this)">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">Case *</label>
-                    <select class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[${detailIndex}][case]" required>
-                        <option value="">Select Case</option>
-                        @foreach ($additionalCases as $case)
-                            <option value="{{ $case->case }}">{{ $case->case }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-600">Specific Date</label>
-                        <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="date" name="details[${detailIndex}][specific_date]">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-600">Amount</label>
-                        <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="number" name="details[${detailIndex}][amount]" step="0.01" min="0" placeholder="0.00">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-600">Details</label>
-                        <textarea class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[${detailIndex}][details]" rows="2" placeholder="Enter details"></textarea>
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-600">Definition</label>
-                        <textarea class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="details[${detailIndex}][definition]" rows="2" placeholder="Enter definition"></textarea>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">Price</label>
-                    <input class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" type="number" name="details[${detailIndex}][price]" step="0.01" min="0" placeholder="0.00">
-                </div>
-            </div>
-            `;
-
-            container.appendChild(newRow);
-            detailIndex++;
-
-            updateRemoveButtons();
-        }
-
-        function removeDetailRow(button) {
-            const row = button.closest('.guarantee-detail-row');
-            row.remove();
-            updateDetailNumbers();
-            updateRemoveButtons();
-        }
-
-        function updateDetailNumbers() {
-            const rows = document.querySelectorAll('.guarantee-detail-row');
-            rows.forEach((row, index) => {
-                const header = row.querySelector('h4');
-                header.textContent = `Detail #${index + 1}`;
-            });
-        }
-
-        function updateRemoveButtons() {
-            const removeButtons = document.querySelectorAll('.remove-detail-btn');
-            const totalRows = document.querySelectorAll('.guarantee-detail-row').length;
-
-            removeButtons.forEach(button => {
-                if (totalRows > 1) {
-                    button.classList.remove('hidden');
+                if (fileType.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img class="p-6 h-auto max-w-full rounded-lg" src="${e.target.result}" alt="Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<embed class="p-6 absolute bottom-0 left-0 right-0 min-h-[700px] w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
+                    };
+                    reader.readAsDataURL(file);
                 } else {
-                    button.classList.add('hidden');
+                    preview.innerHTML = `
+                        <div class="text-center">
+                            <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
+                            <p class="font-medium text-gray-700">${fileName}</p>
+                            <p class="text-sm text-gray-500">File uploaded successfully</p>
+                        </div>
+                        `;
                 }
-            });
+            } else {
+                preview.innerHTML = `
+                    <div class="text-center">
+                        <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
+                        <p class="text-gray-500">No file selected</p>
+                        <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
+                    </div>
+                    `;
+            }
         }
     </script>
 @endpush

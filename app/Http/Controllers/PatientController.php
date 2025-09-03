@@ -23,20 +23,31 @@ class PatientController extends Controller
     // Core Patient CRUD Operations
     public function index(Request $request)
     {
-        $patients = Patient::with(['notes', 'passports', 'medicalReports'])
-            ->orderBy('created_at', 'desc')
+        $patients = Patient::where(function ($query) use ($request) {
+            if ($request->nationality != null) {
+                $query->where('nationality', $request->nationality);
+            }
+            if ($request->type != null) {
+                $query->where('type', $request->type);
+            }
+            if ($request->gender != null) {
+                $query->where('gender', $request->gender);
+            }
+
+        })
             ->where(function ($query) use ($request) {
-                if ($request->has('search')) {
+                if ($request->search != null) {
                     $query->where('hn', 'like', '%' . $request->search . '%')
                         ->orWhere('name', 'like', '%' . $request->search . '%')
                         ->orWhere('qid', 'like', '%' . $request->search . '%');
                 }
             })
+            ->orderBy('hn', 'asc')
             ->paginate(50);
 
         $nationalities = Patient::distinct('nationality')->pluck('nationality');
 
-        return view('patients.index', compact('patients', 'nationalities'));
+        return view('patients.index', compact('patients', 'nationalities', 'request'));
     }
 
     public function create()
@@ -90,16 +101,17 @@ class PatientController extends Controller
         $patient->guaranteeMains->each(function ($guarantee) {
             $endDate         = \Carbon\Carbon::parse($guarantee->extension_cover_end_date ?? $guarantee->cover_end_date);
             $now             = \Carbon\Carbon::now();
-            $daysUntilExpiry = $now->diffInDays($endDate, false);
+            $daysUntilExpiry = $now->diff($endDate, false);
 
-            if ($daysUntilExpiry < 0) {
-                $guarantee->status       = 'expired';
-                $guarantee->status_class = 'bg-red-100 text-red-800';
-                $guarantee->status_text  = 'Expired';
-            } else {
-                $guarantee->status       = 'valid';
+            if ($daysUntilExpiry->days > 0 && $daysUntilExpiry->invert == 0) {
                 $guarantee->status_class = 'bg-green-100 text-green-800';
                 $guarantee->status_text  = 'Valid';
+            } elseif ($daysUntilExpiry->days == 0 && $daysUntilExpiry->invert == 1) {
+                $guarantee->status_class = 'bg-green-100 text-green-800';
+                $guarantee->status_text  = 'Valid';
+            } else {
+                $guarantee->status_class = 'bg-red-100 text-red-800';
+                $guarantee->status_text  = 'Expired';
             }
         });
 
@@ -120,15 +132,15 @@ class PatientController extends Controller
 
                 if ($daysUntilExpiry < 0) {
                     $passport->status       = 'expired';
-                    $passport->status_class = 'bg-red-100 text-red-800';
+                    $passport->status_class = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
                     $passport->status_text  = 'Expired';
                 } elseif ($daysUntilExpiry <= 90) {
                     $passport->status       = 'expiring_soon';
-                    $passport->status_class = 'bg-yellow-100 text-yellow-800';
+                    $passport->status_class = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
                     $passport->status_text  = 'Expiring Soon';
                 } else {
                     $passport->status       = 'valid';
-                    $passport->status_class = 'bg-green-100 text-green-800';
+                    $passport->status_class = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
                     $passport->status_text  = 'Valid';
                 }
 
@@ -143,15 +155,15 @@ class PatientController extends Controller
 
                 if ($daysUntilExpiry < 0) {
                     $latestPassport->status       = 'expired';
-                    $latestPassport->status_class = 'bg-red-100 text-red-800';
+                    $latestPassport->status_class = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
                     $latestPassport->status_text  = 'Expired';
                 } elseif ($daysUntilExpiry <= 90) {
                     $latestPassport->status       = 'expiring_soon';
-                    $latestPassport->status_class = 'bg-yellow-100 text-yellow-800';
+                    $latestPassport->status_class = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
                     $latestPassport->status_text  = 'Expiring Soon';
                 } else {
                     $latestPassport->status       = 'valid';
-                    $latestPassport->status_class = 'bg-green-100 text-green-800';
+                    $latestPassport->status_class = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
                     $latestPassport->status_text  = 'Valid';
                 }
             }
