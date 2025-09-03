@@ -206,7 +206,8 @@
             </div>
         </div>
     </div>
-
+@endsection
+@push("scripts")
     <script>
         let selectedGuaranteeCases = [];
 
@@ -229,19 +230,19 @@
             const container = document.getElementById('selectedCases');
 
             if (selectedGuaranteeCases.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center" id="noCasesMessage">No cases selected</p>';
+                container.innerHTML = '<p class="text-center text-sm text-gray-500" id="noCasesMessage">No cases selected</p>';
             } else {
                 let html = '';
                 selectedGuaranteeCases.forEach(guaranteeCase => {
                     html += `
-                    <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
-                        <span class="text-sm text-blue-800 font-medium">${guaranteeCase.name}</span>
-                        <button type="button" onclick="removeGuaranteeCase(${guaranteeCase.id})" class="text-red-500 hover:text-red-700 transition-colors">
+                    <div class="mb-2 flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-2">
+                        <span class="text-sm font-medium text-blue-800">${guaranteeCase.name}</span>
+                        <button class="text-red-500 transition-colors hover:text-red-700" type="button" onclick="removeGuaranteeCase(${guaranteeCase.id})">
                             <i class="fas fa-times"></i>
                         </button>
                         <input type="hidden" name="guarantee_cases[]" value="${guaranteeCase.id}">
                     </div>
-                `;
+                    `;
                 });
                 container.innerHTML = html;
             }
@@ -274,33 +275,33 @@
                 if (fileType.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        preview.innerHTML = `<img src="${e.target.result}" class="max-w-full h-auto rounded-lg" alt="Preview">`;
+                        preview.innerHTML = `<img class="h-auto max-w-full rounded-lg" src="${e.target.result}" alt="Preview">`;
                     };
                     reader.readAsDataURL(file);
                 } else if (fileType === 'application/pdf') {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        preview.innerHTML = `<embed src="${e.target.result}" type="application/pdf" class="w-full h-full rounded-lg">`;
+                        preview.innerHTML = `<embed class="h-full w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
                     };
                     reader.readAsDataURL(file);
                 } else {
                     preview.innerHTML = `
-                    <div class="text-center">
-                        <i class="fas fa-file text-4xl text-gray-400 mb-3"></i>
-                        <p class="text-gray-700 font-medium">${fileName}</p>
-                        <p class="text-sm text-gray-500">File uploaded successfully</p>
-                    </div>
-                `;
+                        <div class="text-center">
+                            <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
+                            <p class="font-medium text-gray-700">${fileName}</p>
+                            <p class="text-sm text-gray-500">File uploaded successfully</p>
+                        </div>
+                        `;
                 }
             } else {
                 preview.innerHTML = `
-                <div class="text-center">
-                    <i class="fas fa-file-upload text-4xl text-gray-400 mb-3"></i>
-                    <p class="text-gray-500">No file selected</p>
-                    <p class="text-sm text-gray-400 mt-1">Upload a file to see preview</p>
-                </div>
-            `;
+                    <div class="text-center">
+                        <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
+                        <p class="text-gray-500">No file selected</p>
+                        <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
+                    </div>
+                    `;
             }
         }
     </script>
-@endsection
+@endpush

@@ -646,7 +646,7 @@ class PatientController extends Controller
         $additionalTypes = PatientAdditionalType::all();
         $additionalCases = GuaranteeAdditionalCase::all();
 
-        return view('patients.add_additional_guarantee', compact('patient', 'embassies', 'additionalTypes', 'additionalCases'));
+        return view('patients.guarantees.addtional_add', compact('patient', 'embassies', 'additionalTypes', 'additionalCases'));
     }
 
     public function storeGuaranteeAdditional(Request $request, $hn)
