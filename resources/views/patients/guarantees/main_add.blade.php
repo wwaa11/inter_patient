@@ -76,7 +76,7 @@
                             <!-- Number -->
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-700" for="number">
-                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Number
+                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Number (Optional)
                                 </label>
                                 <input class="@error("number") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="number" type="text" name="number" placeholder="Enter Number" value="{{ old("number") }}">
                                 @error("number")
@@ -167,8 +167,8 @@
                                     <div class="max-h-40 overflow-y-auto rounded-lg border border-gray-200" id="availableCases">
                                         @foreach ($guaranteeCases as $case)
                                             <div class="case-item flex items-center justify-between border-b border-gray-100 p-3 last:border-b-0 hover:bg-gray-50" data-case-name="{{ strtolower($case->case) }}">
-                                                <span class="text-sm text-gray-700">{{ $case->case }}</span>
-                                                <button class="rounded-full bg-blue-500 px-3 py-1 text-xs text-white transition-colors hover:bg-blue-600" type="button" onclick="addGuaranteeCase({{ $case->id }}, '{{ addslashes($case->case) }}')">
+                                                <span class="text-sm text-gray-700">{{ $case->name }}</span>
+                                                <button class="rounded-full bg-blue-500 px-3 py-1 text-xs text-white transition-colors hover:bg-blue-600" type="button" onclick="addGuaranteeCase({{ $case->id }}, '{{ addslashes($case->name) }}')">
                                                     <i class="fas fa-plus mr-1"></i>Add
                                                 </button>
                                             </div>

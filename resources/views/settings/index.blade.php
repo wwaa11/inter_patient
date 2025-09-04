@@ -37,7 +37,11 @@
                             @forelse($embassies as $embassy)
                                 <tr>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $embassy->id }}</td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $embassy->name }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style="background-color: {{ $embassy->colour }}">
+                                            {{ $embassy->name }}
+                                        </span>
+                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $embassy->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
                                         <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editEmbassy({{ $embassy->id }}, '{{ $embassy->name }}')">
@@ -84,11 +88,15 @@
                             @forelse($guaranteeCases as $case)
                                 <tr>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $case->id }}</td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $case->case }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style="background-color: {{ $case->colour }}">
+                                            {{ $case->name }}
+                                        </span>
+                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->definition ?? "N/A" }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->case }}', '{{ $case->definition }}')">
+                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->name }}', '{{ $case->definition }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
                                         <button class="text-red-600 hover:text-red-900" onclick="deleteGuaranteeCase({{ $case->id }})">

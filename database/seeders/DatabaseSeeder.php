@@ -2,7 +2,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\GuaranteeMainCase;
+use App\Models\Embassy;
+use App\Models\GuaranteeCase;
+use App\Models\PatientAdditionalType;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -10,9 +12,25 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    private function randomHexColour()
+    {
+        return '#' . substr(str_shuffle('0123456789abcdef'), 0, 6);
+    }
+
     public function run(): void
     {
-        $guaranteeMainCases = [
+        $embassies = [
+            'Embassy of the State of Qatar',
+        ];
+
+        foreach ($embassies as $embassy) {
+            Embassy::create([
+                'name'   => $embassy,
+                'colour' => $this->randomHexColour(),
+            ]);
+        }
+
+        $GuaranteeCases = [
             'Anesthesiologist',
             'Cardiology',
             'Cardiothoracic',
@@ -52,9 +70,23 @@ class DatabaseSeeder extends Seeder
             'Neuro-Surgery',
         ];
 
-        foreach ($guaranteeMainCases as $case) {
-            GuaranteeMainCase::create([
-                'case' => $case,
+        foreach ($GuaranteeCases as $case) {
+            GuaranteeCase::create([
+                'name'   => $case,
+                'colour' => $this->randomHexColour(),
+            ]);
+        }
+
+        $patientAddtionalType = [
+            'Addtional',
+            'Equipment',
+            'Medication',
+        ];
+
+        foreach ($patientAddtionalType as $type) {
+            PatientAdditionalType::create([
+                'name'   => $type,
+                'colour' => $this->randomHexColour(),
             ]);
         }
     }

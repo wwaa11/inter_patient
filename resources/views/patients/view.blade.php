@@ -221,7 +221,11 @@
                                 <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-600 dark:bg-slate-800">
                                     @foreach ($patient->guaranteeMains as $guarantee)
                                         <tr>
-                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy }}</td>
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style="background-color: {{ $guarantee->embassyData->colour }}">
+                                                    {{ $guarantee->embassyData->name }}
+                                                </span>
+                                            </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->number }}</td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $guarantee->embassy_ref }}</td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
@@ -230,8 +234,8 @@
                                                 </span>
                                             </td>
                                             <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900 dark:text-white">
-                                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style="background-color: {{ $guarantee->guaranteeCase->color }}">
-                                                    {{ $guarantee->guaranteeCase->case }}
+                                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style="background-color: {{ $guarantee->guaranteeCase->colour }}">
+                                                    {{ $guarantee->guaranteeCase->name }}
                                                 </span>
                                                 <span class="main-defination hidden text-xs font-medium text-slate-500 dark:text-slate-300">
                                                     {{ $guarantee->guaranteeCase->definition }}

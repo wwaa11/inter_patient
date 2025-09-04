@@ -14,13 +14,22 @@ return new class extends Migration
         Schema::create('embassies', function (Blueprint $table) {
             $table->id();
             $table->string("name");
+            $table->string('colour')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('guarantee_main_cases', function (Blueprint $table) {
+        Schema::create('guarantee_cases', function (Blueprint $table) {
             $table->id();
-            $table->string("case");
+            $table->string("name");
             $table->string("definition")->nullable();
+            $table->string('colour')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('patient_additional_types', function (Blueprint $table) {
+            $table->id();
+            $table->string("name");
+            $table->string('colour')->nullable();
             $table->timestamps();
         });
 
@@ -41,20 +50,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('guarantee_addtional_cases', function (Blueprint $table) {
-            $table->id();
-            $table->string("case");
-            $table->string("definition")->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('patient_addtional_types', function (Blueprint $table) {
-            $table->id();
-            $table->string("type");
-            $table->timestamps();
-        });
-
-        Schema::create('patient_addtional_headers', function (Blueprint $table) {
+        Schema::create('patient_additional_headers', function (Blueprint $table) {
             $table->id();
             // Header Section
             $table->string("hn")->references("hn")->on("patients");
@@ -72,7 +68,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('patient_addtional_details', function (Blueprint $table) {
+        Schema::create('patient_additional_details', function (Blueprint $table) {
             // Header Section
             $table->string("guarantee_header_id")->references("id")->on("patient_addtional_headers");
             // Detail Section
@@ -92,11 +88,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patient_addtional_details');
-        Schema::dropIfExists('patient_addtional_headers');
-        Schema::dropIfExists('guarantee_addtional_cases');
+        Schema::dropIfExists('patient_additional_details');
+        Schema::dropIfExists('patient_additional_headers');
         Schema::dropIfExists('patient_main_guarantees');
-        Schema::dropIfExists('guarantee_main_cases');
+        Schema::dropIfExists('patient_additional_types');
+        Schema::dropIfExists('guarantee_cases');
         Schema::dropIfExists('embassies');
     }
 };

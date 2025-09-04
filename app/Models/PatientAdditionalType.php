@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,14 +8,15 @@ class PatientAdditionalType extends Model
 {
     use HasFactory;
 
-    protected $table = 'patient_addtional_types';
+    protected $table = 'patient_additional_types';
 
     protected $fillable = [
-        'type'
+        'name',
+        'colour',
     ];
 
     public function additionalHeaders()
     {
-        return $this->hasMany(PatientAdditionalHeader::class, 'type', 'type');
+        return $this->hasMany(PatientAdditionalHeader::class, 'type', 'name');
     }
 }

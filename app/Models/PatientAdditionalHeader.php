@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +8,7 @@ class PatientAdditionalHeader extends Model
 {
     use HasFactory;
 
-    protected $table = 'patient_addtional_headers';
+    protected $table = 'patient_additional_headers';
 
     protected $fillable = [
         'hn',
@@ -20,13 +19,13 @@ class PatientAdditionalHeader extends Model
         'cover_start_date',
         'cover_end_date',
         'total_price',
-        'file'
+        'file',
     ];
 
     protected $casts = [
         'cover_start_date' => 'date',
-        'cover_end_date' => 'date',
-        'file' => 'array'
+        'cover_end_date'   => 'date',
+        'file'             => 'array',
     ];
 
     public function patient()

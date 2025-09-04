@@ -2,15 +2,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Embassy;
-use App\Models\GuaranteeMainCase;
+use App\Models\GuaranteeCase;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
+    private function randomHexColour()
+    {
+        return '#' . substr(str_shuffle('0123456789abcdef'), 0, 6);
+    }
+
     public function index()
     {
         $embassies      = Embassy::all();
-        $guaranteeCases = GuaranteeMainCase::all();
+        $guaranteeCases = GuaranteeCase::all();
 
         return view('settings.index', compact('embassies', 'guaranteeCases'));
     }
@@ -23,7 +28,8 @@ class SettingsController extends Controller
         ]);
 
         Embassy::create([
-            'name' => $request->name,
+            'name'   => $request->name,
+            'colour' => $this->randomHexColour(),
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Embassy added successfully!');
@@ -59,9 +65,10 @@ class SettingsController extends Controller
             'definition' => 'nullable|string|max:255',
         ]);
 
-        GuaranteeMainCase::create([
-            'case'       => $request->case,
+        GuaranteeCase::create([
+            'name'       => $request->case,
             'definition' => $request->definition,
+            'colour'     => $this->randomHexColour(),
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case added successfully!');
@@ -74,7 +81,7 @@ class SettingsController extends Controller
             'definition' => 'nullable|string|max:255',
         ]);
 
-        $guaranteeCase = GuaranteeMainCase::findOrFail($id);
+        $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->update([
             'case'       => $request->case,
             'definition' => $request->definition,
@@ -85,7 +92,7 @@ class SettingsController extends Controller
 
     public function destroyGuaranteeCase($id)
     {
-        $guaranteeCase = GuaranteeMainCase::findOrFail($id);
+        $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->delete();
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case deleted successfully!');

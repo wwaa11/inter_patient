@@ -7,5 +7,6 @@ class Embassy extends Model
 {
     protected $fillable = [
         'name',
+        'colour',
     ];
 }

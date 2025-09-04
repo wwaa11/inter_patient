@@ -39,7 +39,7 @@
         </div>
 
         <div class="mx-auto mt-6 w-full max-w-sm sm:mt-8 sm:max-w-md">
-            <div class="login-form px-4 py-8 shadow-2xl ring-1 ring-slate-200/50 sm:rounded-2xl sm:px-8 sm:py-10 lg:px-10">
+            <div class="bg-white px-4 py-8 shadow-2xl ring-1 ring-slate-200/50 sm:rounded-2xl sm:px-8 sm:py-10 lg:px-10 dark:bg-slate-800">
                 <form class="space-y-5 sm:space-y-6" id="loginForm">
                     @csrf
                     <div>

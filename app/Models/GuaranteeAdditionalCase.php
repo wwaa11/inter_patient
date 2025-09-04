@@ -8,15 +8,16 @@ class GuaranteeAdditionalCase extends Model
 {
     use HasFactory;
 
-    protected $table = 'guarantee_addtional_cases';
+    protected $table = 'guarantee_additional_cases';
 
     protected $fillable = [
-        'case',
+        'name',
         'definition',
+        'colour',
     ];
 
     public function additionalDetails()
     {
-        return $this->hasMany(PatientAdditionalDetail::class, 'case', 'case');
+        return $this->hasMany(PatientAdditionalDetail::class, 'case', 'name');
     }
 }

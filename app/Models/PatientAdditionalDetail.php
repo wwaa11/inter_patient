@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +8,7 @@ class PatientAdditionalDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'patient_addtional_details';
+    protected $table = 'patient_additional_details';
 
     protected $fillable = [
         'guarantee_header_id',
@@ -18,7 +17,7 @@ class PatientAdditionalDetail extends Model
         'details',
         'definition',
         'amount',
-        'price'
+        'price',
     ];
 
     public function header()

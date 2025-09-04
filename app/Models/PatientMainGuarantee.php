@@ -64,6 +64,11 @@ class PatientMainGuarantee extends Model
 
     public function guaranteeCase()
     {
-        return $this->hasOne(GuaranteeMainCase::class, 'id', 'case');
+        return $this->hasOne(GuaranteeCase::class, 'id', 'case');
+    }
+
+    public function embassyData()
+    {
+        return $this->hasOne(Embassy::class, 'name', 'embassy');
     }
 }
