@@ -35,11 +35,21 @@ class PatientAdditionalHeader extends Model
 
     public function additionalType()
     {
-        return $this->belongsTo(PatientAdditionalType::class, 'type', 'type');
+        return $this->hasOne(PatientAdditionalType::class, 'name', 'type');
     }
 
     public function details()
     {
         return $this->hasMany(PatientAdditionalDetail::class, 'guarantee_header_id', 'id');
+    }
+
+    public function coverPeriod()
+    {
+        return date('d/m/Y', strtotime($this->cover_start_date)) . ' - ' . date('d/m/Y', strtotime($this->cover_end_date));
+    }
+
+    public function issueDate()
+    {
+        return date('d/m/Y', strtotime($this->issue_date));
     }
 }

@@ -38,14 +38,9 @@ class PatientMainGuarantee extends Model
         return date('d/m/Y', strtotime($this->issue_date));
     }
 
-    public function coverStartDate()
+    public function coverPeriod()
     {
-        return date('d/m/Y', strtotime($this->cover_start_date));
-    }
-
-    public function coverEndDate()
-    {
-        return date('d/m/Y', strtotime($this->cover_end_date));
+        return date('d/m/Y', strtotime($this->cover_start_date)) . ' - ' . date('d/m/Y', strtotime($this->cover_end_date));
     }
 
     public function extensionCoverEndDate()

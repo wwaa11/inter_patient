@@ -673,22 +673,24 @@ class PatientController extends Controller
     public function storeGuaranteeAdditional(Request $request, $hn)
     {
         $validator = Validator::make($request->all(), [
-            'embassy'                 => 'required|string|max:255',
-            'type'                    => 'required|string|max:255',
-            'embassy_ref'             => 'nullable|string|max:255',
-            'mb'                      => 'nullable|string|max:255',
-            'issue_date'              => 'required|date',
-            'cover_start_date'        => 'required|date',
-            'cover_end_date'          => 'required|date|after:cover_start_date',
-            'total_price'             => 'required|numeric|min:0',
-            'details'                 => 'required|array|min:1',
-            'details.*.case'          => 'required|string',
-            'details.*.specific_date' => 'nullable|date',
-            'details.*.details'       => 'nullable|string',
-            'details.*.definition'    => 'nullable|string',
-            'details.*.amount'        => 'nullable|numeric|min:0',
-            'details.*.price'         => 'nullable|numeric|min:0',
-            'file.*'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'type'                       => 'required|string|max:255',
+            'embassy_ref'                => 'nullable|string|max:255',
+            'mb'                         => 'nullable|string|max:255',
+            'issue_date'                 => 'required|date',
+            'cover_start_date'           => 'nullable|date',
+            'cover_end_date'             => 'nullable|date|after:cover_start_date',
+            'total_price'                => 'nullable|numeric|min:0',
+            'details'                    => 'required|array|min:1',
+            'details.*.additional_case'  => 'nullable|string',
+            'details.*.specific_dates'   => 'nullable|array',
+            'details.*.specific_dates.*' => 'nullable|date',
+            'details.*.date_range_start' => 'nullable|date',
+            'details.*.date_range_end'   => 'nullable|date|after_or_equal:details.*.date_range_start',
+            'details.*.detail'           => 'required|string',
+            'details.*.definition'       => 'nullable|string',
+            'details.*.amount'           => 'nullable|string',
+            'details.*.price'            => 'nullable|numeric|min:0',
+            'file.*'                     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         if ($validator->fails()) {
@@ -709,11 +711,9 @@ class PatientController extends Controller
                     mkdir($directory, 0755, true);
                 }
 
-                foreach ($request->file('file') as $file) {
-                    $filename = 'additional_guarantee_' . time() . '_' . $file->getClientOriginalName();
-                    $file->move($directory, $filename);
-                    $uploadedFiles[] = $filename;
-                }
+                $filename = 'additional_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
+                $request->file('file')->move($directory, $filename);
+                $uploadedFiles[] = $filename;
             }
 
             // Create additional guarantee header
@@ -726,16 +726,30 @@ class PatientController extends Controller
                 'cover_start_date' => $request->cover_start_date,
                 'cover_end_date'   => $request->cover_end_date,
                 'total_price'      => $request->total_price,
-                'file'             => json_encode($uploadedFiles),
+                'file'             => $uploadedFiles,
             ]);
 
             // Create additional guarantee details
             foreach ($request->details as $detail) {
+                // Handle date storage - prioritize date range over multiple dates
+                $specificDate = null;
+                $startDate    = null;
+                $endDate      = null;
+
+                if (! empty($detail['date_start']) && ! empty($detail['date_end'])) {
+                    // Date range mode
+                    $startDate = $detail['date_start'];
+                    $endDate   = $detail['date_end'];
+                } elseif (! empty($detail['specific_dates']) && is_array($detail['specific_dates'])) {
+                    $specificDate = array_filter($detail['specific_dates']);
+                }
                 PatientAdditionalDetail::create([
                     'guarantee_header_id' => $header->id,
-                    'case'                => $detail['case'],
-                    'specific_date'       => $detail['specific_date'] ?? null,
-                    'details'             => $detail['details'] ?? null,
+                    'case'                => $detail['additional_case'],
+                    'specific_date'       => $specificDate,
+                    'start_date'          => $startDate,
+                    'end_date'            => $endDate,
+                    'details'             => $detail['detail'] ?? null,
                     'definition'          => $detail['definition'] ?? null,
                     'amount'              => $detail['amount'] ?? null,
                     'price'               => $detail['price'] ?? null,
@@ -745,6 +759,26 @@ class PatientController extends Controller
             return redirect()->route('patients.view', $hn)->with('success', 'Additional guarantee added successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to add additional guarantee: ' . $e->getMessage())->withInput();
+        }
+    }
+    public function destroyGuaranteeAdditionalDetail($hn, $id)
+    {
+        $detail = PatientAdditionalDetail::find($id);
+        if (! $detail) {
+            return redirect()->back()->with('error', 'Additional guarantee not found');
+        }
+
+        try {
+            $detail->delete();
+
+            $findHeader = PatientAdditionalHeader::find($detail->guarantee_header_id);
+            if ($findHeader->details->count() == 0) {
+                $findHeader->delete();
+            }
+
+            return redirect()->back()->with('success', 'Additional guarantee detail deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete additional guarantee detail: ' . $e->getMessage());
         }
     }
 

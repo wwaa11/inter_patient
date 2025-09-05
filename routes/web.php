@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/patients/{hn}/guarantees/additional/create', [PatientController::class, 'createAdditionalGuarantee'])->name('patients.guarantees.additional.create');
         Route::post('/patients/{hn}/guarantees/additional', [PatientController::class, 'storeGuaranteeAdditional'])->name('patients.guarantees.additional.store');
-        Route::post('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'destroyGuaranteeAdditional'])->name('patients.guarantees.additional.destroy');
+        Route::post('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'destroyGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.destroy');
 
         // Settings Routes (admin only)
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

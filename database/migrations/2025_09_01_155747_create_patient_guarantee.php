@@ -51,8 +51,8 @@ return new class extends Migration
         });
 
         Schema::create('patient_additional_headers', function (Blueprint $table) {
-            $table->id();
             // Header Section
+            $table->id();
             $table->string("hn")->references("hn")->on("patients");
             $table->string("type");
             $table->string("embassy_ref");
@@ -70,11 +70,15 @@ return new class extends Migration
 
         Schema::create('patient_additional_details', function (Blueprint $table) {
             // Header Section
-            $table->string("guarantee_header_id")->references("id")->on("patient_addtional_headers");
-            // Detail Section
+            $table->id();
+            $table->string("guarantee_header_id")->references("id")->on("patient_additional_headers");
             $table->string("case")->nullable();
+            // Date Section
             $table->string("specific_date")->nullable();
-            $table->string("details");
+            $table->string("start_date")->nullable();
+            $table->string("end_date")->nullable();
+            // Detail Section
+            $table->text("details");
             $table->string("definition")->nullable();
             $table->string("amount")->nullable();
             $table->string("price")->nullable();

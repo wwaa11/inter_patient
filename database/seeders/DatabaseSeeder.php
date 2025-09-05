@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Embassy;
 use App\Models\GuaranteeCase;
 use App\Models\PatientAdditionalType;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +20,15 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        User::create([
+            'userid'     => '650017',
+            'name'       => 'Admin',
+            'position'   => 'admin',
+            'department' => 'admin',
+            'division'   => 'admin',
+            'role'       => 'admin',
+        ]);
+
         $embassies = [
             'Embassy of the State of Qatar',
         ];

@@ -14,10 +14,16 @@ class PatientAdditionalDetail extends Model
         'guarantee_header_id',
         'case',
         'specific_date',
+        'start_date',
+        'end_date',
         'details',
         'definition',
         'amount',
         'price',
+    ];
+
+    protected $casts = [
+        'specific_date' => 'array',
     ];
 
     public function header()
@@ -28,5 +34,17 @@ class PatientAdditionalDetail extends Model
     public function guaranteeCase()
     {
         return $this->belongsTo(GuaranteeAdditionalCase::class, 'case', 'case');
+    }
+
+    // Accessor to handle both single date and multiple dates
+    public function getSpecificDatesAttribute()
+    {
+        if (is_string($this->specific_date)) {
+            // Try to decode JSON, if it fails, return as single date array
+            $decoded = json_decode($this->specific_date, true);
+            return $decoded ?: [$this->specific_date];
+        }
+        
+        return $this->specific_date ?: [];
     }
 }

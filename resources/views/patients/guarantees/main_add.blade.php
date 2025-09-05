@@ -189,7 +189,7 @@
                     </div>
 
                     <!-- Right Panel - File Preview -->
-                    <div class="relative flex-1 rounded-lg bg-white shadow-sm">
+                    <div class="relative min-h-[800px] flex-1 rounded-lg bg-white shadow-sm">
                         <div class="border-b border-gray-200 px-6 py-4">
                             <h2 class="flex items-center text-lg font-semibold text-gray-900">
                                 <i class="fas fa-eye mr-2 text-blue-500"></i>File Preview
@@ -295,7 +295,7 @@
                 } else if (fileType === 'application/pdf') {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        preview.innerHTML = `<embed class="p-6 absolute bottom-0 left-0 right-0 min-h-[700px] h-full w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
+                        preview.innerHTML = `<embed class="p-6  min-h-[700px] h-full w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
                     };
                     reader.readAsDataURL(file);
                 } else {
