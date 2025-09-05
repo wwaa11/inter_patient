@@ -61,7 +61,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                                @if (strtolower($guarantee->coverPeriod()) !== 'n/a')
+                                @if (strtolower($guarantee->coverPeriod()) !== "n/a")
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center">
                                             <i class="fas fa-clock mr-2 text-slate-500"></i>
@@ -80,7 +80,7 @@
                                         @endif
                                     </div>
                                 @else
-                                    <span class="text-slate-400 italic">N/A</span>
+                                    <span class="italic text-slate-400">N/A</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
@@ -94,13 +94,13 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <span class="text-slate-400 italic text-sm">No files</span>
+                                    <span class="text-sm italic text-slate-400">No files</span>
                                 @endif
                             </td>
                             @if (auth()->user()->role === "admin")
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-slate-400 text-sm">{{ $guarantee->details->count() }} {{ Str::plural('detail', $guarantee->details->count()) }}</span>
+                                        <span class="text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</span>
                                         <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50" onclick="addDetailToGuarantee({{ $guarantee->id }})" title="Add Detail">
                                             <i class="fas fa-plus mr-1"></i>
                                             Add Detail
@@ -109,7 +109,7 @@
                                 </td>
                             @endif
                         </tr>
-                        
+
                         <!-- Detail Rows -->
                         @foreach ($guarantee->details as $item)
                             <tr class="transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50">
@@ -120,7 +120,7 @@
                                             {{ $item->guaranteeCase->name }}
                                         </span>
                                     @else
-                                        <span class="text-slate-400 text-sm">No case</span>
+                                        <span class="text-sm text-slate-400">No case</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
@@ -158,7 +158,7 @@
                                 <td class="px-6 py-4">
                                     @if ($item->details)
                                         <div class="max-w-xs">
-                                            <p class="text-sm text-slate-700 dark:text-slate-300 truncate" title="{{ $item->details }}">{{ $item->details }}</p>
+                                            <p class="truncate text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">{{ $item->details }}</p>
                                         </div>
                                     @endif
                                 </td>
@@ -212,21 +212,21 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', id);
-                
+
                 // Add CSRF token
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';
                 csrfToken.name = '_token';
                 csrfToken.value = '{{ csrf_token() }}';
                 form.appendChild(csrfToken);
-                
+
                 // Add method override for DELETE
                 const methodInput = document.createElement('input');
                 methodInput.type = 'hidden';
                 methodInput.name = '_method';
                 methodInput.value = 'DELETE';
                 form.appendChild(methodInput);
-                
+
                 // Submit the form
                 document.body.appendChild(form);
                 form.submit();
@@ -235,8 +235,7 @@
 
 
         function addDetailToGuarantee(guaranteeId) {
-            // Redirect to add detail page for the specific guarantee
-            window.location.href = `/patients/{{ $patient->hn }}/guarantees/additional/${guaranteeId}/details/create`;
+
         }
     </script>
 @endpush
