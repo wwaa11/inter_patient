@@ -1,10 +1,10 @@
 @extends("layouts.app")
 
 @section("content")
-    <div class="min-h-screen bg-gray-50 py-6">
+    <div class="min-h-screen bg-gray-50 py-6 dark:bg-slate-900">
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-6 rounded-lg bg-white shadow-sm">
+            <div class="mb-6 rounded-lg bg-white shadow-sm dark:bg-slate-800">
                 <div class="border-b border-gray-200 px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">

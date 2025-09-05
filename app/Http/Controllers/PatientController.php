@@ -761,6 +761,212 @@ class PatientController extends Controller
             return redirect()->back()->with('error', 'Failed to add additional guarantee: ' . $e->getMessage())->withInput();
         }
     }
+
+    public function addGuaranteeAdditionalDetail(Request $request, $hn, $headerId)
+    {
+        $validator = Validator::make($request->all(), [
+            'additional_case'  => 'nullable|string',
+            'specific_dates'   => 'nullable|array',
+            'specific_dates.*' => 'nullable|date',
+            'date_range_start' => 'nullable|date',
+            'date_range_end'   => 'nullable|date|after_or_equal:date_range_start',
+            'detail'           => 'required|string',
+            'definition'       => 'nullable|string',
+            'amount'           => 'nullable|string',
+            'price'            => 'nullable|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return response()->json(['success' => false, 'message' => 'Patient not found'], 404);
+        }
+
+        $header = PatientAdditionalHeader::find($headerId);
+        if (! $header || $header->hn !== $hn) {
+            return response()->json(['success' => false, 'message' => 'Guarantee header not found'], 404);
+        }
+
+        try {
+            // Handle date storage - prioritize date range over multiple dates
+            $specificDate = null;
+            $startDate    = null;
+            $endDate      = null;
+
+            if (! empty($request->date_range_start) && ! empty($request->date_range_end)) {
+                // Date range mode
+                $startDate = $request->date_range_start;
+                $endDate   = $request->date_range_end;
+            } elseif (! empty($request->specific_dates) && is_array($request->specific_dates)) {
+                $specificDate = array_filter($request->specific_dates);
+            }
+
+            $detail = PatientAdditionalDetail::create([
+                'guarantee_header_id' => $header->id,
+                'case'                => $request->additional_case,
+                'specific_date'       => $specificDate,
+                'start_date'          => $startDate,
+                'end_date'            => $endDate,
+                'details'             => $request->detail,
+                'definition'          => $request->definition,
+                'amount'              => $request->amount,
+                'price'               => $request->price,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Additional guarantee detail added successfully',
+                'detail'  => $detail,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add additional guarantee detail: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function editGuaranteeAdditionalDetail($hn, $id)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $detail = PatientAdditionalDetail::find($id);
+        if (! $detail) {
+            return redirect()->back()->with('error', 'Additional guarantee detail not found');
+        }
+
+        $embassies       = Embassy::all();
+        $additionalTypes = PatientAdditionalType::all();
+        $additionalCases = GuaranteeCase::all();
+        $header          = $detail->header;
+
+        return view('patients.guarantees.addtional_edit', compact('patient', 'detail', 'header', 'embassies', 'additionalTypes', 'additionalCases'));
+    }
+
+    public function updateGuaranteeAdditionalDetail(Request $request, $hn, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'type'             => 'required|string|max:255',
+            'embassy_ref'      => 'nullable|string|max:255',
+            'mb'               => 'nullable|string|max:255',
+            'issue_date'       => 'required|date',
+            'cover_start_date' => 'nullable|date',
+            'cover_end_date'   => 'nullable|date|after:cover_start_date',
+            'total_price'      => 'nullable|numeric|min:0',
+            'additional_case'  => 'nullable|string',
+            'specific_dates'   => 'nullable|array',
+            'specific_dates.*' => 'nullable|date',
+            'date_range_start' => 'nullable|date',
+            'date_range_end'   => 'nullable|date|after_or_equal:date_range_start',
+            'detail'           => 'required|string',
+            'definition'       => 'nullable|string',
+            'amount'           => 'nullable|string',
+            'price'            => 'nullable|numeric|min:0',
+            'file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'files_to_remove'  => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $detail = PatientAdditionalDetail::find($id);
+        if (! $detail) {
+            return redirect()->back()->with('error', 'Additional guarantee detail not found');
+        }
+
+        try {
+            $header = $detail->header;
+
+            // Handle file uploads and removals
+            $uploadedFiles = $header->file ?? [];
+
+            // Handle file removal
+            if ($request->has('files_to_remove')) {
+                $filesToRemove = json_decode($request->files_to_remove, true);
+                if (is_array($filesToRemove)) {
+                    $uploadedFiles = array_filter($uploadedFiles, function ($file) use ($filesToRemove) {
+                        return ! in_array($file, $filesToRemove);
+                    });
+                    // Re-index the array to avoid gaps
+                    $uploadedFiles = array_values($uploadedFiles);
+
+                    // Optionally delete physical files from server
+                    foreach ($filesToRemove as $fileToRemove) {
+                        $filePath = public_path('hn/' . $hn . '/' . $fileToRemove);
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                    }
+                }
+            }
+
+            // Handle new file upload
+            if ($request->hasFile('file')) {
+                $directory = public_path('hn/' . $hn);
+                if (! file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $filename = 'additional_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
+                $request->file('file')->move($directory, $filename);
+                $uploadedFiles[] = $filename;
+            }
+
+            // Update header
+            $header->update([
+                'type'             => $request->type,
+                'embassy_ref'      => $request->embassy_ref,
+                'mb'               => $request->mb,
+                'issue_date'       => $request->issue_date,
+                'cover_start_date' => $request->cover_start_date,
+                'cover_end_date'   => $request->cover_end_date,
+                'total_price'      => $request->total_price,
+                'file'             => $uploadedFiles,
+            ]);
+
+            // Handle date storage - prioritize date range over multiple dates
+            $specificDate = null;
+            $startDate    = null;
+            $endDate      = null;
+
+            if (! empty($request->date_range_start) && ! empty($request->date_range_end)) {
+                // Date range mode
+                $startDate = $request->date_range_start;
+                $endDate   = $request->date_range_end;
+            } elseif (! empty($request->specific_dates) && is_array($request->specific_dates)) {
+                $specificDate = array_filter($request->specific_dates);
+            }
+
+            // Update detail
+            $detail->update([
+                'case'          => $request->additional_case,
+                'specific_date' => $specificDate,
+                'start_date'    => $startDate,
+                'end_date'      => $endDate,
+                'details'       => $request->detail,
+                'definition'    => $request->definition,
+                'amount'        => $request->amount,
+                'price'         => $request->price,
+            ]);
+
+            return redirect()->route('patients.view', $hn)->with('success', 'Additional guarantee updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update additional guarantee: ' . $e->getMessage())->withInput();
+        }
+    }
+
     public function destroyGuaranteeAdditionalDetail($hn, $id)
     {
         $detail = PatientAdditionalDetail::find($id);

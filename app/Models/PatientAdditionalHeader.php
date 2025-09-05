@@ -35,7 +35,7 @@ class PatientAdditionalHeader extends Model
 
     public function additionalType()
     {
-        return $this->hasOne(PatientAdditionalType::class, 'name', 'type');
+        return $this->hasOne(PatientAdditionalType::class, 'id', 'type');
     }
 
     public function details()
@@ -45,11 +45,27 @@ class PatientAdditionalHeader extends Model
 
     public function coverPeriod()
     {
-        return date('d/m/Y', strtotime($this->cover_start_date)) . ' - ' . date('d/m/Y', strtotime($this->cover_end_date));
+        if ($this->cover_start_date && $this->cover_end_date) {
+            return date('d/m/Y', strtotime($this->cover_start_date)) . ' - ' . date('d/m/Y', strtotime($this->cover_end_date));
+        } else {
+            return 'N/A';
+        }
     }
 
     public function issueDate()
     {
         return date('d/m/Y', strtotime($this->issue_date));
+    }
+
+    public function isInCoverPeriod()
+    {
+        $today      = now();
+        $coverStart = \Carbon\Carbon::parse($this->cover_start_date);
+        $coverEnd   = \Carbon\Carbon::parse($this->cover_end_date);
+        if ($coverStart && $coverEnd) {
+            return $today->between($coverStart, $coverEnd);
+        } else {
+            return 'N/A';
+        }
     }
 }

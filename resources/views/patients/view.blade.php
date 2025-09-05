@@ -181,27 +181,23 @@
         </div>
 
         <!-- Guarantees Section -->
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-            <div class="px-6 py-6">
-                <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-lg font-medium text-slate-900 dark:text-white">Guarantees</h3>
-                    @if (auth()->user()->role === "admin")
-                        <div class="flex space-x-2">
-                            <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
-                                <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
-                            </a>
-                            <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
-                                <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
-                            </a>
-                        </div>
-                    @endif
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-lg font-medium text-slate-900 dark:text-white">Guarantees</h3>
+            @if (auth()->user()->role === "admin")
+                <div class="flex space-x-2">
+                    <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
+                        <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
+                    </a>
+                    <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
+                        <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
+                    </a>
                 </div>
-
-                @include("patients.guarantees.main_table_view")
-
-                @include("patients.guarantees.addtional_table_view")
-            </div>
+            @endif
         </div>
+
+        @include("patients.guarantees.main_table_view")
+
+        @include("patients.guarantees.addtional_table_view")
 
         <!-- Additional Information -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -278,10 +274,15 @@
                     @if ($patient->medicalReports && $patient->medicalReports->count() > 0)
                         <div class="space-y-3">
                             @foreach ($patient->medicalReports as $report)
-                                <div class="rounded-lg bg-slate-50 p-3 dark:bg-slate-700">
+                                <div class="rounded-lg border bg-green-100 p-4 text-green-800 dark:bg-green-900 dark:text-green-300">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
-                                            <p class="text-sm text-slate-900 dark:text-white">{{ $report->date->format("d M Y") }}</p>
+                                            <span class="rounded-full px-2 py-1 font-medium">
+                                                {{ $report->date->format("d M Y") }}
+                                            </span>
+                                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                filename: {{ $report->file }}
+                                            </p>
                                         </div>
                                         <div class="ml-2 flex gap-2">
                                             <button class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700" onclick="viewFile('{{ $patient->hn }}', '{{ $report->file }}')">
@@ -546,6 +547,8 @@
         </div>
     </div>
 
+@endsection
+@push("scripts")
     <script>
         function viewFile(hn, filename) {
             const fileContent = document.getElementById('fileContent');
@@ -773,69 +776,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        let selectedGuaranteeCases = [];
-
-        function openAddMainGuaranteeModal() {
-            document.getElementById('addMainGuaranteeModal').classList.remove('hidden');
-            selectedGuaranteeCases = [];
-            updateSelectedCasesDisplay();
-        }
-
-        function closeAddMainGuaranteeModal() {
-            document.getElementById('addMainGuaranteeModal').classList.add('hidden');
-            document.getElementById('addMainGuaranteeForm').reset();
-            document.getElementById('mainGuaranteePreview').innerHTML = '<div class="text-center"><i class="fas fa-file-upload text-4xl text-gray-400 mb-3"></i><p class="text-gray-500">No file selected</p><p class="text-sm text-gray-400 mt-1">Upload a file to see preview</p></div>';
-            selectedGuaranteeCases = [];
-            updateSelectedCasesDisplay();
-        }
-
-        function addGuaranteeCase(caseId, caseName) {
-            if (!selectedGuaranteeCases.find(c => c.id === caseId)) {
-                selectedGuaranteeCases.push({
-                    id: caseId,
-                    name: caseName
-                });
-                updateSelectedCasesDisplay();
-            }
-        }
-
-        function removeGuaranteeCase(caseId) {
-            selectedGuaranteeCases = selectedGuaranteeCases.filter(c => c.id !== caseId);
-            updateSelectedCasesDisplay();
-        }
-
-        function updateSelectedCasesDisplay() {
-            const container = document.getElementById('selectedCases');
-
-            if (selectedGuaranteeCases.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center" id="noCasesMessage">No cases selected</p>';
-            } else {
-                let html = '';
-                selectedGuaranteeCases.forEach(guaranteeCase => {
-                    html += `
-                        <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
-                            <span class="text-sm text-blue-800 font-medium">${guaranteeCase.name}</span>
-                            <button type="button" onclick="removeGuaranteeCase(${guaranteeCase.id})" class="text-red-500 hover:text-red-700 transition-colors">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <input type="hidden" name="guarantee_cases[]" value="${guaranteeCase.id}">
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-        }
-
-        function openAddAdditionalGuaranteeModal() {
-            document.getElementById('addAdditionalGuaranteeModal').classList.remove('hidden');
-        }
-
-        function closeAddAdditionalGuaranteeModal() {
-            document.getElementById('addAdditionalGuaranteeModal').classList.add('hidden');
-            document.getElementById('addAdditionalGuaranteeForm').reset();
-            document.getElementById('additionalGuaranteePreview').innerHTML = '';
-        }
-
         function previewMainGuaranteeFile(input) {
             const file = input.files[0];
             const preview = document.getElementById('mainGuaranteePreview');
@@ -899,8 +839,6 @@
                 closeAddNoteModal();
                 closeAddPassportModal();
                 closeAddMedicalReportModal();
-                closeAddMainGuaranteeModal();
-                closeAddAdditionalGuaranteeModal();
                 closeExtendMainGuaranteeModal();
             }
         });
@@ -911,22 +849,6 @@
             const additionalGuaranteeModal = document.getElementById('addAdditionalGuaranteeModal');
             const extendMainGuaranteeModal = document.getElementById('extendMainGuaranteeModal');
 
-            if (mainGuaranteeModal) {
-                mainGuaranteeModal.addEventListener('click', function(event) {
-                    if (event.target === this) {
-                        closeAddMainGuaranteeModal();
-                    }
-                });
-            }
-
-            if (additionalGuaranteeModal) {
-                additionalGuaranteeModal.addEventListener('click', function(event) {
-                    if (event.target === this) {
-                        closeAddAdditionalGuaranteeModal();
-                    }
-                });
-            }
-
             if (extendMainGuaranteeModal) {
                 extendMainGuaranteeModal.addEventListener('click', function(event) {
                     if (event.target === this) {
@@ -936,5 +858,4 @@
             }
         });
     </script>
-
-@endsection
+@endpush

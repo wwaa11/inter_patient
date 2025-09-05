@@ -1,7 +1,7 @@
 @extends("layouts.app")
 
 @section("content")
-    <div class="min-h-screen bg-gray-50 py-6">
+    <div class="min-h-screen bg-gray-50 py-6 dark:bg-slate-900">
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="mb-6 rounded-lg bg-white shadow-sm">
@@ -184,7 +184,7 @@
                                                     <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
                                                 </label>
                                                 <div class="relative">
-                                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly>
+                                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly value="{{ old("details.0.additional_case_name") }}">
                                                     <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"></i>
                                                     <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg">
                                                         <div class="border-b p-2">
@@ -203,7 +203,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
-                                                    <input class="case-value" type="hidden" name="details[0][additional_case]">
+                                                    <input class="case-value" type="hidden" name="details[0][additional_case]" value="{{ old("details.0.additional_case") }}">
                                                 </div>
                                             </div>
 
@@ -214,7 +214,7 @@
                                                 </label>
                                                 <div class="space-y-3">
                                                     <div class="flex items-center">
-                                                        <input class="mr-2" id="dateRange_0" type="checkbox" onchange="toggleDateRange(this, 0)">
+                                                        <input class="mr-2" id="dateRange_0" type="checkbox" onchange="toggleDateRange(this, 0)" {{ old("details.0.date_range_enabled") ? "checked" : "" }}>
                                                         <label class="text-sm text-gray-600" for="dateRange_0">Use date range</label>
                                                     </div>
                                                     <div class="date-single">
@@ -227,7 +227,7 @@
                                                             </div>
                                                             <div class="date-entries" id="dateEntries_0">
                                                                 <div class="date-entry mb-2 flex items-center space-x-2">
-                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][specific_dates][]">
+                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][specific_dates][]" value="{{ old("details.0.specific_dates.0") }}">
                                                                     <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
                                                                         <i class="fas fa-trash text-sm"></i>
                                                                     </button>
@@ -237,8 +237,8 @@
                                                     </div>
                                                     <div class="date-range hidden">
                                                         <div class="grid grid-cols-2 gap-2">
-                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_start]" placeholder="Start date">
-                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_end]" placeholder="End date">
+                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_start]" placeholder="Start date" value="{{ old("details.0.date_start") }}">
+                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_end]" placeholder="End date" value="{{ old("details.0.date_end") }}">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -249,7 +249,7 @@
                                                 <label class="mb-2 block text-sm font-semibold text-gray-700">
                                                     <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
                                                 </label>
-                                                <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[0][detail]" rows="3" required placeholder="Enter detail information..."></textarea>
+                                                <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[0][detail]" rows="3" required placeholder="Enter detail information...">{{ old("details.0.detail") }}</textarea>
                                             </div>
 
                                             <!-- Definition -->
@@ -257,7 +257,7 @@
                                                 <label class="mb-2 block text-sm font-semibold text-gray-700">
                                                     <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
                                                 </label>
-                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][definition]" placeholder="Enter definition...">
+                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][definition]" placeholder="Enter definition..." value="{{ old("details.0.definition") }}">
                                             </div>
 
                                             <!-- Amount -->
@@ -265,7 +265,7 @@
                                                 <label class="mb-2 block text-sm font-semibold text-gray-700">
                                                     <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
                                                 </label>
-                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][amount]" placeholder="Enter amount..., Ex. 15 tabs">
+                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][amount]" placeholder="Enter amount..., Ex. 15 tabs" value="{{ old("details.0.amount") }}">
                                             </div>
 
                                             <!-- Price -->
@@ -273,7 +273,7 @@
                                                 <label class="mb-2 block text-sm font-semibold text-gray-700">
                                                     <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
                                                 </label>
-                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="number" step="0.01" name="details[0][price]" placeholder="Enter price...">
+                                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="number" step="0.01" name="details[0][price]" placeholder="Enter price..." value="{{ old("details.0.price") }}">
                                             </div>
                                         </div>
                                     </div>
@@ -325,6 +325,23 @@
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             let selectedGuaranteeCases = [];
+            let detailEntryCount = 1;
+
+            // Preserve detail entries on validation error
+            @if (old("details"))
+                const oldDetails = @json(old("details"));
+                if (oldDetails && oldDetails.length > 1) {
+                    // Add additional detail entries based on old input
+                    for (let i = 1; i < oldDetails.length; i++) {
+                        addDetailEntry();
+                    }
+
+                    // Populate the form fields with old values
+                    setTimeout(() => {
+                        populateOldValues(oldDetails);
+                    }, 100);
+                }
+            @endif
 
             function addGuaranteeCase(caseId, caseName) {
                 if (!selectedGuaranteeCases.find(c => c.id === caseId)) {
@@ -423,7 +440,6 @@
             }
 
             // Detail entries management
-            let detailEntryCount = 1;
 
             function addDetailEntry() {
                 const container = document.getElementById('detailEntries');
@@ -455,6 +471,9 @@
                                     <input type="text" class="case-search w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Type to search..." oninput="filterCaseOptions(this)">
                                 </div>
                                 <div class="case-options">
+                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100" data-value="" data-name="" onclick="selectCase(this, ${newIndex})">
+                                        Please select
+                                    </div>
                                     @if (isset($additionalCases))
                                         @foreach ($additionalCases as $case)
                                             <div class="case-option px-3 py-2 hover:bg-gray-100 cursor-pointer" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, ${newIndex})">
@@ -692,6 +711,87 @@
                 });
             }
 
+            // Function to populate old values after dynamic entries are created
+            function populateOldValues(oldDetails) {
+                oldDetails.forEach((detail, index) => {
+                    // Populate case selection
+                    if (detail.additional_case) {
+                        const caseInput = document.querySelector(`input[name="details[${index}][additional_case]"]`);
+                        const caseDisplay = caseInput?.closest('.relative').querySelector('input[type="text"]');
+                        if (caseInput && caseDisplay) {
+                            caseInput.value = detail.additional_case;
+                            // Find case name from options
+                            const caseOption = document.querySelector(`[data-value="${detail.additional_case}"]`);
+                            if (caseOption) {
+                                caseDisplay.value = caseOption.getAttribute('data-name');
+                            }
+                        }
+                    }
+
+                    // Populate specific dates
+                    if (detail.specific_dates && Array.isArray(detail.specific_dates)) {
+                        const dateContainer = document.getElementById(`dateEntries_${index}`);
+                        if (dateContainer) {
+                            // Clear existing date entry
+                            dateContainer.innerHTML = '';
+
+                            // Add date entries for each old value
+                            detail.specific_dates.forEach((date, dateIndex) => {
+                                if (dateIndex === 0) {
+                                    // First entry
+                                    const dateEntry = document.createElement('div');
+                                    dateEntry.className = 'date-entry flex items-center space-x-2 mb-2';
+                                    dateEntry.innerHTML = `
+                                        <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[${index}][specific_dates][]" value="${date}">
+                                        <button type="button" onclick="removeDateEntry(this)" class="text-red-500 hover:text-red-700 p-2" style="display: none;">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
+                                    `;
+                                    dateContainer.appendChild(dateEntry);
+                                } else {
+                                    // Additional entries
+                                    addDateEntry(index);
+                                    const newInput = dateContainer.lastElementChild.querySelector('input[type="date"]');
+                                    if (newInput) {
+                                        newInput.value = date;
+                                    }
+                                }
+                            });
+                            updateDateRemoveButtons(index);
+                        }
+                    }
+
+                    // Populate date range if used
+                    if (detail.date_start || detail.date_end) {
+                        const checkbox = document.getElementById(`dateRange_${index}`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            toggleDateRange(checkbox, index);
+
+                            if (detail.date_start) {
+                                const startInput = document.querySelector(`input[name="details[${index}][date_start]"]`);
+                                if (startInput) startInput.value = detail.date_start;
+                            }
+                            if (detail.date_end) {
+                                const endInput = document.querySelector(`input[name="details[${index}][date_end]"]`);
+                                if (endInput) endInput.value = detail.date_end;
+                            }
+                        }
+                    }
+
+                    // Populate other fields
+                    const fields = ['detail', 'definition', 'amount', 'price'];
+                    fields.forEach(field => {
+                        if (detail[field]) {
+                            const input = document.querySelector(`[name="details[${index}][${field}]"]`);
+                            if (input) {
+                                input.value = detail[field];
+                            }
+                        }
+                    });
+                });
+            }
+
             // Make functions globally accessible
             window.addDetailEntry = addDetailEntry;
             window.removeDetailEntry = removeDetailEntry;
@@ -704,6 +804,7 @@
             window.toggleDateRange = toggleDateRange;
             window.addDateEntry = addDateEntry;
             window.removeDateEntry = removeDateEntry;
+            window.populateOldValues = populateOldValues;
 
         }); // End of DOMContentLoaded
     </script>

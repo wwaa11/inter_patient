@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield("title", "Management Dashboard") - {{ config("app.name", "Laravel") }}</title>
-
+    <link rel="icon" type="image/png" href="{{ asset("images/Logo.ico") }}">
     <!-- Fonts -->
     <link rel="stylesheet" href="{{ asset("font-awesome/css/all.min.css") }}">
 
