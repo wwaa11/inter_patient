@@ -47,7 +47,6 @@
 
             <form id="updateForm" action="{{ route("patients.guarantees.additional.update", [$patient->hn, $detail->id]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                @method("PUT")
 
                 {{-- Information Content --}}
                 <div class="mb-6 rounded-lg bg-white shadow-sm">
@@ -330,11 +329,25 @@
                         <div class="absolute bottom-0 left-0 right-0 m-auto p-6">
                             <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6" id="filePreview">
                                 @if ($header->file && count($header->file) > 0)
-                                    <div class="text-center">
-                                        <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
-                                        <p class="font-medium text-gray-700">{{ count($header->file) }} file(s) uploaded</p>
-                                        <p class="text-sm text-gray-500">Upload a new file to see preview</p>
-                                    </div>
+                                    @foreach ($header->file as $file)
+                                        @php
+                                            $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+                                        @endphp
+                                        @if (in_array(strtolower($fileExtension), ["jpg", "jpeg", "png", "gif"]))
+                                            <img class="h-auto max-w-full rounded-lg" src="{{ asset("hn/" . $patient->hn . "/" . $file) }}" alt="Guarantee File">
+                                        @elseif(strtolower($fileExtension) === "pdf")
+                                            <embed class="h-full min-h-[600px] w-full rounded-lg p-6" src="{{ asset("hn/" . $patient->hn . "/" . $file) }}" type="application/pdf">
+                                        @else
+                                            <div class="text-center">
+                                                <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
+                                                <p class="font-medium text-gray-700">{{ basename($file) }}</p>
+                                                <p class="text-sm text-gray-500">File available for download</p>
+                                                <a class="mt-2 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700" href="{{ asset("hn/" . $patient->hn . "/" . $file) }}" target="_blank">
+                                                    <i class="fas fa-download mr-2"></i>Download
+                                                </a>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 @else
                                     <div class="text-center">
                                         <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
@@ -489,23 +502,42 @@
         }
 
         function previewFile(input) {
-            const filePreview = document.getElementById('filePreview');
+            const file = input.files[0];
+            const preview = document.getElementById('filePreview');
 
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
+            if (file) {
+                const fileType = file.type;
                 const fileName = file.name;
-                const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
 
-                filePreview.innerHTML = `
+                if (fileType.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img class="h-auto max-w-full rounded-lg" src="${e.target.result}" alt="Preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<embed class="p-6 h-full min-h-[600px] w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.innerHTML = `
+                        <div class="text-center">
+                            <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
+                            <p class="font-medium text-gray-700">${fileName}</p>
+                            <p class="text-sm text-gray-500">File uploaded successfully</p>
+                        </div>
+                        `;
+                }
+            } else {
+                preview.innerHTML = `
                     <div class="text-center">
-                        <i class="fas fa-file-alt mb-3 text-4xl text-blue-500"></i>
-                        <p class="font-medium text-gray-900">${fileName}</p>
-                        <p class="text-sm text-gray-500">${fileSize} MB</p>
-                        <p class="mt-2 text-xs text-green-600">
-                            <i class="fas fa-check-circle mr-1"></i>Ready to upload
-                        </p>
+                        <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
+                        <p class="text-gray-500">No file selected</p>
+                        <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
                     </div>
-                `;
+                    `;
             }
         }
     </script>

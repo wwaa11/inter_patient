@@ -14,7 +14,7 @@
                             <div>
                                 <h1 class="flex items-center text-2xl font-bold text-gray-900">
                                     <i class="fas fa-shield-alt mr-3 text-blue-600"></i>
-                                    Add Main Guarantee
+                                    Add Additional Guarantee
                                 </h1>
                                 <p class="mt-1 text-sm text-gray-600">
                                     Patient: <span class="font-medium">{{ $patient->name }}</span> (HN: {{ $patient->hn }})
@@ -162,7 +162,6 @@
                                     <h3 class="text-md font-semibold text-gray-900">
                                         <i class="fas fa-plus mr-2 text-green-500"></i>Additional Information
                                     </h3>
-
                                 </div>
 
                                 <div class="space-y-6" id="detailEntries">
@@ -309,13 +308,12 @@
                 <!-- Action Buttons -->
                 <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6">
                     <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="{{ route("patients.view", $patient->hn) }}">
-                        <i class="fas fa-times mr-2"></i>Cancel
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Patient
                     </a>
-                    <button class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800" type="submit">
-                        <i class="fas fa-save mr-2"></i>Add Main Guarantee
+                    <button class="rounded-lg bg-blue-500 px-6 py-3 text-white transition-colors hover:bg-blue-600" type="submit">
+                        <i class="fas fa-save mr-2"></i>Update Guarantee
                     </button>
                 </div>
-
             </form>
         </div>
     </div>

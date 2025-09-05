@@ -51,7 +51,7 @@
                             <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
                                 <div class="flex items-center">
                                     <i class="fas fa-building mr-2 text-slate-500"></i>
-                                    {{ $guarantee->embassy_ref }}
+                                    {{ $guarantee->embassy_ref }}/{{ $guarantee->mb }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
@@ -124,18 +124,18 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if ($item->definition)
-                                        <div class="text-sm text-slate-600 dark:text-slate-400">
-                                            <i class="fas fa-user-tie mr-1"></i>
-                                            Staff: {{ $item->definition }}
+                                    @if ($item->details)
+                                        <div class="mb-3 max-w-xs">
+                                            <p class="truncate text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                {{ $item->details }}
+                                            </p>
                                         </div>
                                     @endif
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
-                                        <div class="text-sm text-slate-900 dark:text-white">
-                                            <i class="fas fa-calendar-check mr-1 text-slate-500"></i>
-                                            {!! $item->specificDate() !!}
+                                    @if ($item->definition)
+                                        <div class="text-sm text-slate-600 dark:text-slate-400">
+                                            <i class="fa-solid fa-language"></i>
+                                            {{ $item->definition }}
                                         </div>
                                     @endif
                                 </td>
@@ -143,24 +143,26 @@
                                     <div class="flex space-x-3">
                                         @if ($item->amount)
                                             <div class="flex items-center">
-                                                <i class="fas fa-dollar-sign mr-1 text-emerald-600"></i>
                                                 <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ $item->amount }}</span>
                                             </div>
                                         @endif
                                         @if ($item->price)
                                             <div class="flex items-center">
-                                                <i class="fas fa-tag mr-1 text-blue-600"></i>
+                                                <i class="fas fa-dollar-sign mr-1 text-blue-600"></i>
                                                 <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ $item->price }}</span>
                                             </div>
                                         @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if ($item->details)
-                                        <div class="max-w-xs">
-                                            <p class="truncate text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">{{ $item->details }}</p>
+                                    @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
+                                        <div class="text-sm text-slate-900 dark:text-white">
+                                            {!! $item->specificDate() !!}
                                         </div>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4">
+
                                 </td>
                                 @if (auth()->user()->role === "admin")
                                     <td class="px-6 py-4">
@@ -233,9 +235,10 @@
             }
         }
 
-
         function addDetailToGuarantee(guaranteeId) {
-
+            // Redirect to the add detail page for the specific guarantee
+            const url = '{{ route("patients.guarantees.additional.detail.create", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId)
+            window.location.href = url;
         }
     </script>
 @endpush

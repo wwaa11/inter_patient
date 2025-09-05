@@ -49,8 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/patients/{hn}/guarantees/additional/create', [PatientController::class, 'createAdditionalGuarantee'])->name('patients.guarantees.additional.create');
         Route::post('/patients/{hn}/guarantees/additional', [PatientController::class, 'storeGuaranteeAdditional'])->name('patients.guarantees.additional.store');
+        Route::get('/patients/{hn}/guarantees/additional/{id}/add-detail', [PatientController::class, 'createGuaranteeDetail'])->name('patients.guarantees.additional.detail.create');
+        Route::post('/patients/{hn}/guarantees/additional/{id}/add-detail', [PatientController::class, 'storeGuaranteeDetail'])->name('patients.guarantees.additional.detail.store');
         Route::get('/patients/{hn}/guarantees/additional/{id}/edit', [PatientController::class, 'editGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.edit');
-        Route::put('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'updateGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.update');
+        Route::post('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'updateGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.update');
         Route::post('/patients/{hn}/guarantees/additional/{id}/delete', [PatientController::class, 'destroyGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.destroy');
 
         // Settings Routes (admin only)

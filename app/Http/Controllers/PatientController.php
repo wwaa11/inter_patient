@@ -762,6 +762,66 @@ class PatientController extends Controller
         }
     }
 
+    public function createGuaranteeDetail($hn, $id)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $guarantee = PatientAdditionalHeader::find($id);
+        if (! $guarantee) {
+            return redirect()->back()->with('error', 'Additional guarantee header not found');
+        }
+
+        $embassies       = Embassy::all();
+        $additionalTypes = PatientAdditionalType::all();
+        $additionalCases = GuaranteeCase::all();
+
+        return view('patients.guarantees.addtional_detail_add', compact('patient', 'guarantee', 'embassies', 'additionalTypes', 'additionalCases'));
+    }
+
+    public function storeGuaranteeDetail(Request $request, $hn, $id)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $header = PatientAdditionalHeader::find($id);
+        if (! $header) {
+            return redirect()->back()->with('error', 'Additional guarantee header not found');
+        }
+
+        foreach ($request->details as $detail) {
+            // Handle date storage - prioritize date range over multiple dates
+            $specificDate = null;
+            $startDate    = null;
+            $endDate      = null;
+
+            if (! empty($detail['date_start']) && ! empty($detail['date_end'])) {
+                // Date range mode
+                $startDate = $detail['date_start'];
+                $endDate   = $detail['date_end'];
+            } elseif (! empty($detail['specific_dates']) && is_array($detail['specific_dates'])) {
+                $specificDate = array_filter($detail['specific_dates']);
+            }
+            PatientAdditionalDetail::create([
+                'guarantee_header_id' => $header->id,
+                'case'                => $detail['case_id'],
+                'specific_date'       => $specificDate,
+                'start_date'          => $startDate,
+                'end_date'            => $endDate,
+                'details'             => $detail['detail'] ?? null,
+                'definition'          => $detail['definition'] ?? null,
+                'amount'              => $detail['amount'] ?? null,
+                'price'               => $detail['price'] ?? null,
+            ]);
+        }
+
+        return redirect()->route('patients.view', $patient->hn)->with('success', 'Guarantee detail added successfully');
+    }
+
     public function editGuaranteeAdditionalDetail($hn, $id)
     {
         $patient = Patient::find($hn);
