@@ -137,7 +137,7 @@
                 <div class="mb-4 flex items-center justify-between">
                     <h3 class="text-lg font-medium text-slate-900 dark:text-white">Patient Notes</h3>
                     @if (auth()->user()->role === "admin")
-                        <button class="text-blue-600 hover:text-blue-800" onclick="openAddNoteModal()">
+                        <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddNoteModal()">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     @endif
@@ -207,7 +207,7 @@
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-medium text-slate-900 dark:text-white">Passports</h3>
                         @if (auth()->user()->role === "admin")
-                            <button class="text-blue-600 hover:text-blue-800" onclick="openAddPassportModal()">
+                            <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddPassportModal()">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         @endif
@@ -215,14 +215,14 @@
                     @if ($passportsWithStatus && $passportsWithStatus->count() > 0)
                         <div class="space-y-3">
                             @foreach ($passportsWithStatus as $passport)
-                                <div class="{{ $passport->status_class }} rounded-lg border p-4">
+                                <div class="{{ $passport->status_class }} rounded-lg p-4">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
                                             <div class="mb-2 flex items-center gap-2">
                                                 <p class="text-sm font-semibold text-slate-900 dark:text-white">
                                                     {{ $passport->number ?? "No Number" }}
                                                     @if ($loop->first)
-                                                        <span class="ml-2 text-xs text-slate-500">(Latest)</span>
+                                                        <span class="ml-2 text-xs text-slate-800 dark:text-slate-200">(Latest)</span>
                                                     @endif
                                                 </p>
                                                 <span class="{{ $passport->status_class }} inline-flex items-center rounded-full px-2 py-1 text-xs font-medium">
@@ -230,7 +230,7 @@
                                                 </span>
                                             </div>
                                             @if ($passport->issue_date || $passport->expiry_date)
-                                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-200">
                                                     @if ($passport->issue_date)
                                                         Issued: {{ \Carbon\Carbon::parse($passport->issue_date)->format("M d, Y") }}
                                                     @endif
@@ -266,7 +266,7 @@
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-medium text-slate-900 dark:text-white">Medical Reports</h3>
                         @if (auth()->user()->role === "admin")
-                            <button class="text-blue-600 hover:text-blue-800" onclick="openAddMedicalReportModal()">
+                            <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddMedicalReportModal()">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         @endif
@@ -274,13 +274,13 @@
                     @if ($patient->medicalReports && $patient->medicalReports->count() > 0)
                         <div class="space-y-3">
                             @foreach ($patient->medicalReports as $report)
-                                <div class="rounded-lg border bg-green-100 p-4 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                <div class="rounded-lg bg-green-100 p-4 text-green-800 dark:bg-green-900 dark:text-green-300">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
-                                            <span class="rounded-full px-2 py-1 font-medium">
+                                            <span class="rounded-full font-medium">
                                                 {{ $report->date->format("d M Y") }}
                                             </span>
-                                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-200">
                                                 filename: {{ $report->file }}
                                             </p>
                                         </div>
@@ -307,17 +307,17 @@
     </div>
 
     <!-- Add Note Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4" id="addNoteModal">
-        <div class="w-full max-w-lg transform rounded-xl bg-white shadow-2xl transition-all">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="addNoteModal">
+        <div class="w-full max-w-lg transform rounded-xl bg-white shadow-2xl transition-all dark:bg-slate-800">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-gray-200 p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-slate-700">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                         <i class="fa-solid fa-sticky-note text-blue-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900">Add Patient Note</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add Patient Note</h3>
                 </div>
-                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" onclick="closeAddNoteModal()">
+                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-white" onclick="closeAddNoteModal()">
                     <i class="fa-solid fa-times text-lg"></i>
                 </button>
             </div>
@@ -325,15 +325,15 @@
             <form class="p-6" action="{{ route("patients.notes.store", $patient->hn) }}" method="POST">
                 @csrf
                 <div class="mb-6">
-                    <label class="mb-2 block text-sm font-semibold text-gray-700" for="note">Note Content</label>
-                    <textarea class="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="note" name="note" rows="5" placeholder="Enter your note here..." required></textarea>
-                    <p class="mt-2 text-xs text-gray-500">Your name will be automatically added to the note.</p>
+                    <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="note">Note Content</label>
+                    <textarea class="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" id="note" name="note" rows="5" placeholder="Enter your note here..." required></textarea>
+                    <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">Your name will be automatically added to the note.</p>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200" type="button" onclick="closeAddNoteModal()">
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700" type="button" onclick="closeAddNoteModal()">
                         Cancel
                     </button>
-                    <button class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" type="submit">
+                    <button class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:hover:bg-blue-700" type="submit">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Add Note
                     </button>
@@ -343,15 +343,15 @@
     </div>
 
     <!-- Add Passport Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4" id="addPassportModal">
-        <div class="max-h-[90vh] w-full max-w-2xl transform overflow-y-auto rounded-xl bg-white shadow-2xl transition-all">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="addPassportModal">
+        <div class="max-h-[90vh] w-full max-w-2xl transform overflow-y-auto rounded-xl bg-white shadow-2xl transition-all dark:bg-slate-800">
             <!-- Header -->
-            <div class="sticky top-0 flex items-center justify-between rounded-t-xl border-b border-gray-200 bg-white p-6">
+            <div class="sticky top-0 flex items-center justify-between rounded-t-xl border-b border-gray-200 bg-white p-6 dark:bg-slate-800">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
                         <i class="fa-solid fa-passport text-green-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900">Add New Passport</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Passport</h3>
                 </div>
                 <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" onclick="closeAddPassportModal()">
                     <i class="fa-solid fa-times text-lg"></i>
@@ -363,44 +363,44 @@
                 <div class="space-y-6">
                     <!-- File Upload -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="passport_file">Passport File *</label>
-                        <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="passport_file">Passport File *</label>
+                        <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400 dark:border-slate-700">
                             <i class="fa-solid fa-cloud-upload-alt mb-3 text-3xl text-gray-400"></i>
                             <input class="hidden" id="passport_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this, 'passport-filename')">
                             <label class="cursor-pointer" for="passport_file">
-                                <span class="font-medium text-blue-600 hover:text-blue-700">Click to upload</span>
-                                <span class="text-gray-500"> or drag and drop</span>
+                                <span class="font-medium text-blue-600 hover:text-blue-700 dark:text-white">Click to upload</span>
+                                <span class="text-gray-500 dark:text-slate-400"> or drag and drop</span>
                             </label>
-                            <p class="mt-2 text-xs text-gray-500">PDF, JPG, PNG up to 10MB</p>
-                            <p class="mt-2 hidden text-sm text-gray-700" id="passport-filename"></p>
+                            <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">PDF, JPG, PNG up to 10MB</p>
+                            <p class="mt-2 hidden text-sm text-gray-700 dark:text-white" id="passport-filename"></p>
                         </div>
                     </div>
 
                     <!-- Passport Number -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="passport_number">Passport Number</label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="passport_number" type="text" name="number" placeholder="Enter passport number">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="passport_number">Passport Number</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" id="passport_number" type="text" name="number" placeholder="Enter passport number">
                     </div>
 
                     <!-- Dates -->
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700" for="issue_date">Issue Date</label>
-                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="issue_date" type="date" name="issue_date">
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="issue_date">Issue Date</label>
+                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" id="issue_date" type="date" name="issue_date">
                         </div>
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700" for="expiry_date">Expiry Date</label>
-                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="expiry_date" type="date" name="expiry_date">
+                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="expiry_date">Expiry Date</label>
+                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" id="expiry_date" type="date" name="expiry_date">
                         </div>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
-                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200" type="button" onclick="closeAddPassportModal()">
+                <div class="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6 dark:border-slate-700">
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700" type="button" onclick="closeAddPassportModal()">
                         Cancel
                     </button>
-                    <button class="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2" type="submit">
+                    <button class="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-slate-900 dark:text-white" type="submit">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Add Passport
                     </button>
@@ -410,17 +410,17 @@
     </div>
 
     <!-- Add Medical Report Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4" id="addMedicalReportModal">
-        <div class="w-full max-w-xl transform rounded-xl bg-white shadow-2xl transition-all">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="addMedicalReportModal">
+        <div class="w-full max-w-xl transform rounded-xl bg-white shadow-2xl transition-all dark:bg-slate-800">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-gray-200 p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-slate-700">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
                         <i class="fa-solid fa-file-medical text-red-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900">Add Medical Report</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add Medical Report</h3>
                 </div>
-                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" onclick="closeAddMedicalReportModal()">
+                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-white" onclick="closeAddMedicalReportModal()">
                     <i class="fa-solid fa-times text-lg"></i>
                 </button>
             </div>
@@ -430,33 +430,33 @@
                 <div class="space-y-6">
                     <!-- File Upload -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="medical_file">Medical Report File *</label>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="medical_file">Medical Report File *</label>
                         <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-red-400">
                             <i class="fa-solid fa-file-medical mb-3 text-3xl text-gray-400"></i>
                             <input class="hidden" id="medical_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required onchange="updateFileName(this, 'medical-filename')">
                             <label class="cursor-pointer" for="medical_file">
-                                <span class="font-medium text-red-600 hover:text-red-700">Click to upload</span>
-                                <span class="text-gray-500"> or drag and drop</span>
+                                <span class="font-medium text-red-600 hover:text-red-700 dark:text-white">Click to upload</span>
+                                <span class="text-gray-500 dark:text-slate-400"> or drag and drop</span>
                             </label>
-                            <p class="mt-2 text-xs text-gray-500">PDF, JPG, PNG up to 10MB</p>
-                            <p class="mt-2 hidden text-sm text-gray-700" id="medical-filename"></p>
+                            <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">PDF, JPG, PNG up to 10MB</p>
+                            <p class="mt-2 hidden text-sm text-gray-700 dark:text-white" id="medical-filename"></p>
                         </div>
                     </div>
 
                     <!-- Report Date -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="report_date">Report Date *</label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500" id="report_date" type="date" name="date" required>
-                        <p class="mt-2 text-xs text-gray-500">Select the date when this medical report was created.</p>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="report_date">Report Date *</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" id="report_date" type="date" name="date" required>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">Select the date when this medical report was created.</p>
                     </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
-                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200" type="button" onclick="closeAddMedicalReportModal()">
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700" type="button" onclick="closeAddMedicalReportModal()">
                         Cancel
                     </button>
-                    <button class="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2" type="submit">
+                    <button class="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-slate-900 dark:text-white" type="submit">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Add Report
                     </button>
@@ -466,17 +466,17 @@
     </div>
 
     <!-- Extend Main Guarantee Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4" id="extendMainGuaranteeModal">
-        <div class="w-full max-w-xl transform rounded-xl bg-white shadow-2xl transition-all">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="extendMainGuaranteeModal">
+        <div class="w-full max-w-xl transform rounded-xl bg-white shadow-2xl transition-all dark:bg-slate-700">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-gray-200 p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-slate-600">
                 <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                         <i class="fa-solid fa-calendar-plus text-blue-600"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900">Extend Main Guarantee</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-300">Extend Main Guarantee</h3>
                 </div>
-                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" onclick="closeExtendMainGuaranteeModal()">
+                <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-600 dark:hover:text-slate-300" onclick="closeExtendMainGuaranteeModal()">
                     <i class="fa-solid fa-times text-lg"></i>
                 </button>
             </div>
@@ -485,24 +485,24 @@
                 @csrf
                 <div class="space-y-6">
                     <!-- Guarantee Info -->
-                    <div class="rounded-lg bg-blue-50 p-4">
-                        <h4 class="mb-2 text-sm font-medium text-blue-800">Guarantee Information</h4>
-                        <p class="text-sm text-blue-600" id="guaranteeInfo">Guarantee #: <span id="guaranteeNumber"></span></p>
+                    <div class="rounded-lg bg-blue-50 p-4 dark:bg-slate-600">
+                        <h4 class="mb-2 text-sm font-medium text-blue-800 dark:text-slate-300">Guarantee Information</h4>
+                        <p class="text-sm text-red-600 dark:text-slate-300" id="guaranteeInfo">Guarantee : <span id="guaranteeNumber"></span></p>
                     </div>
 
                     <!-- New End Date -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="extend_cover_end_date">New Cover End Date *</label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="extend_cover_end_date" type="date" name="cover_end_date" required>
-                        <p class="mt-2 text-xs text-gray-500">Select the new end date for the guarantee coverage.</p>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="extend_cover_end_date">New Cover End Date *</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-slate-600 dark:text-slate-300" id="extend_cover_end_date" type="date" name="cover_end_date" required>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-slate-300">Select the new end date for the guarantee coverage.</p>
                     </div>
 
                     <!-- File Upload -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700" for="extend_file">Extension Document *</label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500" id="extend_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
-                        <p class="mt-2 text-xs text-gray-500">Upload the extension document (PDF, JPG, JPEG, PNG - Max 10MB).</p>
-                        <div class="mt-2 hidden text-xs text-blue-600" id="extend-filename"></div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="extend_file">Extension Document *</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-slate-600 dark:text-slate-300" id="extend_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-slate-300">Upload the extension document (PDF, JPG, JPEG, PNG - Max 10MB).</p>
+                        <div class="mt-2 hidden text-xs text-blue-600 dark:text-slate-300" id="extend-filename"></div>
                     </div>
                 </div>
 
@@ -521,27 +521,55 @@
     </div>
 
     <!-- File Viewer Modal - Full Screen -->
-    <div class="fixed inset-0 z-50 hidden bg-black bg-opacity-95" id="fileModal">
-        <div class="relative flex h-full w-full flex-col">
+    <div class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm" id="fileModal">
+        <div class="relative flex h-full w-full flex-col bg-white shadow-2xl dark:bg-slate-900">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b bg-white p-4 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                        <i class="fa-solid fa-file text-sm text-blue-600"></i>
+            <div class="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 p-6 shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-700">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                        <i class="fa-solid fa-file-lines text-white"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">File Viewer</h3>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">File Viewer</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">View and manage patient documents</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button class="inline-flex items-center rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200" onclick="closeFileModal()">
+                <div class="flex items-center gap-3">
+                    <button class="inline-flex items-center rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:scale-105 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-slate-600 dark:text-slate-200 dark:hover:bg-slate-500" onclick="downloadFile()">
+                        <i class="fa-solid fa-download mr-2"></i>
+                        Download
+                    </button>
+                    <button class="inline-flex items-center rounded-xl bg-red-100 px-4 py-2.5 text-sm font-medium text-red-700 transition-all duration-200 hover:scale-105 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50" onclick="closeFileModal()">
                         <i class="fa-solid fa-times mr-2"></i>
                         Close
                     </button>
                 </div>
             </div>
             <!-- Content Area -->
-            <div class="flex-1 overflow-hidden bg-gray-50">
-                <div class="flex h-full w-full items-center justify-center p-4" id="fileContent">
+            <div class="flex-1 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+                <div class="flex h-full w-full items-center justify-center p-8" id="fileContent">
+                    <!-- Loading State -->
+                    <div class="flex flex-col items-center justify-center space-y-4 text-slate-500 dark:text-slate-400" id="fileLoadingState">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl text-slate-600 dark:text-slate-300"></i>
+                        </div>
+                        <p class="text-lg font-medium">Loading file...</p>
+                        <p class="text-sm">Please wait while we prepare your document</p>
+                    </div>
                     <!-- File content will be loaded here -->
+                </div>
+            </div>
+            <!-- Footer with file info -->
+            <div class="border-t border-slate-200 bg-slate-50 px-6 py-3 dark:border-slate-700 dark:bg-slate-800" id="fileFooter" style="display: none;">
+                <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle"></i>
+                        <span id="fileInfo">File information will appear here</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span id="fileSize"></span>
+                        <span id="fileType"></span>
+                    </div>
                 </div>
             </div>
         </div>
