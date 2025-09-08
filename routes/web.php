@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -54,6 +55,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/patients/{hn}/guarantees/additional/{id}/edit', [PatientController::class, 'editGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.edit');
         Route::post('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'updateGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.update');
         Route::post('/patients/{hn}/guarantees/additional/{id}/delete', [PatientController::class, 'destroyGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.destroy');
+
+        // User Management Routes (admin only)
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::put('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 
         // Settings Routes (admin only)
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

@@ -12,16 +12,18 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">Primary guarantee information and documentation</p>
                 </div>
             </div>
-            @if ($patient->guaranteeMains && $patient->guaranteeMains->count() > 0)
-                <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2">
+                @if (auth()->user()->role === "admin")
                     <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
                         <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
                     </a>
+                @endif
+                @if ($patient->guaranteeMains && $patient->guaranteeMains->count() > 0)
                     <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                         {{ $patient->guaranteeMains->count() }} {{ Str::plural("guarantee", $patient->guaranteeMains->count()) }}
                     </span>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 

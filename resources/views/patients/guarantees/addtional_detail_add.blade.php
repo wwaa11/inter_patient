@@ -107,7 +107,7 @@
                 </div>
 
                 <!-- Coverage Area/Specialty Content -->
-                <div class="flex flex-col gap-6 lg:flex-row">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <!-- Left Panel - Details -->
                     <div class="rounded-lg bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="border-b border-gray-200 px-6 py-4 dark:border-slate-700">
@@ -115,165 +115,157 @@
                         </div>
                         <div class="space-y-6 p-6">
                             <!-- Detail Entries -->
-                            <div class="border-t border-gray-200 pt-6">
-                                <div class="mb-4 flex items-center justify-between">
-                                    <h3 class="text-md font-semibold text-gray-900 dark:text-slate-100">
-                                        <i class="fas fa-list mr-2 text-green-500"></i>Additional Information
-                                    </h3>
-                                </div>
+                            <div class="mb-4 flex items-center justify-between">
+                                <h3 class="text-md font-semibold text-gray-900 dark:text-slate-100">
+                                    <i class="fas fa-list mr-2 text-green-500"></i>Additional Information
+                                </h3>
+                            </div>
 
-                                <div class="space-y-6" id="details-container">
-                                    <!-- Initial detail entry -->
-                                    <div class="detail-entry rounded-lg border border-gray-200 bg-white p-4 dark:border-slate-600 dark:bg-slate-700">
-                                        <div class="mb-4 flex items-center justify-between">
-                                            <h4 class="text-sm font-semibold text-gray-800 dark:text-slate-200">
-                                                <i class="fas fa-file-alt mr-2 text-blue-500"></i>Detail Entry
-                                            </h4>
-                                            <button class="text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" type="button" onclick="removeDetail(this)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                            <div class="space-y-6" id="details-container">
+                                <!-- Initial detail entry -->
+                                <div class="detail-entry rounded-lg border border-gray-200 bg-white p-4 dark:border-slate-600 dark:bg-slate-700">
+                                    <div class="mb-4 flex items-center justify-between">
+                                        <h4 class="text-sm font-semibold text-gray-800 dark:text-slate-200">
+                                            <i class="fas fa-file-alt mr-2 text-blue-500"></i>Detail Entry
+                                        </h4>
+                                        <button class="text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" type="button" onclick="removeDetail(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex flex-col gap-4">
+                                        <!-- Case Selection -->
+                                        <div class="md:col-span-2">
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
+                                            </label>
+                                            <div class="relative">
+                                                <input class="@error("details.0.case_id") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" onkeydown="return false" value="{{ old("details.0.case_name") }}">
+                                                <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 dark:text-slate-300"></i>
+                                                <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700">
+                                                    <div class="border-b p-2 dark:border-slate-600">
+                                                        <input class="case-search w-full rounded border border-gray-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300" type="text" placeholder="Type to search..." oninput="filterCaseOptions(this)">
+                                                    </div>
+                                                    <div class="case-options">
+                                                        <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600" data-value="" data-name="" onclick="selectCase(this, 0)">
+                                                            Please select
+                                                        </div>
+                                                        @if (isset($additionalCases))
+                                                            @foreach ($additionalCases as $case)
+                                                                <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, 0)">
+                                                                    {{ $case->name }}
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <input class="case-value" type="hidden" name="details[0][case_id]" value="{{ old("details.0.case_id") }}">
+                                            </div>
+                                            @error("details.0.case_id")
+                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                            @enderror
                                         </div>
 
-                                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                            <!-- Case Selection -->
-                                            <div class="md:col-span-2">
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-list mr-2 text-blue-500"></i>Case *
-                                                </label>
-                                                <select class="@error("details.0.case_id") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" name="details[0][case_id]" required>
-                                                    <option value="">Select a case</option>
-                                                    @foreach ($additionalCases as $case)
-                                                        <option value="{{ $case->id }}" {{ old("details.0.case_id") == $case->id ? "selected" : "" }}>{{ $case->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error("details.0.case_id")
-                                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Date Type Selection -->
-                                            <div class="md:col-span-2">
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-calendar mr-2 text-purple-500"></i>Date Type
-                                                </label>
-                                                <div class="flex space-x-4">
-                                                    <label class="flex items-center">
-                                                        <input class="mr-2" type="radio" name="details[0][date_type]" value="range" checked onchange="toggleDateType(this, 0)">
-                                                        <span class="text-sm text-gray-700 dark:text-slate-300">Date Range</span>
-                                                    </label>
-                                                    <label class="flex items-center">
-                                                        <input class="mr-2" type="radio" name="details[0][date_type]" value="specific" onchange="toggleDateType(this, 0)">
-                                                        <span class="text-sm text-gray-700 dark:text-slate-300">Specific Dates</span>
-                                                    </label>
+                                        <!-- Specific Date -->
+                                        <div class="md:col-span-2">
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
+                                            </label>
+                                            <div class="space-y-3">
+                                                <div class="flex items-center">
+                                                    <input class="mr-2" id="dateRange_0" type="checkbox" onchange="toggleDateRange(this, 0)" {{ old("details.0.date_range_enabled") ? "checked" : "" }}>
+                                                    <label class="text-sm text-gray-600 dark:text-slate-400" for="dateRange_0">Use date range</label>
                                                 </div>
-                                            </div>
-
-                                            <!-- Date Range Fields -->
-                                            <div class="date-range-fields md:col-span-2">
-                                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                    <div>
-                                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                            <i class="fas fa-calendar-plus mr-2 text-green-500"></i>Start Date
-                                                        </label>
-                                                        <input class="@error("details.0.date_start") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="details[0][date_start]" value="{{ old("details.0.date_start") }}">
-                                                        @error("details.0.date_start")
-                                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                        @enderror
+                                                <div class="date-single">
+                                                    <div class="space-y-2">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-sm font-medium text-gray-700 dark:text-slate-300">Dates</span>
+                                                            <button class="text-sm font-medium text-green-600 hover:text-green-700 dark:text-green-400" type="button" onclick="addDateEntry(0)">
+                                                                <i class="fas fa-plus mr-1"></i>Add Date
+                                                            </button>
+                                                        </div>
+                                                        <div class="date-entries" id="dateEntries_0">
+                                                            <div class="date-entry mb-2 flex items-center space-x-2">
+                                                                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[0][specific_dates][]" value="{{ old("details.0.specific_dates.0") }}">
+                                                                <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
+                                                                    <i class="fas fa-trash text-sm"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                            <i class="fas fa-calendar-times mr-2 text-red-500"></i>End Date
-                                                        </label>
-                                                        <input class="@error("details.0.date_end") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="details[0][date_end]" value="{{ old("details.0.date_end") }}">
-                                                        @error("details.0.date_end")
-                                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                        @enderror
+                                                </div>
+                                                <div class="date-range hidden">
+                                                    <div class="grid grid-cols-2 gap-2">
+                                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[0][date_start]" placeholder="Start Date" value="{{ old("details.0.date_start") }}">
+                                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[0][date_end]" placeholder="End Date" value="{{ old("details.0.date_end") }}">
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <!-- Specific Dates Fields -->
-                                            <div class="specific-dates-fields hidden md:col-span-2">
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Dates
-                                                </label>
-                                                <div class="specific-dates-container space-y-2">
-                                                    <div class="flex items-center space-x-2">
-                                                        <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="details[0][specific_dates][]" value="{{ old("details.0.specific_dates.0") }}">
-                                                        <button class="rounded-lg bg-green-500 px-3 py-2 text-white transition-colors hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700" type="button" onclick="addSpecificDate(this)">
-                                                            <i class="fas fa-plus"></i>
-                                                        </button>
-                                                        <button class="rounded-lg bg-red-500 px-3 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700" type="button" onclick="removeSpecificDate(this)">
-                                                            <i class="fas fa-minus"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <!-- Detail -->
+                                        <div class="md:col-span-2">
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
+                                            </label>
+                                            <textarea class="@error("details.0.detail") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" name="details[0][detail]" rows="3" required placeholder="Enter detail description">{{ old("details.0.detail") }}</textarea>
+                                            @error("details.0.detail")
+                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                            @enderror
+                                        </div>
 
-                                            <!-- Detail -->
-                                            <div class="md:col-span-2">
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
-                                                </label>
-                                                <textarea class="@error("details.0.detail") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" name="details[0][detail]" rows="3" required placeholder="Enter detail description">{{ old("details.0.detail") }}</textarea>
-                                                @error("details.0.detail")
-                                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                @enderror
-                                            </div>
+                                        <!-- Definition -->
+                                        <div>
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
+                                            </label>
+                                            <input class="@error("details.0.definition") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][definition]" placeholder="Enter definition" value="{{ old("details.0.definition") }}">
+                                            @error("details.0.definition")
+                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                            @enderror
+                                        </div>
 
-                                            <!-- Definition -->
-                                            <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-book mr-2 text-indigo-500"></i>Definition
-                                                </label>
-                                                <input class="@error("details.0.definition") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][definition]" placeholder="Enter definition" value="{{ old("details.0.definition") }}">
-                                                @error("details.0.definition")
-                                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                @enderror
-                                            </div>
+                                        <!-- Amount -->
+                                        <div>
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
+                                            </label>
+                                            <input class="@error("details.0.amount") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][amount]" placeholder="Enter amount (e.g., 100,000)" value="{{ old("details.0.amount") }}">
+                                            @error("details.0.amount")
+                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                            @enderror
+                                        </div>
 
-                                            <!-- Amount -->
-                                            <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount
-                                                </label>
-                                                <input class="@error("details.0.amount") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][amount]" placeholder="Enter amount (e.g., 100,000)" value="{{ old("details.0.amount") }}">
-                                                @error("details.0.amount")
-                                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Price -->
-                                            <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
-                                                    <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price
-                                                </label>
-                                                <input class="@error("details.0.price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][price]" placeholder="Enter price" value="{{ old("details.0.price") }}">
-                                                @error("details.0.price")
-                                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                                @enderror
-                                            </div>
+                                        <!-- Price -->
+                                        <div>
+                                            <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                                <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
+                                            </label>
+                                            <input class="@error("details.0.price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[0][price]" placeholder="Enter price" value="{{ old("details.0.price") }}">
+                                            @error("details.0.price")
+                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
-
-                                <button class="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800" type="button" onclick="addDetail()">
-                                    <i class="fas fa-plus mr-2"></i>Add Detail
-                                </button>
                             </div>
+
+                            <button class="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800" type="button" onclick="addDetail()">
+                                <i class="fas fa-plus mr-2"></i>Add Detail
+                            </button>
 
                         </div>
                     </div>
 
                     <!-- Right Panel - File Preview -->
-                    <div class="relative min-h-[800px] flex-1 rounded-lg bg-white shadow-sm">
+                    <div class="relative min-h-[800px] rounded-lg bg-white shadow-sm md:col-span-2 dark:bg-slate-800">
                         <div class="border-b border-gray-200 px-6 py-4">
                             <h2 class="flex items-center text-lg font-semibold text-gray-900">
                                 <i class="fas fa-eye mr-2 text-blue-500"></i>File Preview
                             </h2>
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 m-auto p-6">
-                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6" id="filePreview">
+                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:border-slate-600 dark:bg-slate-700" id="filePreview">
                                 @if ($guarantee->file)
                                     @foreach ($guarantee->file as $file)
                                         @php
@@ -325,114 +317,116 @@
 
         function addDetail() {
             const container = document.getElementById('details-container');
+            const newIndex = detailIndex;
+
             const newDetail = `
-            <div class="detail-entry rounded-lg border border-gray-200 bg-white p-4">
+            <div class="detail-entry rounded-lg border border-gray-200 bg-white p-4 dark:border-slate-600 dark:bg-slate-700">
                 <div class="mb-4 flex items-center justify-between">
-                    <h4 class="text-sm font-semibold text-gray-800">
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-slate-200">
                         <i class="fas fa-file-alt mr-2 text-blue-500"></i>Detail Entry
                     </h4>
-                    <button type="button" onclick="removeDetail(this)" class="text-red-500 hover:text-red-700 transition-colors">
+                    <button type="button" onclick="removeDetail(this)" class="text-red-500 hover:text-red-700 transition-colors dark:text-red-400 dark:hover:text-red-300">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
                 
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="flex flex-col gap-4">
                     <!-- Case Selection -->
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-list mr-2 text-blue-500"></i>Case *
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                            <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
                         </label>
-                        <select class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[${detailIndex}][case_id]" required>
-                            <option value="">Select a case</option>
-                            @foreach ($additionalCases as $case)
-                                <option value="{{ $case->id }}">{{ $case->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Date Type Selection -->
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-calendar mr-2 text-purple-500"></i>Date Type
-                        </label>
-                        <div class="flex space-x-4">
-                            <label class="flex items-center">
-                                <input class="mr-2" type="radio" name="details[${detailIndex}][date_type]" value="range" checked onchange="toggleDateType(this, ${detailIndex})">
-                                <span class="text-sm text-gray-700">Date Range</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input class="mr-2" type="radio" name="details[${detailIndex}][date_type]" value="specific" onchange="toggleDateType(this, ${detailIndex})">
-                                <span class="text-sm text-gray-700">Specific Dates</span>
-                            </label>
+                        <div class="relative">
+                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" onkeydown="return false">
+                            <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 dark:text-slate-300"></i>
+                            <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700">
+                                <div class="border-b p-2 dark:border-slate-600">
+                                    <input class="case-search w-full rounded border border-gray-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300" type="text" placeholder="Type to search..." oninput="filterCaseOptions(this)">
+                                </div>
+                                <div class="case-options">
+                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600" data-value="" data-name="" onclick="selectCase(this, ${newIndex})">
+                                        Please select
+                                    </div>
+                                    @if (isset($additionalCases))
+                                        @foreach ($additionalCases as $case)
+                                            <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, ${newIndex})">
+                                                {{ $case->name }}
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                            <input class="case-value" type="hidden" name="details[${newIndex}][case_id]">
                         </div>
                     </div>
 
-                    <!-- Date Range Fields -->
-                    <div class="date-range-fields md:col-span-2">
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                    <i class="fas fa-calendar-plus mr-2 text-green-500"></i>Start Date
-                                </label>
-                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[${detailIndex}][date_start]">
-                            </div>
-                            <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                    <i class="fas fa-calendar-times mr-2 text-red-500"></i>End Date
-                                </label>
-                                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[${detailIndex}][date_end]">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Specific Dates Fields -->
-                    <div class="specific-dates-fields hidden md:col-span-2">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Dates
+                    <!-- Specific Date -->
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                            <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
                         </label>
-                        <div class="specific-dates-container space-y-2">
-                            <div class="flex items-center space-x-2">
-                                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[${detailIndex}][specific_dates][]">
-                                <button type="button" onclick="addSpecificDate(this)" class="rounded-lg bg-green-500 px-3 py-2 text-white transition-colors hover:bg-green-600">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                                <button type="button" onclick="removeSpecificDate(this)" class="rounded-lg bg-red-500 px-3 py-2 text-white transition-colors hover:bg-red-600">
-                                    <i class="fas fa-minus"></i>
-                                </button>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <input class="mr-2" id="dateRange_${newIndex}" type="checkbox" onchange="toggleDateRange(this, ${newIndex})">
+                                <label class="text-sm text-gray-600 dark:text-slate-400" for="dateRange_${newIndex}">Use date range</label>
+                            </div>
+                            <div class="date-single">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-slate-300">Dates</span>
+                                        <button class="text-sm font-medium text-green-600 hover:text-green-700 dark:text-green-400" type="button" onclick="addDateEntry(${newIndex})">
+                                            <i class="fas fa-plus mr-1"></i>Add Date
+                                        </button>
+                                    </div>
+                                    <div class="date-entries" id="dateEntries_${newIndex}">
+                                        <div class="date-entry mb-2 flex items-center space-x-2">
+                                            <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[${newIndex}][specific_dates][]">
+                                            <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
+                                                <i class="fas fa-trash text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="date-range hidden">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[${newIndex}][date_start]" placeholder="Start Date">
+                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[${newIndex}][date_end]" placeholder="End Date">
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Detail -->
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
                             <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
                         </label>
-                        <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[${detailIndex}][detail]" rows="3" required placeholder="Enter detail description"></textarea>
+                        <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" name="details[${newIndex}][detail]" rows="3" required placeholder="Enter detail description"></textarea>
                     </div>
 
                     <!-- Definition -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-book mr-2 text-indigo-500"></i>Definition
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                            <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[${detailIndex}][definition]" placeholder="Enter definition">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[${newIndex}][definition]" placeholder="Enter definition">
                     </div>
 
                     <!-- Amount -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                            <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[${detailIndex}][amount]" placeholder="Enter amount (e.g., 100,000)">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[${newIndex}][amount]" placeholder="Enter amount (e.g., 100,000)">
                     </div>
 
                     <!-- Price -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
-                            <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                            <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[${detailIndex}][price]" placeholder="Enter price">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="details[${newIndex}][price]" placeholder="Enter price">
                     </div>
                 </div>
             </div>
@@ -499,5 +493,107 @@
                 alert('At least one specific date field is required.');
             }
         }
+
+        // New functions for searchable dropdown and date range functionality
+        function toggleCaseDropdown(input) {
+            const dropdown = input.parentElement.querySelector('.case-dropdown');
+            const searchInput = dropdown.querySelector('.case-search');
+
+            dropdown.classList.toggle('hidden');
+
+            if (!dropdown.classList.contains('hidden') && searchInput) {
+                searchInput.focus();
+            }
+        }
+
+        function selectCase(option, index) {
+            const dropdown = option.closest('.case-dropdown');
+            const input = dropdown.parentElement.querySelector('input[type="text"]');
+            const hiddenInput = dropdown.parentElement.querySelector('.case-value');
+
+            input.value = option.dataset.name;
+            hiddenInput.value = option.dataset.value;
+            dropdown.classList.add('hidden');
+        }
+
+        function filterCaseOptions(searchInput) {
+            const searchTerm = searchInput.value.toLowerCase();
+            const options = searchInput.closest('.case-dropdown').querySelectorAll('.case-option');
+
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleDateRange(checkbox, index) {
+            const container = checkbox.closest('div').parentElement;
+            const singleDateDiv = container.querySelector('.date-single');
+            const dateRangeDiv = container.querySelector('.date-range');
+
+            if (checkbox.checked) {
+                singleDateDiv.classList.add('hidden');
+                dateRangeDiv.classList.remove('hidden');
+            } else {
+                singleDateDiv.classList.remove('hidden');
+                dateRangeDiv.classList.add('hidden');
+            }
+        }
+
+        function addDateEntry(index) {
+            const container = document.getElementById(`dateEntries_${index}`);
+            const dateEntries = container.querySelectorAll('.date-entry');
+
+            const newDateEntry = document.createElement('div');
+            newDateEntry.className = 'date-entry mb-2 flex items-center space-x-2';
+            newDateEntry.innerHTML = `
+                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="details[${index}][specific_dates][]">
+                <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)">
+                    <i class="fas fa-trash text-sm"></i>
+                </button>
+            `;
+
+            container.appendChild(newDateEntry);
+
+            // Show remove buttons for all entries when there's more than one
+            updateDateEntryButtons(container);
+        }
+
+        function removeDateEntry(button) {
+            const container = button.closest('.date-entries');
+            const dateEntry = button.closest('.date-entry');
+            const dateEntries = container.querySelectorAll('.date-entry');
+
+            if (dateEntries.length > 1) {
+                dateEntry.remove();
+                updateDateEntryButtons(container);
+            }
+        }
+
+        function updateDateEntryButtons(container) {
+            const dateEntries = container.querySelectorAll('.date-entry');
+            dateEntries.forEach((entry, index) => {
+                const removeButton = entry.querySelector('button');
+                if (dateEntries.length > 1) {
+                    removeButton.style.display = 'block';
+                } else {
+                    removeButton.style.display = 'none';
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.case-dropdown');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.parentElement.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
     </script>
 @endsection

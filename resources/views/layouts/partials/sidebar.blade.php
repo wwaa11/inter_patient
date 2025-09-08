@@ -18,7 +18,7 @@
                     <ul class="-mx-2 space-y-1" role="list">
                         <!-- Patients -->
                         <li>
-                            <a class="{{ request()->routeIs("patients*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("patients") }}">
+                            <a class="{{ request()->routeIs("patients*") ? "nav-active text-emerald-700 dark:text-emerald-500" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("patients") }}">
                                 <i class="fa-solid fa-user h-6 w-6 text-lg"></i>
                                 Patients
                             </a>
@@ -33,6 +33,14 @@
                         </li> --}}
 
                         @if (auth()->user()->role === "admin")
+                            <!-- User Management -->
+                            <li>
+                                <a class="{{ request()->routeIs("users*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("users.index") }}">
+                                    <i class="fa-solid fa-users h-6 w-6 text-lg"></i>
+                                    User Management
+                                </a>
+                            </li>
+
                             <!-- Settings -->
                             <li>
                                 <a class="{{ request()->routeIs("settings*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("settings.index") }}">

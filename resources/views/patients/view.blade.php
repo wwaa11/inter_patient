@@ -145,7 +145,7 @@
                 @if ($patient->notes && $patient->notes->count() > 0)
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3" id="notesContainer">
                         @foreach ($patient->notes->sortByDesc("created_at") as $index => $note)
-                            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800 {{ $index >= 3 ? 'hidden' : '' }} note-item" data-index="{{ $index }}">
+                            <div class="{{ $index >= 3 ? "hidden" : "" }} note-item rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800" data-index="{{ $index }}">
                                 <div class="flex items-start gap-3">
                                     <div class="flex-shrink-0">
                                         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
@@ -176,7 +176,7 @@
                     </div>
                     @if ($patient->notes->count() > 3)
                         <div class="mt-4 text-center">
-                            <button id="viewMoreNotesBtn" class="inline-flex items-center rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600" onclick="toggleNotes()">
+                            <button class="inline-flex items-center rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600" id="viewMoreNotesBtn" onclick="toggleNotes()">
                                 <i class="fa-solid fa-chevron-down mr-2"></i>
                                 <span id="viewMoreText">View More ({{ $patient->notes->count() - 3 }} more)</span>
                             </button>
@@ -540,6 +540,7 @@
             </div>
             <!-- Content Area -->
             <div class="flex-1 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+                <input id="fileUrl" type="hidden" value="">
                 <div class="flex h-full w-full items-center justify-center p-8" id="fileContent">
                     <!-- Loading State -->
                     <div class="flex flex-col items-center justify-center space-y-4 text-slate-500 dark:text-slate-400" id="fileLoadingState">
@@ -590,6 +591,8 @@
             const fileUrl = `/files/${hn}/${filename}`;
             const fileExtension = filename.split('.').pop().toLowerCase();
 
+            $('#fileUrl').val(fileUrl);
+
             if (['pdf'].includes(fileExtension)) {
                 fileContent.innerHTML = `
                     <iframe src="${fileUrl}" 
@@ -623,6 +626,11 @@
                     </div>
                 `;
             }
+        }
+
+        function downloadFile() {
+            const fileUrl = $('#fileUrl').val();
+            window.open(fileUrl, '_blank');
         }
 
         function closeFileModal() {
@@ -913,9 +921,9 @@
             const viewMoreBtn = document.getElementById('viewMoreNotesBtn');
             const viewMoreText = document.getElementById('viewMoreText');
             const icon = viewMoreBtn.querySelector('i');
-            
+
             let isExpanded = false;
-            
+
             // Check if notes are currently expanded
             hiddenNotes.forEach(note => {
                 const index = parseInt(note.getAttribute('data-index'));
@@ -923,7 +931,7 @@
                     isExpanded = true;
                 }
             });
-            
+
             if (isExpanded) {
                 // Hide notes beyond the first 3
                 hiddenNotes.forEach(note => {
@@ -932,7 +940,7 @@
                         note.classList.add('hidden');
                     }
                 });
-                
+
                 // Update button text and icon
                 const totalNotes = {{ $patient->notes->count() }};
                 const hiddenCount = totalNotes - 3;
@@ -943,7 +951,7 @@
                 hiddenNotes.forEach(note => {
                     note.classList.remove('hidden');
                 });
-                
+
                 // Update button text and icon
                 viewMoreText.textContent = 'View Less';
                 icon.className = 'fa-solid fa-chevron-up mr-2';
