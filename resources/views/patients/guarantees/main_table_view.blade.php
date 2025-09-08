@@ -130,9 +130,12 @@
                                             <i class="fas fa-calendar-plus mr-1"></i>
                                             Extend
                                         </button>
+                                        <a href="{{ route('patients.guarantees.main.edit', [$patient->hn, $guarantee->id]) }}" class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900" title="Edit Guarantee">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            Edit
+                                        </a>
                                         <button class="inline-flex items-center rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors duration-200 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})" title="Delete Guarantee">
-                                            <i class="fas fa-trash-alt mr-1"></i>
-                                            Delete
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </td>

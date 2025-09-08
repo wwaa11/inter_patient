@@ -527,6 +527,113 @@ class PatientController extends Controller
         return view('patients.guarantees.main_add', compact('patient', 'embassies', 'guaranteeCases'));
     }
 
+    public function editMainGuarantee($hn, $id)
+    {
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $guarantee = PatientMainGuarantee::find($id);
+        if (! $guarantee || $guarantee->hn != $hn) {
+            return redirect()->route('patients.view', $hn)->with('error', 'Guarantee not found');
+        }
+
+        // Get all guarantees with the same embassy, dates, and file to group related cases
+        $relatedGuarantees = PatientMainGuarantee::where('hn', $hn)
+            ->where('embassy', $guarantee->embassy)
+            ->where('embassy_ref', $guarantee->embassy_ref)
+            ->where('issue_date', $guarantee->issue_date)
+            ->where('cover_start_date', $guarantee->cover_start_date)
+            ->where('cover_end_date', $guarantee->cover_end_date)
+            ->get();
+
+        $selectedCases = $relatedGuarantees->pluck('case')->toArray();
+        
+        $embassies      = Embassy::all();
+        $guaranteeCases = GuaranteeCase::all();
+
+        return view('patients.guarantees.main_edit', compact('patient', 'guarantee', 'embassies', 'guaranteeCases', 'selectedCases', 'relatedGuarantees'));
+    }
+
+    public function updateMainGuarantee(Request $request, $hn, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'embassy'          => 'required|string|max:255',
+            'embassy_ref'      => 'nullable|string|max:255',
+            'number'           => 'nullable|string|max:255',
+            'mb'               => 'nullable|string|max:255',
+            'issue_date'       => 'required|date',
+            'cover_start_date' => 'required|date',
+            'cover_end_date'   => 'required|date',
+            'guarantee_cases'  => 'required|array|min:1',
+            'file'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $guarantee = PatientMainGuarantee::find($id);
+        if (! $guarantee || $guarantee->hn != $hn) {
+            return redirect()->route('patients.view', $hn)->with('error', 'Guarantee not found');
+        }
+
+        try {
+            // Get all related guarantees (same group)
+            $relatedGuarantees = PatientMainGuarantee::where('hn', $hn)
+                ->where('embassy', $guarantee->embassy)
+                ->where('embassy_ref', $guarantee->embassy_ref)
+                ->where('issue_date', $guarantee->issue_date)
+                ->where('cover_start_date', $guarantee->cover_start_date)
+                ->where('cover_end_date', $guarantee->cover_end_date)
+                ->get();
+
+            // Handle file upload if new file is provided
+            $uploadedFiles = $guarantee->file; // Keep existing files
+            if ($request->hasFile('file')) {
+                $directory = public_path('hn/' . $hn);
+                if (! file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $filename = 'main_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
+                $request->file('file')->move($directory, $filename);
+                $uploadedFiles = [$filename];
+            }
+
+            // Delete all related guarantees
+            foreach ($relatedGuarantees as $relatedGuarantee) {
+                $relatedGuarantee->delete();
+            }
+
+            // Create new guarantee records for each selected case
+            foreach ($request->guarantee_cases as $case) {
+                PatientMainGuarantee::create([
+                    'hn'               => $hn,
+                    'embassy'          => $request->embassy,
+                    'embassy_ref'      => $request->embassy_ref,
+                    'number'           => $request->number,
+                    'mb'               => $request->mb,
+                    'issue_date'       => $request->issue_date,
+                    'cover_start_date' => $request->cover_start_date,
+                    'cover_end_date'   => $request->cover_end_date,
+                    'case'             => $case,
+                    'file'             => $uploadedFiles,
+                ]);
+            }
+
+            return redirect()->route('patients.view', $hn)->with('success', 'Main guarantee updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update main guarantee: ' . $e->getMessage())->withInput();
+        }
+    }
+
     public function extendMainGuarantee(Request $request, $hn, $id)
     {
         $validator = Validator::make($request->all(), [

@@ -588,7 +588,9 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
 
-            const fileUrl = `/files/${hn}/${filename}`;
+            // const fileUrl = `/files/${hn}/${filename}`;
+            const fileUrl = '{{ route("files.view", ["hn" => "__hn__", "filename" => "__NAME__"]) }}'.replace('__hn__', hn).replace('__NAME__', filename);
+
             const fileExtension = filename.split('.').pop().toLowerCase();
 
             $('#fileUrl').val(fileUrl);
