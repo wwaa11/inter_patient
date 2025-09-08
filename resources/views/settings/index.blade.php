@@ -44,7 +44,7 @@
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $embassy->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editEmbassy({{ $embassy->id }}, '{{ $embassy->name }}')">
+                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editEmbassy({{ $embassy->id }}, '{{ $embassy->name }}', '{{ $embassy->colour }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
                                         <button class="text-red-600 hover:text-red-900" onclick="deleteEmbassy({{ $embassy->id }})">
@@ -96,7 +96,7 @@
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->definition ?? "N/A" }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->name }}', '{{ $case->definition }}')">
+                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->name }}', '{{ $case->definition }}', '{{ $case->colour }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
                                         <button class="text-red-600 hover:text-red-900" onclick="deleteGuaranteeCase({{ $case->id }})">
@@ -130,6 +130,16 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="embassyColour">Color</label>
+                    <div class="mt-1 flex items-center space-x-3">
+                        <input class="h-10 w-16 rounded-md border border-slate-300 dark:border-slate-600" id="embassyColour" type="color" name="colour" value="#3B82F6">
+                        <input class="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="embassyColourText" type="text" placeholder="#3B82F6" readonly>
+                    </div>
+                    @error("colour")
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
                 <div class="flex justify-end space-x-2">
                     <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeEmbassyModal()">Cancel</button>
                     <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="submit">Save</button>
@@ -159,6 +169,16 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCaseColour">Color</label>
+                    <div class="mt-1 flex items-center space-x-3">
+                        <input class="h-10 w-16 rounded-md border border-slate-300 dark:border-slate-600" id="guaranteeCaseColour" type="color" name="colour" value="#10B981">
+                        <input class="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCaseColourText" type="text" placeholder="#10B981" readonly>
+                    </div>
+                    @error("colour")
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
                 <div class="flex justify-end space-x-2">
                     <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeGuaranteeCaseModal()">Cancel</button>
                     <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="submit">Save</button>
@@ -174,15 +194,19 @@
             document.getElementById('embassyForm').action = '{{ route("settings.embassies.store") }}';
             document.getElementById('embassyMethod').value = '';
             document.getElementById('embassyName').value = '';
+            document.getElementById('embassyColour').value = '#3B82F6';
+            document.getElementById('embassyColourText').value = '#3B82F6';
             document.getElementById('embassyModal').classList.remove('hidden');
             document.getElementById('embassyModal').classList.add('flex');
         }
 
-        function editEmbassy(id, name) {
+        function editEmbassy(id, name, colour) {
             document.getElementById('embassyModalTitle').textContent = 'Edit Embassy';
             document.getElementById('embassyForm').action = '{{ route("settings.embassies.update", "__ID__") }}'.replace('__ID__', id);
             document.getElementById('embassyMethod').value = 'PUT';
             document.getElementById('embassyName').value = name;
+            document.getElementById('embassyColour').value = colour || '#3B82F6';
+            document.getElementById('embassyColourText').value = colour || '#3B82F6';
             document.getElementById('embassyModal').classList.remove('hidden');
             document.getElementById('embassyModal').classList.add('flex');
         }
@@ -210,16 +234,20 @@
             document.getElementById('guaranteeCaseMethod').value = '';
             document.getElementById('guaranteeCase').value = '';
             document.getElementById('guaranteeCaseDefinition').value = '';
+            document.getElementById('guaranteeCaseColour').value = '#10B981';
+            document.getElementById('guaranteeCaseColourText').value = '#10B981';
             document.getElementById('guaranteeCaseModal').classList.remove('hidden');
             document.getElementById('guaranteeCaseModal').classList.add('flex');
         }
 
-        function editGuaranteeCase(id, caseName, definition) {
+        function editGuaranteeCase(id, caseName, definition, colour) {
             document.getElementById('guaranteeCaseModalTitle').textContent = 'Edit Guarantee Case';
             document.getElementById('guaranteeCaseForm').action = '{{ route("settings.guarantee-cases.update", "__ID__") }}'.replace('__ID__', id);
             document.getElementById('guaranteeCaseMethod').value = 'PUT';
             document.getElementById('guaranteeCase').value = caseName;
             document.getElementById('guaranteeCaseDefinition').value = definition || '';
+            document.getElementById('guaranteeCaseColour').value = colour || '#10B981';
+            document.getElementById('guaranteeCaseColourText').value = colour || '#10B981';
             document.getElementById('guaranteeCaseModal').classList.remove('hidden');
             document.getElementById('guaranteeCaseModal').classList.add('flex');
         }
@@ -239,6 +267,15 @@
                 form.submit();
             }
         }
+
+        // Color picker event listeners
+        document.getElementById('embassyColour').addEventListener('input', function(e) {
+            document.getElementById('embassyColourText').value = e.target.value;
+        });
+
+        document.getElementById('guaranteeCaseColour').addEventListener('input', function(e) {
+            document.getElementById('guaranteeCaseColourText').value = e.target.value;
+        });
 
         // Close modals when clicking outside
         document.getElementById('embassyModal').addEventListener('click', function(e) {

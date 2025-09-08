@@ -38,12 +38,14 @@ class SettingsController extends Controller
     public function updateEmbassy(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'   => 'required|string|max:255',
+            'colour' => 'nullable|string|max:255',
         ]);
 
         $embassy = Embassy::findOrFail($id);
         $embassy->update([
-            'name' => $request->name,
+            'name'   => $request->name,
+            'colour' => $request->colour,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Embassy updated successfully!');
@@ -79,12 +81,14 @@ class SettingsController extends Controller
         $request->validate([
             'case'       => 'required|string|max:255',
             'definition' => 'nullable|string|max:255',
+            'colour'     => 'nullable|string|max:255',
         ]);
 
         $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->update([
             'case'       => $request->case,
             'definition' => $request->definition,
+            'colour'     => $request->colour,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case updated successfully!');

@@ -551,7 +551,8 @@ class PatientController extends Controller
             }
 
             $file     = $request->file('file');
-            $filename = 'main_guarantee_extension_' . time() . '_' . $file->getClientOriginalName();
+            $filename = 'main_guarantee_' . time() . '_extension_' . $request->file('file')->getClientOriginalName();
+
             $file->move($directory, $filename);
 
             // Update guarantee

@@ -32,6 +32,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Embassy Ref</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Cover Period</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Valid</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Files</th>
                         @if (auth()->user()->role === "admin")
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
@@ -67,20 +68,22 @@
                                             <i class="fas fa-clock mr-2 text-slate-500"></i>
                                             <span>{{ $guarantee->coverPeriod() }}</span>
                                         </div>
-                                        @if ($guarantee->isInCoverPeriod())
-                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Active
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                                <i class="fas fa-times-circle mr-1"></i>
-                                                Expired
-                                            </span>
-                                        @endif
                                     </div>
                                 @else
                                     <span class="italic text-slate-400">N/A</span>
+                                @endif
+                            </td>
+                            <td class="w-0 px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                @if ($guarantee->isInCoverPeriod())
+                                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1.5 text-xs font-medium text-green-800">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Valid
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1.5 text-xs font-medium text-red-800">
+                                        <i class="fas fa-times-circle mr-1"></i>
+                                        Expired
+                                    </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
@@ -89,7 +92,7 @@
                                         @foreach ($guarantee->file as $file)
                                             <button class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50" onclick="viewFile('{{ $patient->hn }}', '{{ $file }}')">
                                                 <i class="fas fa-file-alt mr-1.5"></i>
-                                                {{ basename($file) }}
+                                                {{ substr(basename($file), 32) }}
                                             </button>
                                         @endforeach
                                     </div>
@@ -98,12 +101,12 @@
                                 @endif
                             </td>
                             @if (auth()->user()->role === "admin")
-                                <td class="px-6 py-4">
+                                <td class="w-0 px-6 py-4">
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</span>
                                         <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50" onclick="addDetailToGuarantee({{ $guarantee->id }})" title="Add Detail">
                                             <i class="fas fa-plus mr-1"></i>
-                                            Add Detail
+                                            Add
                                         </button>
                                     </div>
                                 </td>
@@ -140,7 +143,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex space-x-3">
+                                    <div class="flex justify-end space-x-3">
                                         @if ($item->amount)
                                             <div class="flex items-center">
                                                 <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ $item->amount }}</span>
@@ -154,7 +157,7 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4" colspan="2">
                                     @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
                                         <div class="text-sm text-slate-900 dark:text-white">
                                             {!! $item->specificDate() !!}
