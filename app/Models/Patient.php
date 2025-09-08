@@ -30,7 +30,7 @@ class Patient extends Model
     // Relationships
     public function notes()
     {
-        return $this->hasMany(PatientNote::class, 'hn', 'hn');
+        return $this->hasMany(PatientNote::class, 'hn', 'hn')->orderBy('created_at', 'desc');
     }
 
     public function passports()

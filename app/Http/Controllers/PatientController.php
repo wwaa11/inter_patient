@@ -110,7 +110,7 @@ class PatientController extends Controller
                 $guarantee->status_text  = 'Valid';
             } else {
                 $guarantee->status_class = 'bg-red-100 text-red-800';
-                $guarantee->status_text  = 'Expired';
+                $guarantee->status_text  = 'Invalid';
             }
         });
 

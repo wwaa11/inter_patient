@@ -143,9 +143,9 @@
                     @endif
                 </div>
                 @if ($patient->notes && $patient->notes->count() > 0)
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-                        @foreach ($patient->notes->sortByDesc("created_at") as $note)
-                            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3" id="notesContainer">
+                        @foreach ($patient->notes->sortByDesc("created_at") as $index => $note)
+                            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-600 dark:bg-slate-800 {{ $index >= 3 ? 'hidden' : '' }} note-item" data-index="{{ $index }}">
                                 <div class="flex items-start gap-3">
                                     <div class="flex-shrink-0">
                                         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
@@ -174,6 +174,14 @@
                             </div>
                         @endforeach
                     </div>
+                    @if ($patient->notes->count() > 3)
+                        <div class="mt-4 text-center">
+                            <button id="viewMoreNotesBtn" class="inline-flex items-center rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600" onclick="toggleNotes()">
+                                <i class="fa-solid fa-chevron-down mr-2"></i>
+                                <span id="viewMoreText">View More ({{ $patient->notes->count() - 3 }} more)</span>
+                            </button>
+                        </div>
+                    @endif
                 @else
                     <p class="text-sm text-slate-500 dark:text-slate-400">No notes available for this patient.</p>
                 @endif
@@ -897,6 +905,48 @@
                 }
             } else {
                 preview.innerHTML = '';
+            }
+        }
+
+        function toggleNotes() {
+            const hiddenNotes = document.querySelectorAll('.note-item[data-index]');
+            const viewMoreBtn = document.getElementById('viewMoreNotesBtn');
+            const viewMoreText = document.getElementById('viewMoreText');
+            const icon = viewMoreBtn.querySelector('i');
+            
+            let isExpanded = false;
+            
+            // Check if notes are currently expanded
+            hiddenNotes.forEach(note => {
+                const index = parseInt(note.getAttribute('data-index'));
+                if (index >= 3 && !note.classList.contains('hidden')) {
+                    isExpanded = true;
+                }
+            });
+            
+            if (isExpanded) {
+                // Hide notes beyond the first 3
+                hiddenNotes.forEach(note => {
+                    const index = parseInt(note.getAttribute('data-index'));
+                    if (index >= 3) {
+                        note.classList.add('hidden');
+                    }
+                });
+                
+                // Update button text and icon
+                const totalNotes = {{ $patient->notes->count() }};
+                const hiddenCount = totalNotes - 3;
+                viewMoreText.textContent = `View More (${hiddenCount} more)`;
+                icon.className = 'fa-solid fa-chevron-down mr-2';
+            } else {
+                // Show all notes
+                hiddenNotes.forEach(note => {
+                    note.classList.remove('hidden');
+                });
+                
+                // Update button text and icon
+                viewMoreText.textContent = 'View Less';
+                icon.className = 'fa-solid fa-chevron-up mr-2';
             }
         }
 

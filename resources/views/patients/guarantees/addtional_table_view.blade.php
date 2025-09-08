@@ -32,10 +32,10 @@
                 <thead class="bg-slate-50 dark:bg-slate-800">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Embassy Ref</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Cover Period</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Valid</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Embassy Ref/MB</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Files</th>
                         @if (auth()->user()->role === "admin")
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
@@ -52,18 +52,6 @@
                                     {{ $guarantee->additionalType->name }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                <div class="flex items-center">
-                                    <i class="fas fa-building mr-2 text-slate-500"></i>
-                                    {{ $guarantee->embassy_ref }}/{{ $guarantee->mb }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-plus mr-2 text-slate-500"></i>
-                                    {{ $guarantee->issueDate() }}
-                                </div>
-                            </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
                                 @if (strtolower($guarantee->coverPeriod()) !== "n/a")
                                     <div class="flex items-center justify-between">
@@ -76,7 +64,7 @@
                                     <span class="italic text-slate-400">N/A</span>
                                 @endif
                             </td>
-                            <td class="w-0 px-6 py-4 text-sm text-slate-900 dark:text-white">
+                            <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
                                 @if ($guarantee->isInCoverPeriod())
                                     <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1.5 text-xs font-medium text-green-800">
                                         <i class="fas fa-check-circle mr-1"></i>
@@ -85,10 +73,23 @@
                                 @else
                                     <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1.5 text-xs font-medium text-red-800">
                                         <i class="fas fa-times-circle mr-1"></i>
-                                        Expired
+                                        Invalid
                                     </span>
                                 @endif
                             </td>
+                            <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                                <div class="flex items-center">
+                                    <i class="fas fa-building mr-2 text-slate-500"></i>
+                                    {{ $guarantee->embassy_ref }}/{{ $guarantee->mb }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-plus mr-2 text-slate-500"></i>
+                                    {{ $guarantee->issueDate() }}
+                                </div>
+                            </td>
+
                             <td class="px-6 py-4">
                                 @if ($guarantee->file && count($guarantee->file) > 0)
                                     <div class="flex flex-wrap gap-2">
@@ -107,7 +108,7 @@
                                 <td class="w-0 px-6 py-4">
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</span>
-                                        <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50" onclick="addDetailToGuarantee({{ $guarantee->id }})" title="Add Detail">
+                                        <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900" onclick="addDetailToGuarantee({{ $guarantee->id }})" title="Add Detail">
                                             <i class="fas fa-plus mr-1"></i>
                                             Add
                                         </button>
@@ -126,13 +127,21 @@
                                             {{ $item->guaranteeCase->name }}
                                         </span>
                                     @else
-                                        <span class="text-sm text-slate-400">No case</span>
+                                        <span class="inline-flex items-center rounded-md bg-gray-700 px-2.5 py-1 text-xs font-semibold text-white">N/A</span>
                                     @endif
                                 </td>
+
                                 <td class="px-6 py-4">
+                                    @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
+                                        <div class="text-sm text-slate-900 dark:text-white">
+                                            {!! $item->specificDate() !!}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4" colspan="2">
                                     @if ($item->details)
                                         <div class="mb-3 max-w-xs">
-                                            <p class="truncate text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">
+                                            <p class="text-wrap text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">
                                                 <i class="fas fa-info-circle mr-1"></i>
                                                 {{ $item->details }}
                                             </p>
@@ -149,35 +158,30 @@
                                     <div class="flex justify-end space-x-3">
                                         @if ($item->amount)
                                             <div class="flex items-center">
-                                                <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ $item->amount }}</span>
-                                            </div>
-                                        @endif
-                                        @if ($item->price)
-                                            <div class="flex items-center">
-                                                <i class="fas fa-dollar-sign mr-1 text-blue-600"></i>
-                                                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ $item->price }}</span>
+                                                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ $item->amount }}</span>
                                             </div>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4" colspan="2">
-                                    @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
-                                        <div class="text-sm text-slate-900 dark:text-white">
-                                            {!! $item->specificDate() !!}
-                                        </div>
-                                    @endif
-                                </td>
                                 <td class="px-6 py-4">
+                                    <div class="flex justify-end space-x-3">
 
+                                        @if ($item->price)
+                                            <div class="flex items-center">
+                                                <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ $item->price }}</span>
+                                                <i class="fas fa-dollar-sign ml-1 text-emerald-600"></i>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
                                 @if (auth()->user()->role === "admin")
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
-                                            <button class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50" onclick="editAdditionalDetail({{ $item->id }})">
+                                            <button class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900" onclick="editAdditionalDetail({{ $item->id }})">
                                                 <i class="fas fa-edit mr-1"></i>
                                                 Edit
                                             </button>
-                                            <button class="inline-flex items-center rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors duration-200 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50" onclick="deleteAdditionalDetail({{ $item->id }})">
+                                            <button class="inline-flex items-center rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors duration-200 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900" onclick="deleteAdditionalDetail({{ $item->id }})">
                                                 <i class="fas fa-trash-alt mr-1"></i>
                                                 Delete
                                             </button>

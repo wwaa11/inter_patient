@@ -1,22 +1,22 @@
 @extends("layouts.app")
 
 @section("content")
-    <div class="min-h-screen bg-gray-50 py-6">
+    <div class="min-h-screen bg-gray-50 py-6 dark:bg-slate-900">
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-6 rounded-lg bg-white shadow-sm">
-                <div class="border-b border-gray-200 px-6 py-4">
+            <div class="mb-6 rounded-lg bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div class="border-b border-gray-200 px-6 py-4 dark:border-slate-700">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <a class="mr-4 text-gray-500 hover:text-gray-700" href="{{ route("patients.view", $patient->hn) }}">
+                            <a class="mr-4 text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300" href="{{ route("patients.view", $patient->hn) }}">
                                 <i class="fas fa-arrow-left text-lg"></i>
                             </a>
                             <div>
-                                <h1 class="flex items-center text-2xl font-bold text-gray-900">
+                                <h1 class="flex items-center text-2xl font-bold text-gray-900 dark:text-slate-100">
                                     <i class="fas fa-edit mr-3 text-blue-600"></i>
                                     Edit Additional Guarantee
                                 </h1>
-                                <p class="mt-1 text-sm text-gray-600">
+                                <p class="mt-1 text-sm text-gray-600 dark:text-slate-400">
                                     Patient: <span class="font-medium">{{ $patient->name }}</span> (HN: {{ $patient->hn }})
                                 </p>
                             </div>
@@ -49,20 +49,20 @@
                 @csrf
 
                 {{-- Information Content --}}
-                <div class="mb-6 rounded-lg bg-white shadow-sm">
+                <div class="mb-6 rounded-lg bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="space-y-6">
-                        <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="text-lg font-semibold text-gray-900">Guarantee Information ( Update all guarantee that use the same information)</h2>
+                        <div class="border-b border-gray-200 px-6 py-4 dark:border-slate-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-slate-100">Guarantee Information ( Update all guarantee that use the same information)</h2>
                         </div>
 
                         <div class="grid grid-cols-1 gap-6 px-6 pb-4 md:grid-cols-3">
 
                             {{-- Type --}}
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="type">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="type">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Type *
                                 </label>
-                                <select class="@error("type") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="type" name="type" required>
+                                <select class="@error("type") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="type" name="type" required>
                                     @foreach ($additionalTypes as $type)
                                         <option value="{{ $type->id }}" {{ old("type", $header->name) == $type->id ? "selected" : "" }}>
                                             {{ $type->name }}
@@ -76,10 +76,10 @@
 
                             <!-- Embassy Reference -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="embassy_ref">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="embassy_ref">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference *
                                 </label>
-                                <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="embassy_ref" type="text" name="embassy_ref" required placeholder="Enter embassy reference" value="{{ old("embassy_ref", $header->embassy_ref) }}">
+                                <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="embassy_ref" type="text" name="embassy_ref" required placeholder="Enter embassy reference" value="{{ old("embassy_ref", $header->embassy_ref) }}">
                                 @error("embassy_ref")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -87,10 +87,10 @@
 
                             <!-- MB -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="mb">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="mb">
                                     <i class="fas fa-hashtag mr-2 text-purple-500"></i>MB (Optional)
                                 </label>
-                                <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb", $header->mb) }}">
+                                <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb", $header->mb) }}">
                                 @error("mb")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -98,10 +98,10 @@
 
                             <!-- Issue Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="issue_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="issue_date">
                                     <i class="fas fa-calendar-plus mr-2 text-purple-500"></i>Issue Date *
                                 </label>
-                                <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date", $header->issue_date) }}">
+                                <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date", $header->issue_date) }}">
                                 @error("issue_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -109,10 +109,10 @@
 
                             <!-- Cover Start Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_start_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="cover_start_date">
                                     <i class="fas fa-calendar-check mr-2 text-green-500"></i>Cover Start Date (Optional)
                                 </label>
-                                <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_start_date" type="date" name="cover_start_date" value="{{ $header->cover_start_date == null ? "" : date("Y-m-d", strtotime($header->cover_start_date)) }}">
+                                <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="cover_start_date" type="date" name="cover_start_date" value="{{ $header->cover_start_date == null ? "" : date("Y-m-d", strtotime($header->cover_start_date)) }}">
                                 @error("cover_start_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -120,10 +120,10 @@
 
                             <!-- Cover End Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_end_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="cover_end_date">
                                     <i class="fas fa-calendar-times mr-2 text-red-500"></i>Cover End Date (Optional)
                                 </label>
-                                <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_end_date" type="date" name="cover_end_date" value="{{ $header->cover_end_date == null ? "" : date("Y-m-d", strtotime($header->cover_end_date)) }}">
+                                <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="cover_end_date" type="date" name="cover_end_date" value="{{ $header->cover_end_date == null ? "" : date("Y-m-d", strtotime($header->cover_end_date)) }}">
                                 @error("cover_end_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -131,10 +131,10 @@
 
                             <!-- Total Price -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="total_price">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="total_price">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Total Price (Optional)
                                 </label>
-                                <input class="@error("total_price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="total_price" type="text" name="total_price" placeholder="Enter Total Price" value="{{ old("total_price", $header->total_price) }}">
+                                <input class="@error("total_price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="total_price" type="text" name="total_price" placeholder="Enter Total Price" value="{{ old("total_price", $header->total_price) }}">
                                 @error("total_price")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -143,15 +143,15 @@
                             <!-- Current Files Display -->
                             @if ($header->file && count($header->file) > 0)
                                 <div class="md:col-span-3">
-                                    <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                    <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
                                         <i class="fas fa-paperclip mr-2 text-blue-500"></i>Current Files
                                     </label>
                                     <div class="space-y-2">
                                         @foreach ($header->file as $index => $file)
-                                            <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3" id="file-item-{{ $index }}">
+                                            <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-700" id="file-item-{{ $index }}">
                                                 <div class="flex items-center">
-                                                    <i class="fas fa-file mr-2 text-gray-500"></i>
-                                                    <span class="text-sm text-gray-700">{{ $file }}</span>
+                                                    <i class="fas fa-file mr-2 text-gray-500 dark:text-slate-300"></i>
+                                                    <span class="text-sm text-gray-700 dark:text-slate-300">{{ $file }}</span>
                                                 </div>
                                                 <div class="flex items-center space-x-2">
                                                     <a class="text-blue-600 hover:text-blue-800" href="{{ asset("hn/" . $patient->hn . "/" . $file) }}" target="_blank">
@@ -169,16 +169,16 @@
 
                             <!-- File Upload -->
                             <div class="md:col-span-3">
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="guarantee_file">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="guarantee_file">
                                     <i class="fas fa-cloud-upload-alt mr-2 text-orange-500"></i>Upload New File (Optional)
                                 </label>
-                                <div class="relative">
-                                    <input class="@error("file") border-red-500 @enderror w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 transition-all file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500" id="guarantee_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" onchange="previewFile(this)">
+                                <div class="relative dark:bg-slate-700 dark:text-slate-300">
+                                    <input class="@error("file") border-red-500 @enderror w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 transition-all file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500 dark:border-slate-600" id="guarantee_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" onchange="previewFile(this)">
                                     @error("file")
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <p class="mt-2 text-xs text-gray-500">
+                                <p class="mt-2 text-xs text-gray-500 dark:text-slate-300">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Accepted formats: PDF, JPG, JPEG, PNG (Max: 10MB)
                                 </p>
@@ -189,130 +189,139 @@
                 </div>
 
                 <!-- Coverage Area/Specialty Content -->
-                <div class="flex flex-col gap-6 lg:flex-row">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <!-- Left Panel - Form -->
-                    <div class="rounded-lg bg-white shadow-sm">
-                        <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="text-lg font-semibold text-gray-900">Coverage Area / Detail</h2>
+                    <div class="col-span-1 rounded-lg bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div class="border-b border-gray-200 px-6 py-4 dark:border-slate-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-slate-100">Coverage Area / Detail</h2>
                         </div>
                         <div class="space-y-6 p-6">
-
                             <!-- Detail Entry -->
-                            <div class="border-t border-gray-200 pt-6">
-                                <div class="mb-4">
-                                    <h3 class="text-md font-semibold text-gray-900">
-                                        <i class="fas fa-edit mr-2 text-green-500"></i>Detail Information
-                                    </h3>
-                                </div>
+                            <div class="mb-4">
+                                <h3 class="text-md font-semibold text-gray-900 dark:text-slate-100">
+                                    <i class="fas fa-edit mr-2 text-green-500"></i>Detail Information
+                                </h3>
+                            </div>
 
-                                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                                    <div class="flex flex-col gap-4">
-                                        <!-- Select Case -->
-                                        <div>
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
-                                            </label>
-                                            <select class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="additional_case">
-                                                <option value="">Please select</option>
-                                                @if (isset($additionalCases))
-                                                    @foreach ($additionalCases as $case)
-                                                        <option value="{{ $case->id }}" {{ old("additional_case", $detail->case) == $case->id ? "selected" : "" }}>
-                                                            {{ $case->name }}
-                                                        </option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-
-                                        <!-- Specific Date -->
-                                        <div>
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
-                                            </label>
-                                            <div class="space-y-3">
-                                                @php
-                                                    $hasDateRange = !empty($detail->start_date) && !empty($detail->end_date);
-                                                    $hasSpecificDates = !empty($detail->specific_date) && is_array($detail->specific_date);
-                                                @endphp
-
-                                                <div class="flex items-center">
-                                                    <input class="mr-2" id="dateRange" type="checkbox" onchange="toggleDateRange(this)" {{ $hasDateRange ? "checked" : "" }}>
-                                                    <label class="text-sm text-gray-600" for="dateRange">Use date range</label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-slate-600 dark:bg-slate-700">
+                                <div class="flex flex-col gap-4">
+                                    <!-- Select Case -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
+                                        </label>
+                                        <div class="relative">
+                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" onkeydown="return false" value="{{ $additionalCases->where("id", old("additional_case", $detail->case))->first()->name ?? "" }}">
+                                            <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 dark:text-slate-400"></i>
+                                            <input class="case-value" type="hidden" name="additional_case" value="{{ old("additional_case", $detail->case) }}">
+                                            <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700">
+                                                <div class="border-b p-2 dark:border-slate-600">
+                                                    <input class="case-search w-full rounded border border-gray-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" placeholder="Type to search..." oninput="filterCaseOptions(this)">
                                                 </div>
-
-                                                <div class="date-single {{ $hasDateRange ? "hidden" : "" }}">
-                                                    <div class="space-y-2">
-                                                        <div class="flex items-center justify-between">
-                                                            <span class="text-sm font-medium text-gray-700">Dates</span>
-                                                            <button class="text-sm font-medium text-green-600 hover:text-green-700" type="button" onclick="addDateEntry()">
-                                                                <i class="fas fa-plus mr-1"></i>Add Date
-                                                            </button>
-                                                        </div>
-                                                        <div class="date-entries" id="dateEntries">
-                                                            @if ($hasSpecificDates)
-                                                                @foreach ($detail->specific_date as $index => $date)
-                                                                    <div class="date-entry mb-2 flex items-center space-x-2">
-                                                                        <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="specific_dates[]" value="{{ $date }}">
-                                                                        <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" {{ $index === 0 ? "style=display:none;" : "" }}>
-                                                                            <i class="fas fa-trash text-sm"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                @endforeach
-                                                            @else
-                                                                <div class="date-entry mb-2 flex items-center space-x-2">
-                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="specific_dates[]" value="{{ old("specific_dates.0") }}">
-                                                                    <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
-                                                                        <i class="fas fa-trash text-sm"></i>
-                                                                    </button>
-                                                                </div>
-                                                            @endif
-                                                        </div>
+                                                <div class="case-options">
+                                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:text-slate-100 dark:hover:bg-slate-600" data-value="" data-name="" onclick="selectCase(this)">
+                                                        Please select
                                                     </div>
-                                                </div>
-
-                                                <div class="date-range {{ !$hasDateRange ? "hidden" : "" }}">
-                                                    <div class="grid grid-cols-2 gap-2">
-                                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="date_range_start" placeholder="Start date" value="{{ old("date_range_start", $detail->start_date) }}">
-                                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="date_range_end" placeholder="End date" value="{{ old("date_range_end", $detail->end_date) }}">
-                                                    </div>
+                                                    @if (isset($additionalCases))
+                                                        @foreach ($additionalCases as $case)
+                                                            <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:text-slate-100 dark:hover:bg-slate-600" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this)">
+                                                                {{ $case->name }}
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Detail -->
-                                        <div class="md:col-span-2">
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
-                                            </label>
-                                            <textarea class="@error("detail") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="detail" rows="3" required placeholder="Enter detail information...">{{ old("detail", $detail->details) }}</textarea>
-                                            @error("detail")
-                                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                            @enderror
-                                        </div>
+                                    <!-- Specific Date -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
+                                        </label>
+                                        <div class="space-y-3">
+                                            @php
+                                                $hasDateRange = !empty($detail->start_date) && !empty($detail->end_date);
+                                                $hasSpecificDates = !empty($detail->specific_date) && is_array($detail->specific_date);
+                                            @endphp
 
-                                        <!-- Definition -->
-                                        <div>
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
-                                            </label>
-                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="definition" placeholder="Enter definition..." value="{{ old("definition", $detail->definition) }}">
-                                        </div>
+                                            <div class="flex items-center">
+                                                <input class="mr-2" id="dateRange" type="checkbox" onchange="toggleDateRange(this)" {{ $hasDateRange ? "checked" : "" }}>
+                                                <label class="text-sm text-gray-600 dark:text-slate-400" for="dateRange">Use date range</label>
+                                            </div>
 
-                                        <!-- Amount -->
-                                        <div>
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
-                                            </label>
-                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="amount" placeholder="Enter amount..., Ex. 15 tabs" value="{{ old("amount", $detail->amount) }}">
-                                        </div>
+                                            <div class="date-single {{ $hasDateRange ? "hidden" : "" }}">
+                                                <div class="space-y-2">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-slate-300">Dates</span>
+                                                        <button class="text-sm font-medium text-green-600 hover:text-green-700" type="button" onclick="addDateEntry()">
+                                                            <i class="fas fa-plus mr-1"></i>Add Date
+                                                        </button>
+                                                    </div>
+                                                    <div class="date-entries" id="dateEntries">
+                                                        @if ($hasSpecificDates)
+                                                            @foreach ($detail->specific_date as $index => $date)
+                                                                <div class="date-entry mb-2 flex items-center space-x-2">
+                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="specific_dates[]" value="{{ $date }}">
+                                                                    <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" {{ $index === 0 ? "style=display:none;" : "" }}>
+                                                                        <i class="fas fa-trash text-sm"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endforeach
+                                                        @else
+                                                            <div class="date-entry mb-2 flex items-center space-x-2">
+                                                                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="specific_dates[]" value="{{ old("specific_dates.0") }}">
+                                                                <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
+                                                                    <i class="fas fa-trash text-sm"></i>
+                                                                </button>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                        <!-- Price -->
-                                        <div>
-                                            <label class="mb-2 block text-sm font-semibold text-gray-700">
-                                                <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
-                                            </label>
-                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="number" step="0.01" name="price" placeholder="Enter price..." value="{{ old("price", $detail->price) }}">
+                                            <div class="date-range {{ !$hasDateRange ? "hidden" : "" }}">
+                                                <div class="grid grid-cols-2 gap-2">
+                                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="date_range_start" placeholder="Start date" value="{{ old("date_range_start", $detail->start_date) }}">
+                                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" name="date_range_end" placeholder="End date" value="{{ old("date_range_end", $detail->end_date) }}">
+                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Detail -->
+                                    <div class="md:col-span-2">
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
+                                        </label>
+                                        <textarea class="@error("detail") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" name="detail" rows="3" required placeholder="Enter detail information...">{{ old("detail", $detail->details) }}</textarea>
+                                        @error("detail")
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Definition -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
+                                        </label>
+                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="definition" placeholder="Enter definition..." value="{{ old("definition", $detail->definition) }}">
+                                    </div>
+
+                                    <!-- Amount -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
+                                        </label>
+                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="text" name="amount" placeholder="Enter amount..., Ex. 15 tabs" value="{{ old("amount", $detail->amount) }}">
+                                    </div>
+
+                                    <!-- Price -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
+                                        </label>
+                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="number" step="0.01" name="price" placeholder="Enter price..." value="{{ old("price", $detail->price) }}">
                                     </div>
                                 </div>
                             </div>
@@ -320,14 +329,14 @@
                     </div>
 
                     <!-- Right Panel - File Preview -->
-                    <div class="relative min-h-[800px] flex-1 rounded-lg bg-white shadow-sm">
-                        <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="flex items-center text-lg font-semibold text-gray-900">
+                    <div class="relative grid min-h-[800px] rounded-lg bg-white shadow-sm md:col-span-2 dark:border-slate-700 dark:bg-slate-800">
+                        <div class="border-b border-gray-200 px-6 py-4 dark:border-slate-700">
+                            <h2 class="flex items-center text-lg font-semibold text-gray-900 dark:text-slate-100">
                                 <i class="fas fa-eye mr-2 text-blue-500"></i>File Preview
                             </h2>
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 m-auto p-6">
-                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6" id="filePreview">
+                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:border-slate-600 dark:bg-slate-700" id="filePreview">
                                 @if ($header->file && count($header->file) > 0)
                                     @foreach ($header->file as $file)
                                         @php
@@ -340,8 +349,8 @@
                                         @else
                                             <div class="text-center">
                                                 <i class="fas fa-file mb-3 text-4xl text-gray-400"></i>
-                                                <p class="font-medium text-gray-700">{{ basename($file) }}</p>
-                                                <p class="text-sm text-gray-500">File available for download</p>
+                                                <p class="font-medium text-gray-700 dark:text-slate-300">{{ basename($file) }}</p>
+                                                <p class="text-sm text-gray-500 dark:text-slate-400">File available for download</p>
                                                 <a class="mt-2 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700" href="{{ asset("hn/" . $patient->hn . "/" . $file) }}" target="_blank">
                                                     <i class="fas fa-download mr-2"></i>Download
                                                 </a>
@@ -351,8 +360,8 @@
                                 @else
                                     <div class="text-center">
                                         <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
-                                        <p class="text-gray-500">No file selected</p>
-                                        <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
+                                        <p class="text-gray-500 dark:text-slate-400">No file selected</p>
+                                        <p class="mt-1 text-sm text-gray-400 dark:text-slate-500">Upload a file to see preview</p>
                                     </div>
                                 @endif
                             </div>
@@ -361,11 +370,11 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6">
-                    <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="{{ route("patients.view", $patient->hn) }}">
+                <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6 dark:border-slate-700">
+                    <a class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600" href="{{ route("patients.view", $patient->hn) }}">
                         <i class="fas fa-times mr-2"></i>Cancel
                     </a>
-                    <button class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800" type="submit">
+                    <button class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800" type="submit">
                         <i class="fas fa-save mr-2"></i>Update Guarantee
                     </button>
                 </div>
@@ -394,7 +403,7 @@
             const newEntry = document.createElement('div');
             newEntry.className = 'date-entry mb-2 flex items-center space-x-2';
             newEntry.innerHTML = `
-                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="specific_dates[]">
+                <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" type="date" name="specific_dates[]">
                 <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)">
                     <i class="fas fa-trash text-sm"></i>
                 </button>
@@ -540,5 +549,61 @@
                     `;
             }
         }
+
+        // Searchable dropdown functionality
+        function toggleCaseDropdown(input) {
+            const dropdown = input.parentElement.querySelector('.case-dropdown');
+            const allDropdowns = document.querySelectorAll('.case-dropdown');
+
+            // Close all other dropdowns
+            allDropdowns.forEach(dd => {
+                if (dd !== dropdown) {
+                    dd.classList.add('hidden');
+                }
+            });
+
+            dropdown.classList.toggle('hidden');
+
+            if (!dropdown.classList.contains('hidden')) {
+                const searchInput = dropdown.querySelector('.case-search');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            }
+        }
+
+        function selectCase(option) {
+            const dropdown = option.closest('.case-dropdown');
+            const container = dropdown.parentElement;
+            const displayInput = container.querySelector('input[type="text"]');
+            const hiddenInput = container.querySelector('.case-value');
+
+            displayInput.value = option.dataset.name;
+            hiddenInput.value = option.dataset.value;
+            dropdown.classList.add('hidden');
+        }
+
+        function filterCaseOptions(searchInput) {
+            const searchTerm = searchInput.value.toLowerCase();
+            const options = searchInput.closest('.case-dropdown').querySelectorAll('.case-option');
+
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.case-dropdown').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        });
     </script>
 @endpush

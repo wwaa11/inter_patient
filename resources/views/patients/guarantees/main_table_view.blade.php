@@ -124,11 +124,11 @@
                             @if (auth()->user()->role === "admin")
                                 <td class="px-3 py-4">
                                     <div class="flex space-x-2">
-                                        <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->embassy_ref }}')" title="Extend Guarantee">
+                                        <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->embassy_ref }}')" title="Extend Guarantee">
                                             <i class="fas fa-calendar-plus mr-1"></i>
                                             Extend
                                         </button>
-                                        <button class="inline-flex items-center rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors duration-200 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50" onclick="deleteMainGuarantee({{ $guarantee->id }})" title="Delete Guarantee">
+                                        <button class="inline-flex items-center rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors duration-200 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900" onclick="deleteMainGuarantee({{ $guarantee->id }})" title="Delete Guarantee">
                                             <i class="fas fa-trash-alt mr-1"></i>
                                             Delete
                                         </button>
