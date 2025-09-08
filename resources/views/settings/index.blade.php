@@ -44,10 +44,10 @@
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $embassy->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editEmbassy({{ $embassy->id }}, '{{ $embassy->name }}', '{{ $embassy->colour }}')">
+                                        <button class="mr-2 text-blue-600 dark:text-blue-400 dark:hover:text-blue-500" onclick="editEmbassy({{ $embassy->id }}, '{{ $embassy->name }}', '{{ $embassy->colour }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
-                                        <button class="text-red-600 hover:text-red-900" onclick="deleteEmbassy({{ $embassy->id }})">
+                                        <button class="text-red-500 hover:text-red-900 dark:hover:text-red-600" onclick="deleteEmbassy({{ $embassy->id }})">
                                             <i class="fa-solid fa-trash"></i> Delete
                                         </button>
                                     </td>
@@ -96,10 +96,10 @@
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->definition ?? "N/A" }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $case->created_at->format("d M Y") }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <button class="mr-2 text-blue-600 hover:text-blue-900" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->name }}', '{{ $case->definition }}', '{{ $case->colour }}')">
+                                        <button class="mr-2 text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500" onclick="editGuaranteeCase({{ $case->id }}, '{{ $case->name }}', '{{ $case->definition }}', '{{ $case->colour }}')">
                                             <i class="fa-solid fa-edit"></i> Edit
                                         </button>
-                                        <button class="text-red-600 hover:text-red-900" onclick="deleteGuaranteeCase({{ $case->id }})">
+                                        <button class="text-red-500 hover:text-red-900 dark:hover:text-red-600" onclick="deleteGuaranteeCase({{ $case->id }})">
                                             <i class="fa-solid fa-trash"></i> Delete
                                         </button>
                                     </td>
@@ -117,71 +117,71 @@
     </div>
 
     <!-- Embassy Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50" id="embassyModal">
-        <div class="w-full max-w-md rounded-lg bg-white p-6 dark:bg-slate-800">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="embassyModal">
+        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl dark:bg-slate-700">
             <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-white" id="embassyModalTitle">Add Embassy</h3>
             <form id="embassyForm" method="POST">
                 @csrf
                 <input id="embassyMethod" type="hidden" name="_method" value="">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="embassyName">Embassy Name</label>
-                    <input class="@error("name") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="embassyName" type="text" name="name" value="{{ old("name") }}" required>
+                    <input class="@error("name") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-200 dark:bg-slate-500 dark:text-white" id="embassyName" type="text" name="name" value="{{ old("name") }}" required>
                     @error("name")
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="mb-4">
+                <div class="mb-4" id="embassyColourContainer">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="embassyColour">Color</label>
                     <div class="mt-1 flex items-center space-x-3">
                         <input class="h-10 w-16 rounded-md border border-slate-300 dark:border-slate-600" id="embassyColour" type="color" name="colour" value="#3B82F6">
-                        <input class="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="embassyColourText" type="text" placeholder="#3B82F6" readonly>
+                        <input class="flex-1 rounded-md px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-500 dark:text-white" id="embassyColourText" type="text" placeholder="#3B82F6" readonly>
                     </div>
                     @error("colour")
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeEmbassyModal()">Cancel</button>
-                    <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="submit">Save</button>
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700" type="button" onclick="closeEmbassyModal()">Cancel</button>
+                    <button class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:hover:bg-blue-700" type="submit">Save</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Guarantee Case Modal -->
-    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50" id="guaranteeCaseModal">
-        <div class="w-full max-w-md rounded-lg bg-white p-6 dark:bg-slate-800">
+    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-white p-4 dark:bg-slate-800" id="guaranteeCaseModal">
+        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl dark:bg-slate-700">
             <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-white" id="guaranteeCaseModalTitle">Add Guarantee Case</h3>
             <form id="guaranteeCaseForm" method="POST">
                 @csrf
                 <input id="guaranteeCaseMethod" type="hidden" name="_method" value="">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCase">Case</label>
-                    <input class="@error("case") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCase" type="text" name="case" value="{{ old("case") }}" required>
+                    <input class="@error("case") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-200 dark:bg-slate-500 dark:text-white" id="guaranteeCase" type="text" name="case" value="{{ old("case") }}" required>
                     @error("case")
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCaseDefinition">Definition (Optional)</label>
-                    <input class="@error("definition") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCaseDefinition" type="text" name="definition" value="{{ old("definition") }}">
+                    <input class="@error("definition") border-red-300 @else border-slate-300 @enderror mt-1 block w-full rounded-md px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-200 dark:bg-slate-500 dark:text-white" id="guaranteeCaseDefinition" type="text" name="definition" value="{{ old("definition") }}">
                     @error("definition")
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="mb-4">
+                <div class="mb-4" id="guaranteeCaseColourContainer">
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="guaranteeCaseColour">Color</label>
                     <div class="mt-1 flex items-center space-x-3">
                         <input class="h-10 w-16 rounded-md border border-slate-300 dark:border-slate-600" id="guaranteeCaseColour" type="color" name="colour" value="#10B981">
-                        <input class="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="guaranteeCaseColourText" type="text" placeholder="#10B981" readonly>
+                        <input class="flex-1 rounded-md px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-500 dark:text-white" id="guaranteeCaseColourText" type="text" placeholder="#10B981" readonly>
                     </div>
                     @error("colour")
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button class="rounded-lg bg-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-400" type="button" onclick="closeGuaranteeCaseModal()">Cancel</button>
-                    <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="submit">Save</button>
+                    <button class="rounded-lg bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700" type="button" onclick="closeGuaranteeCaseModal()">Cancel</button>
+                    <button class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:hover:bg-blue-700" type="submit">Save</button>
                 </div>
             </form>
         </div>
@@ -194,8 +194,7 @@
             document.getElementById('embassyForm').action = '{{ route("settings.embassies.store") }}';
             document.getElementById('embassyMethod').value = '';
             document.getElementById('embassyName').value = '';
-            document.getElementById('embassyColour').value = '#3B82F6';
-            document.getElementById('embassyColourText').value = '#3B82F6';
+            document.getElementById('embassyColourContainer').classList.add('hidden');
             document.getElementById('embassyModal').classList.remove('hidden');
             document.getElementById('embassyModal').classList.add('flex');
         }
@@ -217,14 +216,26 @@
         }
 
         function deleteEmbassy(id) {
-            if (confirm('Are you sure you want to delete this embassy?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("settings.embassies.destroy", "__ID__") }}'.replace('__ID__', id);
-                form.innerHTML = '@csrf';
-                document.body.appendChild(form);
-                form.submit();
-            }
+            Swal.fire({
+                title: 'Delete Embassy?',
+                text: 'Are you sure you want to delete this embassy? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("settings.embassies.destroy", "__ID__") }}'.replace('__ID__', id);
+                    form.innerHTML = '@csrf';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         }
 
         // Guarantee Case Modal Functions
@@ -234,8 +245,7 @@
             document.getElementById('guaranteeCaseMethod').value = '';
             document.getElementById('guaranteeCase').value = '';
             document.getElementById('guaranteeCaseDefinition').value = '';
-            document.getElementById('guaranteeCaseColour').value = '#10B981';
-            document.getElementById('guaranteeCaseColourText').value = '#10B981';
+            document.getElementById('guaranteeCaseColourContainer').classList.add('hidden');
             document.getElementById('guaranteeCaseModal').classList.remove('hidden');
             document.getElementById('guaranteeCaseModal').classList.add('flex');
         }
@@ -258,14 +268,26 @@
         }
 
         function deleteGuaranteeCase(id) {
-            if (confirm('Are you sure you want to delete this guarantee case?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("settings.guarantee-cases.destroy", "__ID__") }}'.replace('__ID__', id);
-                form.innerHTML = '@csrf';
-                document.body.appendChild(form);
-                form.submit();
-            }
+            Swal.fire({
+                title: 'Delete Guarantee Case?',
+                text: 'Are you sure you want to delete this guarantee case? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("settings.guarantee-cases.destroy", "__ID__") }}'.replace('__ID__', id);
+                    form.innerHTML = '@csrf';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         }
 
         // Color picker event listeners

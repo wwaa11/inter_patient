@@ -14,6 +14,9 @@
             </div>
             @if ($patient->guaranteeAdditionals && $patient->guaranteeAdditionals->count() > 0)
                 <div class="flex items-center space-x-2">
+                    <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
+                        <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
+                    </a>
                     <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                         {{ $patient->guaranteeAdditionals->count() }} {{ Str::plural("guarantee", $patient->guaranteeAdditionals->count()) }}
                     </span>

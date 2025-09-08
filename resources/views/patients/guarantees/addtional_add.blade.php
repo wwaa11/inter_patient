@@ -4,19 +4,19 @@
     <div class="min-h-screen bg-gray-50 py-6 dark:bg-slate-900">
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-6 rounded-lg bg-white shadow-sm">
+            <div class="mb-6 rounded-lg bg-white shadow-sm dark:bg-slate-800">
                 <div class="border-b border-gray-200 px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <a class="mr-4 text-gray-500 hover:text-gray-700" href="{{ route("patients.view", $patient->hn) }}">
+                            <a class="mr-4 text-gray-500 hover:text-gray-700 dark:text-slate-300" href="{{ route("patients.view", $patient->hn) }}">
                                 <i class="fas fa-arrow-left text-lg"></i>
                             </a>
                             <div>
-                                <h1 class="flex items-center text-2xl font-bold text-gray-900">
+                                <h1 class="flex items-center text-2xl font-bold text-gray-900 dark:text-white">
                                     <i class="fas fa-shield-alt mr-3 text-blue-600"></i>
                                     Add Additional Guarantee
                                 </h1>
-                                <p class="mt-1 text-sm text-gray-600">
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                     Patient: <span class="font-medium">{{ $patient->name }}</span> (HN: {{ $patient->hn }})
                                 </p>
                             </div>
@@ -37,22 +37,22 @@
             <form class="" action="{{ route("patients.guarantees.additional.store", $patient->hn) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 {{-- Information Content --}}
-                <div class="mb-6 rounded-lg bg-white shadow-sm">
+                <div class="mb-6 rounded-lg bg-white shadow-sm dark:bg-slate-800 dark:text-white">
                     <div class="space-y-6">
                         <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="text-lg font-semibold text-gray-900">Guarantee Information</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Guarantee Information</h2>
                         </div>
 
                         <div class="grid grid-cols-1 gap-6 px-6 pb-4 md:grid-cols-3">
 
                             {{-- Type --}}
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="type">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="type">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Type *
                                 </label>
                                 <select class="@error("type") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="type" name="type" required>
                                     @foreach ($additionalTypes as $type)
-                                        <option {{ old("type") == $type->id ? "selected" : "" }} value="{{ $type->id }}">{{ $type->name }}</option>
+                                        <option class="dark:bg-slate-800 dark:text-white" {{ old("type") == $type->id ? "selected" : "" }} value="{{ $type->id }}">{{ $type->name }}</option>
                                     @endforeach
                                 </select>
                                 @error("type")
@@ -62,10 +62,10 @@
 
                             <!-- Embassy Reference -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="embassy_ref">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="embassy_ref">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference *
                                 </label>
-                                <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="embassy_ref" type="text" name="embassy_ref" required placeholder="Enter embassy reference" value="{{ old("embassy_ref") }}">
+                                <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="embassy_ref" type="text" name="embassy_ref" required placeholder="Enter embassy reference" value="{{ old("embassy_ref") }}">
                                 @error("embassy_ref")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -73,10 +73,10 @@
 
                             <!-- MB -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="mb">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="mb">
                                     <i class="fas fa-hashtag mr-2 text-purple-500"></i>MB (Optional)
                                 </label>
-                                <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb") }}">
+                                <input class="@error("mb") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="mb" type="text" name="mb" placeholder="Enter MB" value="{{ old("mb") }}">
                                 @error("mb")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -84,10 +84,10 @@
 
                             <!-- Issue Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="issue_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="issue_date">
                                     <i class="fas fa-calendar-plus mr-2 text-purple-500"></i>Issue Date *
                                 </label>
-                                <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date") }}">
+                                <input class="@error("issue_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="issue_date" type="date" name="issue_date" required value="{{ old("issue_date") }}">
                                 @error("issue_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -95,10 +95,10 @@
 
                             <!-- Cover Start Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_start_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="cover_start_date">
                                     <i class="fas fa-calendar-check mr-2 text-green-500"></i>Cover Start Date (Optional)
                                 </label>
-                                <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_start_date" type="date" name="cover_start_date" value="{{ old("cover_start_date") }}">
+                                <input class="@error("cover_start_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="cover_start_date" type="date" name="cover_start_date" value="{{ old("cover_start_date") }}">
                                 @error("cover_start_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -106,10 +106,10 @@
 
                             <!-- Cover End Date -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="cover_end_date">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="cover_end_date">
                                     <i class="fas fa-calendar-times mr-2 text-red-500"></i>Cover End Date (Optional)
                                 </label>
-                                <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="cover_end_date" type="date" name="cover_end_date" value="{{ old("cover_end_date") }}">
+                                <input class="@error("cover_end_date") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="cover_end_date" type="date" name="cover_end_date" value="{{ old("cover_end_date") }}">
                                 @error("cover_end_date")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -117,10 +117,10 @@
 
                             <!-- Total Price -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="total_price">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="total_price">
                                     <i class="fas fa-hashtag mr-2 text-green-500"></i>Total Price (Optional)
                                 </label>
-                                <input class="@error("total_price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" id="total_price" type="text" name="total_price" placeholder="Enter Total Price" value="{{ old("total_price") }}">
+                                <input class="@error("total_price") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" id="total_price" type="text" name="total_price" placeholder="Enter Total Price" value="{{ old("total_price") }}">
                                 @error("total_price")
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -133,15 +133,15 @@
                 <!-- Coverage Area/Specialty Content -->
                 <div class="flex flex-col gap-6 lg:flex-row">
                     <!-- Left Panel - Form -->
-                    <div class="rounded-lg bg-white shadow-sm">
+                    <div class="rounded-lg bg-white shadow-sm dark:bg-slate-800 dark:text-white">
                         <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="text-lg font-semibold text-gray-900">Coverage Area / Detail</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Coverage Area / Detail</h2>
                         </div>
                         <div class="space-y-6 p-6">
 
                             <!-- File Upload -->
                             <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="guarantee_file">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="guarantee_file">
                                     <i class="fas fa-cloud-upload-alt mr-2 text-orange-500"></i>Upload File *
                                 </label>
                                 <div class="relative">
@@ -150,7 +150,7 @@
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <p class="mt-2 text-xs text-gray-500">
+                                <p class="mt-2 text-xs text-gray-500 dark:text-white">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Accepted formats: PDF, JPG, JPEG, PNG (Max: 10MB)
                                 </p>
@@ -159,16 +159,16 @@
                             <!-- Add Button Section -->
                             <div class="border-t border-gray-200 pt-6">
                                 <div class="mb-4 flex items-center justify-between">
-                                    <h3 class="text-md font-semibold text-gray-900">
+                                    <h3 class="text-md font-semibold text-gray-900 dark:text-white">
                                         <i class="fas fa-plus mr-2 text-green-500"></i>Additional Information
                                     </h3>
                                 </div>
 
                                 <div class="space-y-6" id="detailEntries">
                                     <!-- Initial Detail Entry -->
-                                    <div class="detail-entry rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                    <div class="detail-entry rounded-lg border border-gray-200 bg-gray-50 p-4 dark:bg-slate-800">
                                         <div class="mb-4 flex items-center justify-between">
-                                            <h4 class="text-sm font-semibold text-gray-800">
+                                            <h4 class="text-sm font-semibold text-gray-800 dark:text-white">
                                                 <i class="fas fa-file-alt mr-2 text-blue-500"></i>Detail Entry #1
                                             </h4>
                                             <button class="text-red-500 transition-colors hover:text-red-700" type="button" onclick="removeDetailEntry(this)" style="display: none;">
@@ -179,23 +179,23 @@
                                         <div class="flex flex-col gap-4">
                                             <!-- Select Case -->
                                             <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
                                                 </label>
                                                 <div class="relative">
-                                                    <input class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly value="{{ old("details.0.additional_case_name") }}">
-                                                    <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"></i>
-                                                    <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg">
+                                                    <input class="@error("details.0.additional_case_name") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" type="text" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly value="{{ old("details.0.additional_case_name") }}">
+                                                    <i class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 dark:text-white"></i>
+                                                    <div class="case-dropdown absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:bg-slate-800">
                                                         <div class="border-b p-2">
                                                             <input class="case-search w-full rounded border border-gray-300 px-3 py-2 text-sm" type="text" placeholder="Type to search..." oninput="filterCaseOptions(this)">
                                                         </div>
                                                         <div class="case-options">
-                                                            <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100" data-value="" data-name="" onclick="selectCase(this, 0)">
+                                                            <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700" data-value="" data-name="" onclick="selectCase(this, 0)">
                                                                 Please select
                                                             </div>
                                                             @if (isset($additionalCases))
                                                                 @foreach ($additionalCases as $case)
-                                                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, 0)">
+                                                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-700" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, 0)">
                                                                         {{ $case->name }}
                                                                     </div>
                                                                 @endforeach
@@ -208,25 +208,25 @@
 
                                             <!-- Specific Date -->
                                             <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
                                                 </label>
                                                 <div class="space-y-3">
                                                     <div class="flex items-center">
                                                         <input class="mr-2" id="dateRange_0" type="checkbox" onchange="toggleDateRange(this, 0)" {{ old("details.0.date_range_enabled") ? "checked" : "" }}>
-                                                        <label class="text-sm text-gray-600" for="dateRange_0">Use date range</label>
+                                                        <label class="text-sm text-gray-600 dark:text-white" for="dateRange_0">Use date range</label>
                                                     </div>
                                                     <div class="date-single">
                                                         <div class="space-y-2">
                                                             <div class="flex items-center justify-between">
-                                                                <span class="text-sm font-medium text-gray-700">Dates</span>
-                                                                <button class="text-sm font-medium text-green-600 hover:text-green-700" type="button" onclick="addDateEntry(0)">
+                                                                <span class="text-sm font-medium text-gray-700 dark:text-white">Dates</span>
+                                                                <button class="text-sm font-medium text-green-600 hover:text-green-700 dark:text-green-400" type="button" onclick="addDateEntry(0)">
                                                                     <i class="fas fa-plus mr-1"></i>Add Date
                                                                 </button>
                                                             </div>
                                                             <div class="date-entries" id="dateEntries_0">
                                                                 <div class="date-entry mb-2 flex items-center space-x-2">
-                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][specific_dates][]" value="{{ old("details.0.specific_dates.0") }}">
+                                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" type="date" name="details[0][specific_dates][]" value="{{ old("details.0.specific_dates.0") }}">
                                                                     <button class="p-2 text-red-500 hover:text-red-700" type="button" onclick="removeDateEntry(this)" style="display: none;">
                                                                         <i class="fas fa-trash text-sm"></i>
                                                                     </button>
@@ -236,8 +236,8 @@
                                                     </div>
                                                     <div class="date-range hidden">
                                                         <div class="grid grid-cols-2 gap-2">
-                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_start]" placeholder="Start date" value="{{ old("details.0.date_start") }}">
-                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[0][date_end]" placeholder="End date" value="{{ old("details.0.date_end") }}">
+                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" type="date" name="details[0][date_start]" placeholder="Start date" value="{{ old("details.0.date_start") }}">
+                                                            <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" type="date" name="details[0][date_end]" placeholder="End date" value="{{ old("details.0.date_end") }}">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -245,7 +245,7 @@
 
                                             <!-- Detail -->
                                             <div class="md:col-span-2">
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
                                                 </label>
                                                 <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[0][detail]" rows="3" required placeholder="Enter detail information...">{{ old("details.0.detail") }}</textarea>
@@ -253,7 +253,7 @@
 
                                             <!-- Definition -->
                                             <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
                                                 </label>
                                                 <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][definition]" placeholder="Enter definition..." value="{{ old("details.0.definition") }}">
@@ -261,7 +261,7 @@
 
                                             <!-- Amount -->
                                             <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
                                                 </label>
                                                 <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[0][amount]" placeholder="Enter amount..., Ex. 15 tabs" value="{{ old("details.0.amount") }}">
@@ -269,7 +269,7 @@
 
                                             <!-- Price -->
                                             <div>
-                                                <label class="mb-2 block text-sm font-semibold text-gray-700">
+                                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                                                     <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
                                                 </label>
                                                 <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="number" step="0.01" name="details[0][price]" placeholder="Enter price..." value="{{ old("details.0.price") }}">
@@ -278,7 +278,7 @@
                                     </div>
                                 </div>
 
-                                <button class="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" type="button" onclick="addDetailEntry()">
+                                <button class="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800" type="button" onclick="addDetailEntry()">
                                     <i class="fas fa-plus mr-2"></i>Add Detail
                                 </button>
                             </div>
@@ -287,18 +287,18 @@
                     </div>
 
                     <!-- Right Panel - File Preview -->
-                    <div class="relative min-h-[800px] flex-1 rounded-lg bg-white shadow-sm">
+                    <div class="relative min-h-[800px] flex-1 rounded-lg bg-white shadow-sm dark:bg-slate-800">
                         <div class="border-b border-gray-200 px-6 py-4">
-                            <h2 class="flex items-center text-lg font-semibold text-gray-900">
+                            <h2 class="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
                                 <i class="fas fa-eye mr-2 text-blue-500"></i>File Preview
                             </h2>
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 m-auto p-6">
-                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6" id="filePreview">
+                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:bg-slate-800" id="filePreview">
                                 <div class="text-center">
-                                    <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
-                                    <p class="text-gray-500">No file selected</p>
-                                    <p class="mt-1 text-sm text-gray-400">Upload a file to see preview</p>
+                                    <i class="fas fa-file-upload mb-3 text-4xl text-gray-400 dark:text-white"></i>
+                                    <p class="text-gray-500 dark:text-white">No file selected</p>
+                                    <p class="mt-1 text-sm text-gray-400 dark:text-white">Upload a file to see preview</p>
                                 </div>
                             </div>
                         </div>
@@ -414,7 +414,7 @@
                     } else if (fileType === 'application/pdf') {
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            preview.innerHTML = `<embed class="p-6 h-full min-h-[600px] w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
+                            preview.innerHTML = `<embed class="p-6 h-full min-h-[700px] w-full rounded-lg" src="${e.target.result}" type="application/pdf">`;
                         };
                         reader.readAsDataURL(file);
                     } else {
@@ -438,16 +438,15 @@
             }
 
             // Detail entries management
-
             function addDetailEntry() {
                 const container = document.getElementById('detailEntries');
                 const newIndex = detailEntryCount;
 
                 const newEntry = document.createElement('div');
-                newEntry.className = 'detail-entry border border-gray-200 rounded-lg p-4 bg-gray-50';
+                newEntry.className = 'detail-entry border border-gray-200 rounded-lg p-4 bg-gray-50 dark:bg-slate-800';
                 newEntry.innerHTML = `
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-sm font-semibold text-gray-800">
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white">
                         <i class="fas fa-file-alt mr-2 text-blue-500"></i>Detail Entry #${newIndex + 1}
                     </h4>
                     <button type="button" onclick="removeDetailEntry(this)" class="text-red-500 hover:text-red-700 transition-colors">
@@ -458,23 +457,23 @@
                 <div class="flex flex-col gap-4">
                     <!-- Select Case -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-list mr-2 text-blue-500"></i>Select Case (Optional)
                         </label>
                         <div class="relative">
-                            <input type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly>
+                            <input type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500  dark:text-white" placeholder="Search and select a case..." onclick="toggleCaseDropdown(this)" oninput="filterCases(this)" readonly>
                             <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                            <div class="case-dropdown absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
-                                <div class="p-2 border-b">
-                                    <input type="text" class="case-search w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="Type to search..." oninput="filterCaseOptions(this)">
+                            <div class="case-dropdown absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden dark:bg-slate-800">
+                                <div class="p-2 border-b dark:border-slate-600">
+                                    <input type="text" class="case-search w-full px-3 py-2 border border-gray-300 rounded text-sm dark:bg-slate-800 dark:text-white" placeholder="Type to search..." oninput="filterCaseOptions(this)">
                                 </div>
-                                <div class="case-options">
-                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100" data-value="" data-name="" onclick="selectCase(this, ${newIndex})">
+                                <div class="case-options dark:bg-slate-800">
+                                    <div class="case-option cursor-pointer px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-600" data-value="" data-name="" onclick="selectCase(this, ${newIndex})">
                                         Please select
                                     </div>
                                     @if (isset($additionalCases))
                                         @foreach ($additionalCases as $case)
-                                            <div class="case-option px-3 py-2 hover:bg-gray-100 cursor-pointer" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, ${newIndex})">
+                                            <div class="case-option px-3 py-2 hover:bg-gray-100 cursor-pointer dark:hover:bg-slate-600" data-value="{{ $case->id }}" data-name="{{ $case->name }}" onclick="selectCase(this, ${newIndex})">
                                                 {{ $case->name }}
                                             </div>
                                         @endforeach
@@ -487,26 +486,26 @@
 
                     <!-- Specific Date -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-calendar mr-2 text-purple-500"></i>Specific Date (Optional)
                         </label>
                         <div class="space-y-3">
-                            <div class="flex items-center">
+                            <div class="flex items-center dark:text-white">
                                 <input type="checkbox" id="dateRange_${newIndex}" class="mr-2" onchange="toggleDateRange(this, ${newIndex})">
-                                <label for="dateRange_${newIndex}" class="text-sm text-gray-600">Use date range</label>
+                                <label for="dateRange_${newIndex}" class="text-sm text-gray-600 dark:text-white">Use date range</label>
                             </div>
                             <div class="date-single">
                                         <div class="space-y-2">
                                             <div class="flex items-center justify-between">
-                                                <span class="text-sm font-medium text-gray-700">Dates</span>
+                                                <span class="text-sm font-medium text-gray-700 dark:text-white">Dates</span>
                                                 <button type="button" onclick="addDateEntry(${newIndex})" class="text-green-600 hover:text-green-700 text-sm font-medium">
                                                     <i class="fas fa-plus mr-1"></i>Add Date
                                                 </button>
                                             </div>
-                                            <div class="date-entries" id="dateEntries_${newIndex}">
+                                            <div class="date-entries dark:text-white" id="dateEntries_${newIndex}">
                                                 <div class="date-entry flex items-center space-x-2 mb-2">
-                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="date" name="details[${newIndex}][specific_dates][]">
-                                                    <button type="button" onclick="removeDateEntry(this)" class="text-red-500 hover:text-red-700 p-2" style="display: none;">
+                                                    <input class="flex-1 rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:text-white" type="date" name="details[${newIndex}][specific_dates][]">
+                                                    <button type="button" onclick="removeDateEntry(this)" class="text-red-500 hover:text-red-700 p-2 " style="display: none;">
                                                         <i class="fas fa-trash text-sm"></i>
                                                     </button>
                                                 </div>
@@ -524,34 +523,34 @@
 
                     <!-- Detail -->
                     <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-file-alt mr-2 text-green-500"></i>Detail *
                         </label>
-                        <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" name="details[${newIndex}][detail]" rows="3" required placeholder="Enter detail information..."></textarea>
+                        <textarea class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500  dark:text-white" name="details[${newIndex}][detail]" rows="3" required placeholder="Enter detail information..."></textarea>
                     </div>
 
                     <!-- Definition -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-book mr-2 text-indigo-500"></i>Definition (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[${newIndex}][definition]" placeholder="Enter definition...">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500  dark:text-white" type="text" name="details[${newIndex}][definition]" placeholder="Enter definition...">
                     </div>
 
                     <!-- Amount -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-calculator mr-2 text-yellow-500"></i>Amount (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="text" name="details[${newIndex}][amount]" placeholder="Enter amount..., Ex. 15 tabs">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500  dark:text-white" type="text" name="details[${newIndex}][amount]" placeholder="Enter amount..., Ex. 15 tabs">
                     </div>
 
                     <!-- Price -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white">
                             <i class="fas fa-dollar-sign mr-2 text-green-600"></i>Price (Optional)
                         </label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500" type="number" step="0.01" name="details[${newIndex}][price]" placeholder="Enter price...">
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500  dark:text-white" type="number" step="0.01" name="details[${newIndex}][price]" placeholder="Enter price...">
                     </div>
                 </div>
                 `;

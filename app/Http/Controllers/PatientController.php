@@ -531,7 +531,6 @@ class PatientController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'cover_end_date' => 'required|date',
-            'file'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         if ($validator->fails()) {
@@ -550,15 +549,16 @@ class PatientController extends Controller
                 mkdir($directory, 0755, true);
             }
 
-            $file     = $request->file('file');
-            $filename = 'main_guarantee_' . time() . '_extension_' . $request->file('file')->getClientOriginalName();
+            $files = $guarantee->file ?? [];
+            if ($request->hasFile('file')) {
+                $file     = $request->file('file');
+                $filename = 'main_guarantee_' . time() . '_extension_' . $request->file('file')->getClientOriginalName();
 
-            $file->move($directory, $filename);
+                $file->move($directory, $filename);
+                $files[] = $filename;
+            }
 
             // Update guarantee
-            $files   = $guarantee->file ?? [];
-            $files[] = $filename;
-
             $guarantee->update([
                 'extension'                => true,
                 'extension_cover_end_date' => $request->cover_end_date,

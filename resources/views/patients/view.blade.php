@@ -180,25 +180,6 @@
             </div>
         </div>
 
-        <!-- Guarantees Section -->
-        <div class="mb-4 flex items-center justify-between">
-            <h3 class="text-lg font-medium text-slate-900 dark:text-white">Guarantees</h3>
-            @if (auth()->user()->role === "admin")
-                <div class="flex space-x-2">
-                    <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
-                        <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
-                    </a>
-                    <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
-                        <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
-                    </a>
-                </div>
-            @endif
-        </div>
-
-        @include("patients.guarantees.main_table_view")
-
-        @include("patients.guarantees.addtional_table_view")
-
         <!-- Additional Information -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Patient Passports -->
@@ -304,6 +285,10 @@
                 </div>
             </div>
         </div>
+
+        <!-- Guarantees Section -->
+        @include("patients.guarantees.main_table_view")
+        @include("patients.guarantees.addtional_table_view")
     </div>
 
     <!-- Add Note Modal -->
@@ -499,8 +484,8 @@
 
                     <!-- File Upload -->
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="extend_file">Extension Document *</label>
-                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-slate-600 dark:text-slate-300" id="extend_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="extend_file">Extension Document</label>
+                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-slate-600 dark:text-slate-300" id="extend_file" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png">
                         <p class="mt-2 text-xs text-gray-500 dark:text-slate-300">Upload the extension document (PDF, JPG, JPEG, PNG - Max 10MB).</p>
                         <div class="mt-2 hidden text-xs text-blue-600 dark:text-slate-300" id="extend-filename"></div>
                     </div>
@@ -708,68 +693,123 @@
         });
 
         function deleteNote(hn, noteId) {
-            if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
-                axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId))
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting note:', error);
-                        alert('Failed to delete note. Please try again.');
-                    });
-            }
+            Swal.fire({
+                title: 'Delete Note?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId))
+                        .then(response => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting note:', error);
+                            alert('Failed to delete note. Please try again.');
+                        });
+                }
+            });
         }
 
         function deletePassport(hn, passportId) {
-            if (confirm('Are you sure you want to delete this passport? This will also delete the associated file. This action cannot be undone.')) {
-                axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId))
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting passport:', error);
-                        alert('Failed to delete passport. Please try again.');
-                    });
-            }
+            Swal.fire({
+                title: 'Delete Passport?',
+                text: 'This will also delete the associated file. This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId))
+                        .then(response => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting passport:', error);
+                            alert('Failed to delete passport. Please try again.');
+                        });
+                }
+            });
         }
 
         function deleteMedicalReport(hn, reportId) {
-            if (confirm('Are you sure you want to delete this medical report? This will also delete the associated file. This action cannot be undone.')) {
-                axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId))
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting medical report:', error);
-                        alert('Failed to delete medical report. Please try again.');
-                    });
-            }
+            Swal.fire({
+                title: 'Delete Medical Report?',
+                text: 'This will also delete the associated file. This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId))
+                        .then(response => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting medical report:', error);
+                            alert('Failed to delete medical report. Please try again.');
+                        });
+                }
+            });
         }
 
         function deleteMainGuarantee(guaranteeId) {
-            if (confirm('Are you sure you want to delete this main guarantee? This will also delete the associated file. This action cannot be undone.')) {
-                axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting main guarantee:', error);
-                        alert('Failed to delete main guarantee. Please try again.');
-                    });
-            }
+            Swal.fire({
+                title: 'Delete Main Guarantee?',
+                text: 'This will also delete the associated file. This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                        .then(response => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting main guarantee:', error);
+                            alert('Failed to delete main guarantee. Please try again.');
+                        });
+                }
+            });
         }
 
         function deleteAdditionalDetail(guaranteeId) {
-            if (confirm('Are you sure you want to delete this additional guarantee detail? This will also delete the associated file. This action cannot be undone.')) {
-                axios.post('{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting additional guarantee detail:', error);
-                        alert('Failed to delete additional guarantee. Please try again.');
-                    });
-            }
+            Swal.fire({
+                title: 'Delete Additional Guarantee Detail?',
+                text: 'This will also delete the associated file. This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                        .then(response => {
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting additional guarantee detail:', error);
+                            alert('Failed to delete additional guarantee detail. Please try again.');
+                        });
+                }
+            });
         }
 
         function openExtendMainGuaranteeModal(guaranteeId, guaranteeNumber) {
