@@ -65,13 +65,13 @@
                                 </div>
                             </td>
 
-                            <td class="px-3 py-4 text-sm text-slate-900 dark:text-white">
+                            <td class="px-3 py-4 text-sm text-slate-900 dark:text-slate-300">
                                 <div class="flex items-center">
                                     <i class="fas fa-calendar-plus mr-2 text-slate-500"></i>
                                     {{ $guarantee->issueDate() }}
                                 </div>
                             </td>
-                            <td class="px-3 py-4 text-sm text-slate-900 dark:text-white">
+                            <td class="px-3 py-4 text-sm text-slate-900 dark:text-slate-300">
                                 <div class="flex items-center">
                                     <i class="fas fa-clock mr-2 text-slate-500"></i>
                                     <span>{{ $guarantee->coverPeriod() }}</span>
@@ -115,7 +115,7 @@
                                         @foreach ($guarantee->file as $file)
                                             <button class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50" onclick="viewFile('{{ $patient->hn }}', '{{ $file }}')">
                                                 <i class="fas fa-file-alt mr-1.5"></i>
-                                                {{ substr(basename($file), 26) }}
+                                                <span class="truncate">{{ substr(basename($file), 26) }}</span>
                                             </button>
                                         @endforeach
                                     </div>
@@ -130,7 +130,7 @@
                                             <i class="fas fa-calendar-plus mr-1"></i>
                                             Extend
                                         </button>
-                                        <a href="{{ route('patients.guarantees.main.edit', [$patient->hn, $guarantee->id]) }}" class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900" title="Edit Guarantee">
+                                        <a class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900" href="{{ route("patients.guarantees.main.edit", [$patient->hn, $guarantee->id]) }}" title="Edit Guarantee">
                                             <i class="fas fa-edit mr-1"></i>
                                             Edit
                                         </a>
@@ -154,10 +154,9 @@
             <h3 class="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">No Main Guarantees</h3>
             <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">This patient doesn't have any main guarantees on record.</p>
             @if (auth()->user()->role === "admin")
-                <button class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-blue-700 hover:shadow-md">
-                    <i class="fas fa-plus mr-2"></i>
-                    Add Guarantee
-                </button>
+                <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
+                    <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
+                </a>
             @endif
         </div>
     @endif

@@ -24,6 +24,7 @@ class PatientAdditionalDetail extends Model
 
     protected $casts = [
         'specific_date' => 'array',
+        'price'         => 'decimal:2',
     ];
 
     public function header()

@@ -16,9 +16,9 @@
                         <i class="fa-solid fa-edit mr-2"></i>
                         Edit Patient
                     </a>
-                    <form class="inline" method="POST" action="{{ route("patients.destroy", $patient->hn) }}" onsubmit="return confirm('Are you sure you want to delete this patient?')">
+                    <form class="inline" id="delete-patient-form" method="POST" action="{{ route("patients.destroy", $patient->hn) }}">
                         @csrf
-                        <button class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" type="submit">
+                        <button class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" type="button" onclick="deletePatient(event)" type="submit">
                             <i class="fa-solid fa-trash mr-2"></i>
                             Delete Patient
                         </button>
@@ -709,6 +709,23 @@
                 });
             }
         });
+
+        function deletePatient() {
+            Swal.fire({
+                title: 'Delete Patient?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-patient-form').submit();
+                }
+            });
+        }
 
         function deleteNote(hn, noteId) {
             Swal.fire({

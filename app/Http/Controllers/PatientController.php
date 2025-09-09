@@ -549,7 +549,7 @@ class PatientController extends Controller
             ->get();
 
         $selectedCases = $relatedGuarantees->pluck('case')->toArray();
-        
+
         $embassies      = Embassy::all();
         $guaranteeCases = GuaranteeCase::all();
 
@@ -594,7 +594,7 @@ class PatientController extends Controller
                 ->where('cover_end_date', $guarantee->cover_end_date)
                 ->get();
 
-            // Handle file upload if new file is provided
+                                               // Handle file upload if new file is provided
             $uploadedFiles = $guarantee->file; // Keep existing files
             if ($request->hasFile('file')) {
                 $directory = public_path('hn/' . $hn);

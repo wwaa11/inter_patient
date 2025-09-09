@@ -26,7 +26,6 @@
             </div>
         </div>
     </div>
-
     @if ($patient->guaranteeAdditionals && $patient->guaranteeAdditionals->count() > 0)
         <!-- Table Container -->
         <div class="overflow-x-auto">
@@ -67,16 +66,20 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                                @if ($guarantee->isInCoverPeriod())
-                                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1.5 text-xs font-medium text-green-800">
-                                        <i class="fas fa-check-circle mr-1"></i>
-                                        Valid
-                                    </span>
+                                @if ($guarantee->coverPeriod() !== "N/A")
+                                    @if ($guarantee->isInCoverPeriod())
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1.5 text-xs font-medium text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Valid
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1.5 text-xs font-medium text-red-800">
+                                            <i class="fas fa-times-circle mr-1"></i>
+                                            Invalid
+                                        </span>
+                                    @endif
                                 @else
-                                    <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1.5 text-xs font-medium text-red-800">
-                                        <i class="fas fa-times-circle mr-1"></i>
-                                        Invalid
-                                    </span>
+                                    <span class="italic text-slate-400">N/A</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
@@ -91,7 +94,6 @@
                                     {{ $guarantee->issueDate() }}
                                 </div>
                             </td>
-
                             <td class="px-6 py-4">
                                 @if ($guarantee->file && count($guarantee->file) > 0)
                                     <div class="flex flex-wrap gap-2">
@@ -118,7 +120,6 @@
                                 </td>
                             @endif
                         </tr>
-
                         <!-- Detail Rows -->
                         @foreach ($guarantee->details as $item)
                             <tr class="transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50">
@@ -129,10 +130,9 @@
                                             {{ $item->guaranteeCase->name }}
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-md bg-gray-700 px-2.5 py-1 text-xs font-semibold text-white">N/A</span>
+                                        <span class="italic text-slate-400">N/A</span>
                                     @endif
                                 </td>
-
                                 <td class="px-6 py-4">
                                     @if ($item->start_date || $item->end_date || ($item->specific_date && is_array($item->specific_date) && count($item->specific_date) > 0))
                                         <div class="text-sm text-slate-900 dark:text-white">
@@ -167,11 +167,10 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-end space-x-3">
-
                                         @if ($item->price)
                                             <div class="flex items-center">
-                                                <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ $item->price }}</span>
-                                                <i class="fas fa-dollar-sign ml-1 text-emerald-600"></i>
+                                                <span class="mr-1 text-emerald-600">฿</span>
+                                                <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ number_format($item->price) }} </span>
                                             </div>
                                         @endif
                                     </div>
@@ -205,10 +204,9 @@
             <h3 class="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">No Additional Guarantees</h3>
             <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">This patient doesn't have any additional guarantees on record.</p>
             @if (auth()->user()->role === "admin")
-                <button class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 hover:shadow-md">
-                    <i class="fas fa-plus mr-2"></i>
-                    Add Guarantee
-                </button>
+                <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
+                    <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
+                </a>
             @endif
         </div>
     @endif
