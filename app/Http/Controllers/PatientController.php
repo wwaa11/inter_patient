@@ -752,6 +752,16 @@ class PatientController extends Controller
         }
 
         try {
+            foreach ($guarantee->file as $file) {
+                $samefile_guarantee = PatientMainGuarantee::where('hn', $hn)->where('file', 'like', '%' . $file . '%')->get();
+                if ($samefile_guarantee->count() == 1) {
+                    $path = public_path('hn/' . $hn . '/' . $file);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
+                    $this->logAction($hn, 'deleted main guarantee');
+                }
+            }
             $guarantee->delete();
             $this->logAction($hn, 'deleted main guarantee');
 
@@ -1080,6 +1090,13 @@ class PatientController extends Controller
 
             $findHeader = PatientAdditionalHeader::find($detail->guarantee_header_id);
             if ($findHeader->details->count() == 0) {
+                foreach ($findHeader->file as $file) {
+                    $filePath = public_path('hn/' . $hn . '/' . $file);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+
                 $findHeader->delete();
             }
 
