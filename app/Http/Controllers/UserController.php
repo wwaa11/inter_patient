@@ -38,9 +38,6 @@ class UserController extends Controller
             ->with('success', 'User created successfully.');
     }
 
-    /**
-     * Remove the specified user from storage.
-     */
     public function destroy(User $user)
     {
         // Prevent deleting the current user

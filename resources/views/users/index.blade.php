@@ -2,7 +2,7 @@
 
 @section("content")
     <div class="min-h-screen bg-slate-50 py-8 dark:bg-slate-900">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="mb-8">
                 <div class="flex items-center justify-between">
@@ -87,7 +87,6 @@
                                             @if ($user->id !== auth()->id())
                                                 <form class="inline" action="{{ route("users.destroy", $user) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
                                                     @csrf
-                                                    @method("DELETE")
                                                     <button class="font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" type="submit">
                                                         <i class="fa-solid fa-trash mr-1"></i> Delete
                                                     </button>
@@ -128,7 +127,7 @@
                 <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
                     <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Add New User</h3>
                 </div>
-                <form id="createForm" action="{{ route('users.store') }}" method="POST">
+                <form id="createForm" action="{{ route("users.store") }}" method="POST">
                     @csrf
                     <div class="px-6 py-4">
                         <div class="mb-4">
@@ -165,7 +164,6 @@
                 </div>
                 <form id="roleForm" method="POST">
                     @csrf
-                    @method("PUT")
                     <div class="px-6 py-4">
                         <div class="mb-4">
                             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">User ID</label>
@@ -206,7 +204,7 @@
         function openRoleModal(userId, userIdDisplay, currentRole) {
             document.getElementById('modalUserId').value = userIdDisplay;
             document.getElementById('modalRole').value = currentRole;
-            document.getElementById('roleForm').action = `/users/${userId}/role`;
+            document.getElementById('roleForm').action = '{{ route("users.updateRole", "__ID__") }}'.replace('__ID__', userId);
             document.getElementById('roleModal').classList.remove('hidden');
         }
 

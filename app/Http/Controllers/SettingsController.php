@@ -86,7 +86,7 @@ class SettingsController extends Controller
 
         $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->update([
-            'case'       => $request->case,
+            'name'       => $request->case,
             'definition' => $request->definition,
             'colour'     => $request->colour,
         ]);

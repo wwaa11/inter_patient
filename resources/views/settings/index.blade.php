@@ -253,7 +253,6 @@
         function editGuaranteeCase(id, caseName, definition, colour) {
             document.getElementById('guaranteeCaseModalTitle').textContent = 'Edit Guarantee Case';
             document.getElementById('guaranteeCaseForm').action = '{{ route("settings.guarantee-cases.update", "__ID__") }}'.replace('__ID__', id);
-            document.getElementById('guaranteeCaseMethod').value = 'PUT';
             document.getElementById('guaranteeCase').value = caseName;
             document.getElementById('guaranteeCaseDefinition').value = definition || '';
             document.getElementById('guaranteeCaseColour').value = colour || '#10B981';

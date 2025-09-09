@@ -61,21 +61,21 @@ Route::group(['middleware' => 'auth'], function () {
         // User Management Routes (admin only)
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::put('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+        Route::post('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 
         // Settings Routes (admin only)
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
 
         // Embassy Routes
-        Route::post('/settings/embassies', [SettingsController::class, 'storeEmbassy'])->name('settings.embassies.store');
-        Route::put('/settings/embassies/{id}', [SettingsController::class, 'updateEmbassy'])->name('settings.embassies.update');
-        Route::post('/settings/embassies/{id}', [SettingsController::class, 'destroyEmbassy'])->name('settings.embassies.destroy');
+        Route::post('/settings/store/embassies', [SettingsController::class, 'storeEmbassy'])->name('settings.embassies.store');
+        Route::post('/settings/update/embassies/{id}', [SettingsController::class, 'updateEmbassy'])->name('settings.embassies.update');
+        Route::post('/settings/delete/embassies/{id}', [SettingsController::class, 'destroyEmbassy'])->name('settings.embassies.destroy');
 
         // Guarantee Case Routes
-        Route::post('/settings/guarantee-cases', [SettingsController::class, 'storeGuaranteeCase'])->name('settings.guarantee-cases.store');
-        Route::put('/settings/guarantee-cases/{id}', [SettingsController::class, 'updateGuaranteeCase'])->name('settings.guarantee-cases.update');
-        Route::post('/settings/guarantee-cases/{id}', [SettingsController::class, 'destroyGuaranteeCase'])->name('settings.guarantee-cases.destroy');
+        Route::post('/settings/store/guarantee-cases', [SettingsController::class, 'storeGuaranteeCase'])->name('settings.guarantee-cases.store');
+        Route::post('/settings/update/guarantee-cases/{id}', [SettingsController::class, 'updateGuaranteeCase'])->name('settings.guarantee-cases.update');
+        Route::post('/settings/delete/guarantee-cases/{id}', [SettingsController::class, 'destroyGuaranteeCase'])->name('settings.guarantee-cases.destroy');
     });
 
     // File viewing routes
