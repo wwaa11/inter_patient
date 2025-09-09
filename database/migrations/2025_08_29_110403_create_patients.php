@@ -54,9 +54,6 @@ return new class extends Migration
             $table->text('action');
             $table->string('action_by');
             $table->timestamps();
-
-            $table->foreign('hn')->references('hn')->on('patients')->onDelete('cascade');
-            $table->foreign('action_by')->references('userid')->on('users')->onDelete('cascade');
         });
 
     }
