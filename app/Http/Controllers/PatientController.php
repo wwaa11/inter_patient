@@ -349,7 +349,7 @@ class PatientController extends Controller
         // Create directory if it doesn't exist
         $directory = public_path('hn/' . $hn);
         if (! file_exists($directory)) {
-            mkdir($directory, 0755, true);
+            mkdir($directory, 0777, true);
         }
 
         // Handle file upload
@@ -372,7 +372,7 @@ class PatientController extends Controller
 
     public function destroyPassport($hn, $id)
     {
-        $passport = PatientPassport::where('hn', $hn)->find($id);
+        $passport = PatientPassport::find($id);
 
         if (! $passport) {
             return redirect()->route('patients.view', $hn)
@@ -385,13 +385,14 @@ class PatientController extends Controller
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
-
             $passport->delete();
             $this->logAction($hn, 'deleted passport');
 
             return redirect()->route('patients.view', $hn)
                 ->with('success', 'Passport deleted successfully');
         } catch (\Exception $e) {
+            $this->logAction($hn, 'failed to delete passport: ' . $e->getMessage());
+
             return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete passport: ' . $e->getMessage());
         }
@@ -417,7 +418,7 @@ class PatientController extends Controller
         // Create directory if it doesn't exist
         $directory = public_path('hn/' . $hn);
         if (! file_exists($directory)) {
-            mkdir($directory, 0755, true);
+            mkdir($directory, 0777, true);
         }
 
         // Handle file upload
@@ -451,13 +452,14 @@ class PatientController extends Controller
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
-
             $report->delete();
             $this->logAction($hn, 'deleted medical report');
 
             return redirect()->route('patients.view', $hn)
                 ->with('success', 'Medical report deleted successfully');
         } catch (\Exception $e) {
+
+            $this->logAction($hn, 'failed to delete medical report: ' . $e->getMessage());
             return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete medical report: ' . $e->getMessage());
         }
@@ -594,17 +596,21 @@ class PatientController extends Controller
                 ->where('cover_end_date', $guarantee->cover_end_date)
                 ->get();
 
-                                               // Handle file upload if new file is provided
             $uploadedFiles = $guarantee->file; // Keep existing files
             if ($request->hasFile('file')) {
                 $directory = public_path('hn/' . $hn);
                 if (! file_exists($directory)) {
-                    mkdir($directory, 0755, true);
+                    mkdir($directory, 0777, true);
                 }
 
                 $filename = 'main_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
                 $request->file('file')->move($directory, $filename);
-                $uploadedFiles = [$filename];
+
+                if (file_exists(public_path('hn/' . $hn . '/' . $uploadedFiles[0]))) {
+                    unlink(public_path('hn/' . $hn . '/' . $uploadedFiles[0]));
+                }
+
+                $uploadedFiles[0] = $filename;
             }
 
             // Delete all related guarantees
@@ -653,7 +659,7 @@ class PatientController extends Controller
             // Handle file upload
             $directory = public_path('hn/' . $hn);
             if (! file_exists($directory)) {
-                mkdir($directory, 0755, true);
+                mkdir($directory, 0777, true);
             }
 
             $files = $guarantee->file ?? [];
@@ -687,7 +693,7 @@ class PatientController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'embassy'          => 'required|string|max:255',
-            'embassy_ref'      => 'nullable|string|max:255',
+            'embassy_ref'      => 'required|string|max:255',
             'number'           => 'nullable|string|max:255',
             'mb'               => 'nullable|string|max:255',
             'issue_date'       => 'required|date',
@@ -696,7 +702,6 @@ class PatientController extends Controller
             'guarantee_cases'  => 'required|array|min:1',
             'file.*'           => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -712,7 +717,7 @@ class PatientController extends Controller
             if ($request->hasFile('file')) {
                 $directory = public_path('hn/' . $hn);
                 if (! file_exists($directory)) {
-                    mkdir($directory, 0755, true);
+                    mkdir($directory, 0777, true);
                 }
 
                 $filename = 'main_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
@@ -738,6 +743,7 @@ class PatientController extends Controller
 
             return redirect()->route('patients.view', $hn)->with('success', 'Main guarantee added successfully');
         } catch (\Exception $e) {
+
             return redirect()->back()->with('error', 'Failed to add main guarantee: ' . $e->getMessage())->withInput();
         }
     }
@@ -826,7 +832,7 @@ class PatientController extends Controller
             if ($request->hasFile('file')) {
                 $directory = public_path('hn/' . $hn);
                 if (! file_exists($directory)) {
-                    mkdir($directory, 0755, true);
+                    mkdir($directory, 0777, true);
                 }
 
                 $filename = 'additional_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
@@ -843,7 +849,7 @@ class PatientController extends Controller
                 'issue_date'       => $request->issue_date,
                 'cover_start_date' => $request->cover_start_date,
                 'cover_end_date'   => $request->cover_end_date,
-                'total_price'      => $request->total_price,
+                'total_price'      => $request->total_price ? str_replace(',', '', $request->total_price) : null,
                 'file'             => $uploadedFiles,
             ]);
 
@@ -870,7 +876,7 @@ class PatientController extends Controller
                     'details'             => $detail['detail'] ?? null,
                     'definition'          => $detail['definition'] ?? null,
                     'amount'              => $detail['amount'] ?? null,
-                    'price'               => $detail['price'] ?? null,
+                    'price'               => $detail['price'] ? str_replace(',', '', $detail['price']) : null,
                 ]);
             }
 
@@ -933,7 +939,7 @@ class PatientController extends Controller
                 'details'             => $detail['detail'] ?? null,
                 'definition'          => $detail['definition'] ?? null,
                 'amount'              => $detail['amount'] ?? null,
-                'price'               => $detail['price'] ?? null,
+                'price'               => $detail['price'] ? str_replace(',', '', $detail['price']) : null,
             ]);
         }
 
@@ -1027,7 +1033,7 @@ class PatientController extends Controller
             if ($request->hasFile('file')) {
                 $directory = public_path('hn/' . $hn);
                 if (! file_exists($directory)) {
-                    mkdir($directory, 0755, true);
+                    mkdir($directory, 0777, true);
                 }
 
                 $filename = 'additional_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
@@ -1043,7 +1049,7 @@ class PatientController extends Controller
                 'issue_date'       => $request->issue_date,
                 'cover_start_date' => $request->cover_start_date,
                 'cover_end_date'   => $request->cover_end_date,
-                'total_price'      => $request->total_price,
+                'total_price'      => $request->total_price ? str_replace(',', '', $request->total_price) : null,
                 'file'             => $uploadedFiles,
             ]);
 
@@ -1069,7 +1075,7 @@ class PatientController extends Controller
                 'details'       => $request->detail,
                 'definition'    => $request->definition,
                 'amount'        => $request->amount,
-                'price'         => $request->price,
+                'price'         => $request->price ? str_replace(',', '', $request->price) : null,
             ]);
 
             return redirect()->route('patients.view', $hn)->with('success', 'Additional guarantee updated successfully');

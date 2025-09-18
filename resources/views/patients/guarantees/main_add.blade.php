@@ -54,7 +54,7 @@
                             <!-- Embassy Reference -->
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300" for="embassy_ref">
-                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference
+                                    <i class="fas fa-hashtag mr-2 text-green-500"></i>Embassy Reference *
                                 </label>
                                 <input class="@error("embassy_ref") border-red-500 @enderror w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" id="embassy_ref" type="text" name="embassy_ref" placeholder="Enter embassy reference" value="{{ old("embassy_ref") }}">
                                 @error("embassy_ref")
