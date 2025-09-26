@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/patients/{hn}/guarantees/main/{id}/edit', [PatientController::class, 'editMainGuarantee'])->name('patients.guarantees.main.edit');
         Route::post('/patients/{hn}/guarantees/main/{id}/update', [PatientController::class, 'updateMainGuarantee'])->name('patients.guarantees.main.update');
         Route::post('/patients/{hn}/guarantees/main/extend/{id}', [PatientController::class, 'extendMainGuarantee'])->name('patients.guarantees.main.extend');
+        Route::post('/patients/{hn}/guarantees/main/{id}/delete-file', [PatientController::class, 'deleteMainGuaranteeFile'])->name('patients.guarantees.main.delete-file');
         Route::post('/patients/{hn}/guarantees/main/{id}', [PatientController::class, 'destroyMainGuarantee'])->name('patients.guarantees.main.destroy');
 
         Route::get('/patients/{hn}/guarantees/additional/create', [PatientController::class, 'createAdditionalGuarantee'])->name('patients.guarantees.additional.create');

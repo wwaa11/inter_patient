@@ -22,12 +22,20 @@
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .skiptranslate {
+            display: flex;
+        }
+    </style>
     @stack("styles")
+
 </head>
 
 <body class="h-full bg-slate-50 dark:bg-slate-900">
     <div class="min-h-full">
+        <!-- Mobile menu -->
+        @include("layouts.partials.mobile-menu")
         <!-- Sidebar -->
         @include("layouts.partials.sidebar")
         <!-- Main content -->
@@ -45,13 +53,10 @@
                 <!-- Separator -->
                 <div class="h-6 w-px bg-slate-200 lg:hidden dark:bg-slate-700" aria-hidden="true"></div>
 
-                <div class="relative flex flex-1">
-                    <button class="translate-btn cursor-pointer rounded bg-gradient-to-r from-blue-400 to-purple-500 p-1.5 text-white" id="translate-btn" onclick="translatePage()">
-                        <i class="fa-solid fa-language" id="translate-icon"></i>
-                        <span class="ml-2">แปลหน้านี้</span>
-                    </button>
-                </div>
+                {{-- Translate --}}
+                <div class="relative flex flex-1" id="google_translate_element"></div>
 
+                {{-- Profile --}}
                 <div class="flex gap-x-4 self-stretch lg:gap-x-6">
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
                         <!-- Separator -->
@@ -83,17 +88,22 @@
 
             <!-- Page content -->
             <main class="py-6">
-                <div class="mx-auto px-4 sm:px-6 lg:px-8" id="google_translate_element">
+                <div class="mx-auto px-4 sm:px-6 lg:px-8">
                     @yield("content")
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Mobile menu -->
-    @include("layouts.partials.mobile-menu")
-
     <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,th',
+                layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+            }, 'google_translate_element');
+        }
+
         function toggleMobileMenu() {
             const mobileMenu = $('#mobile-menu');
             if (mobileMenu.hasClass('hidden')) {
@@ -102,18 +112,7 @@
                 mobileMenu.addClass('hidden');
             }
         }
-
-        function translatePage() {
-            googleTranslateElementInit();
-        }
-
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en'
-            }, 'google_translate_element');
-        }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     @stack("scripts")
 </body>
 

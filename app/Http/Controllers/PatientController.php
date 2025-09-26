@@ -606,11 +606,7 @@ class PatientController extends Controller
                 $filename = 'main_guarantee_' . time() . '_' . $request->file('file')->getClientOriginalName();
                 $request->file('file')->move($directory, $filename);
 
-                if (file_exists(public_path('hn/' . $hn . '/' . $uploadedFiles[0]))) {
-                    unlink(public_path('hn/' . $hn . '/' . $uploadedFiles[0]));
-                }
-
-                $uploadedFiles[0] = $filename;
+                $uploadedFiles[] = $filename;
             }
 
             // Delete all related guarantees
@@ -636,6 +632,7 @@ class PatientController extends Controller
 
             return redirect()->route('patients.view', $hn)->with('success', 'Main guarantee updated successfully');
         } catch (\Exception $e) {
+            dd($e);
             return redirect()->back()->with('error', 'Failed to update main guarantee: ' . $e->getMessage())->withInput();
         }
     }
@@ -776,6 +773,57 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('patients.view', $hn)
                 ->with('error', 'Failed to delete main guarantee: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteMainGuaranteeFile(Request $request, $hn, $id)
+    {
+        $guarantee = PatientMainGuarantee::where('hn', $hn)->find($id);
+
+        if (! $guarantee) {
+            return response()->json(['success' => false, 'message' => 'Guarantee not found'], 404);
+        }
+
+        $filename = $request->input('filename');
+        if (! $filename) {
+            return response()->json(['success' => false, 'message' => 'Filename is required'], 400);
+        }
+
+        try {
+            // Get current files array
+            $files = $guarantee->file;
+
+            // Check if file exists in the guarantee
+            $fileIndex = array_search($filename, $files);
+            if ($fileIndex === false) {
+
+                return response()->json(['success' => false, 'message' => 'File not found in guarantee'], 404);
+            }
+
+            unset($files[$fileIndex]);
+            $files = array_values($files);
+
+            // Get all main guarantee that have the same file
+            $mainGuarantees = PatientMainGuarantee::where('hn', $hn)
+                ->where('file', 'like', '%' . $filename . '%')
+                ->get();
+
+            foreach ($mainGuarantees as $mainGuarantee) {
+                $mainGuarantee->file = $files;
+                $mainGuarantee->save();
+            }
+
+            // Remove physical file
+            $filePath = public_path('hn/' . $hn . '/' . $filename);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $this->logAction($hn, 'deleted file from main guarantee: ' . $filename);
+
+            return response()->json(['success' => true, 'message' => 'File deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete file: ' . $e->getMessage()], 500);
         }
     }
 

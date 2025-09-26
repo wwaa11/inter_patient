@@ -106,6 +106,10 @@
                                 @enderror
                             </div>
 
+                            <div>
+
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -135,10 +139,15 @@
                                     Accepted formats: PDF, JPG, JPEG, PNG (Max: 10MB)
                                 </p>
                                 @if ($guarantee->file && count($guarantee->file) > 0)
-                                    <p class="mt-2 text-sm text-blue-600 dark:text-blue-400">
-                                        <i class="fas fa-file mr-1"></i>
-                                        {{ substr($guarantee->file[0], 26) }}
-                                    </p>
+                                    @foreach ($guarantee->file as $file)
+                                        <div class="file-item mt-2 flex rounded px-2 py-1 text-sm hover:bg-blue-200 dark:hover:bg-blue-700">
+                                            <p class="flex-1 text-sm text-blue-600 dark:text-blue-400">
+                                                <i class="fas fa-file mr-1"></i>
+                                                {{ substr($file, 26) }}
+                                            </p>
+                                            <span class="cursor-pointer text-red-600 dark:text-red-400" onclick="deleteFile('{{ $file }}')">Delete</span>
+                                        </div>
+                                    @endforeach
                                 @endif
                             </div>
 
@@ -203,7 +212,7 @@
                             </h2>
                         </div>
                         <div class="m-auto p-6">
-                            <div class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:border-slate-700 dark:bg-slate-700" id="filePreview">
+                            <div class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:border-slate-700 dark:bg-slate-700" id="filePreview">
                                 @if ($guarantee->file && count($guarantee->file) > 0)
                                     @foreach ($guarantee->file as $file)
                                         @php
@@ -348,5 +357,36 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateSelectedCasesDisplay();
         });
+
+        // Delete file function
+        function deleteFile(filename) {
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this file!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post(`{{ route("patients.guarantees.main.delete-file", ["hn" => $patient->hn, "id" => $guarantee->id]) }}`, {
+                            filename: filename
+                        })
+                        .then(response => {
+                            if (response.data.success) {
+                                Swal.fire('Deleted!', response.data.message, 'success', setTimeout(() => {
+                                    location.reload();
+                                }, 1000));
+                            } else {
+                                Swal.fire('Error!', response.data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', 'An error occurred while deleting the file', 'error');
+                        });
+                }
+            });
+        }
     </script>
 @endpush
