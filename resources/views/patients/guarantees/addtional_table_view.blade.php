@@ -52,6 +52,7 @@
                                     <i class="fas fa-tag mr-2"></i>
                                     {{ $guarantee->additionalType->name }}
                                 </span>
+                                <i class="fas fa-chevron-down chevron-icon ms-3 cursor-pointer text-slate-500" onclick="openGuaranteeDetails({{ $guarantee->id }})"></i>
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
                                 @if (strtolower($guarantee->coverPeriod()) !== "n/a")
@@ -110,8 +111,8 @@
                             </td>
                             @if (auth()->user()->role === "admin")
                                 <td class="w-0 px-6 py-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</span>
+                                    <div class="flex-col items-center justify-between">
+                                        <div class="text-center text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</div>
                                         <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900" onclick="addDetailToGuarantee({{ $guarantee->id }})" title="Add Detail">
                                             <i class="fas fa-plus mr-1"></i>
                                             Add
@@ -122,7 +123,7 @@
                         </tr>
                         <!-- Detail Rows -->
                         @foreach ($guarantee->details as $item)
-                            <tr class="transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                            <tr class="detail-row hidden transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-700/50" id="additional-detail-{{ $guarantee->id }}">
                                 <td class="px-6 py-4 pl-12">
                                     @if ($item->case !== null)
                                         <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold text-white" style="background-color: {{ $item->guaranteeCase->colour }};">
@@ -214,6 +215,21 @@
 
 @push("scripts")
     <script>
+        function openGuaranteeDetails(guaranteeId) {
+            const detailRows = document.querySelectorAll(`#additional-detail-${guaranteeId}`);
+
+            detailRows.forEach(row => {
+                if (row.classList.contains('show')) {
+                    // Hide the details
+                    row.classList.remove('show');
+                    row.classList.add('hidden');
+                } else {
+                    row.classList.remove('hidden');
+                    row.classList.add('show');
+                }
+            });
+        }
+
         function editAdditionalDetail(id) {
             window.location.href = '{{ route("patients.guarantees.additional.edit", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', id);
         }

@@ -1,4 +1,3 @@
-<!-- Mobile menu -->
 <div class="hidden lg:hidden" id="mobile-menu">
     <div class="fixed inset-0 z-50"></div>
     <div class="fixed inset-y-0 left-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-slate-900/10 dark:bg-slate-800 dark:sm:ring-slate-700">

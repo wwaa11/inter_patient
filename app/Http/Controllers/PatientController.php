@@ -802,7 +802,7 @@ class PatientController extends Controller
             'mb'                         => 'nullable|string|max:255',
             'issue_date'                 => 'required|date',
             'cover_start_date'           => 'nullable|date',
-            'cover_end_date'             => 'nullable|date|after:cover_start_date',
+            'cover_end_date'             => 'nullable|date|after_or_equal:cover_start_date',
             'total_price'                => 'nullable|numeric|min:0',
             'details'                    => 'required|array|min:1',
             'details.*.additional_case'  => 'nullable|string',

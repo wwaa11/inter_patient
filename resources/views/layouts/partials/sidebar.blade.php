@@ -1,4 +1,3 @@
-<!-- Sidebar -->
 <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
     <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <!-- Logo -->
