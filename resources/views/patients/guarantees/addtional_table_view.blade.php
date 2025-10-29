@@ -46,7 +46,7 @@
                 <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-800">
                     @foreach ($patient->guaranteeAdditionals as $guarantee)
                         <!-- Guarantee Header Row -->
-                        <tr class="bg-slate-50 dark:bg-slate-700">
+                        <tr class="@if (!$guarantee->isInCoverPeriod() && $guarantee->coverPeriod() !== "N/A") grayscale opacity-50 @endif bg-slate-50 dark:bg-slate-700">
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-white shadow-sm" style="background-color: {{ $guarantee->additionalType->colour }};">
                                     <i class="fas fa-tag mr-2"></i>
@@ -140,6 +140,19 @@
                                             {!! $item->specificDate() !!}
                                         </div>
                                     @endif
+                                    @if ($item->use_date)
+                                        <div class="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            ใช้งานแล้ว: {{ $item->use_date->format("d/m/Y") }}
+                                        </div>
+                                    @else
+                                        @if (auth()->user()->role === "admin")
+                                            <button class="mt-2 inline-flex items-center rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors duration-200 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900" onclick="openUseDateModal({{ $item->id }})">
+                                                <i class="fa-solid fa-arrow-left mr-1"></i>
+                                                ใช้งาน
+                                            </button>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4" colspan="2">
                                     @if ($item->details)
@@ -213,6 +226,36 @@
     @endif
 </div>
 
+<!-- Use Date Modal -->
+<div class="fixed inset-0 z-50 m-auto hidden items-center justify-center bg-black/30 p-4" id="useDateModal">
+    <div class="m-auto mt-64 w-full max-w-sm transform rounded-xl bg-white shadow-2xl transition-all dark:bg-slate-800">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
+                    <i class="fa-solid fa-play text-emerald-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Set Use Date</h3>
+            </div>
+            <button class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-white" onclick="closeUseDateModal()">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+        <!-- Form -->
+        <form class="p-4" id="useDateForm" method="POST" action="">
+            @csrf
+            <div class="mb-4">
+                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-white" for="use_date">Use Date</label>
+                <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300" id="use_date" type="date" name="use_date" required>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button class="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-white" type="button" onclick="closeUseDateModal()">Cancel</button>
+                <button class="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push("scripts")
     <script>
         function openGuaranteeDetails(guaranteeId) {
@@ -265,6 +308,16 @@
             // Redirect to the add detail page for the specific guarantee
             const url = '{{ route("patients.guarantees.additional.detail.create", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId)
             window.location.href = url;
+        }
+
+        function openUseDateModal(detailId) {
+            const form = document.getElementById('useDateForm');
+            form.action = '{{ route("patients.guarantees.additional.detail.use", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', detailId);
+            document.getElementById('useDateModal').classList.remove('hidden');
+        }
+
+        function closeUseDateModal() {
+            document.getElementById('useDateModal').classList.add('hidden');
         }
     </script>
 @endpush

@@ -16,6 +16,7 @@ class PatientAdditionalDetail extends Model
         'specific_date',
         'start_date',
         'end_date',
+        'use_date',
         'details',
         'definition',
         'amount',
@@ -24,6 +25,7 @@ class PatientAdditionalDetail extends Model
 
     protected $casts = [
         'specific_date' => 'array',
+        'use_date'      => 'date',
         'price'         => 'decimal:2',
     ];
 

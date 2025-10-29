@@ -289,6 +289,14 @@
                                         </div>
                                     </div>
 
+                                    {{-- Use Date --}}
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+                                            <i class="fas fa-calendar mr-2 text-purple-500"></i>Use Date (Optional)
+                                        </label>
+                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" value="{{ old("use_date", date("Y-m-d", strtotime($detail->use_date))) }}" name="use_date" placeholder="Use date">
+                                    </div>
+
                                     <!-- Detail -->
                                     <div class="md:col-span-2">
                                         <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">

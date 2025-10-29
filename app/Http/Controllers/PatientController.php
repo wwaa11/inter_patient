@@ -1120,6 +1120,7 @@ class PatientController extends Controller
                 'specific_date' => $specificDate,
                 'start_date'    => $startDate,
                 'end_date'      => $endDate,
+                'use_date'      => $request->use_date,
                 'details'       => $request->detail,
                 'definition'    => $request->definition,
                 'amount'        => $request->amount,
@@ -1157,6 +1158,41 @@ class PatientController extends Controller
             return redirect()->back()->with('success', 'Additional guarantee detail deleted successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete additional guarantee detail: ' . $e->getMessage());
+        }
+    }
+
+    public function setGuaranteeDetailUseDate(Request $request, $hn, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'use_date' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $patient = Patient::find($hn);
+        if (! $patient) {
+            return redirect()->route('patients.index')->with('error', 'Patient not found');
+        }
+
+        $detail = PatientAdditionalDetail::find($id);
+        if (! $detail || ! $detail->header || $detail->header->hn != $hn) {
+            return redirect()->route('patients.view', $hn)->with('error', 'Additional guarantee detail not found');
+        }
+
+        try {
+            $detail->update([
+                'use_date' => $request->use_date,
+            ]);
+
+            if (method_exists($this, 'logAction')) {
+                $this->logAction($hn, 'set additional detail use date');
+            }
+
+            return redirect()->route('patients.view', $hn)->with('success', 'Use date set successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to set use date: ' . $e->getMessage())->withInput();
         }
     }
 

@@ -58,6 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/patients/{hn}/guarantees/additional/{id}/edit', [PatientController::class, 'editGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.edit');
         Route::post('/patients/{hn}/guarantees/additional/{id}', [PatientController::class, 'updateGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.update');
         Route::post('/patients/{hn}/guarantees/additional/{id}/delete', [PatientController::class, 'destroyGuaranteeAdditionalDetail'])->name('patients.guarantees.additional.destroy');
+        Route::post('/patients/{hn}/guarantees/additional/detail/{id}/use', [PatientController::class, 'setGuaranteeDetailUseDate'])->name('patients.guarantees.additional.detail.use');
 
         // User Management Routes (admin only)
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

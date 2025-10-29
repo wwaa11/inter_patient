@@ -85,7 +85,7 @@
                             </td>
                             <td class="px-3 py-4">
                                 <div>
-                                    <span class="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-white shadow-sm" style="background-color: {{ $guarantee->guaranteeCase->colour }}">
+                                    <span class="inline-flex w-full cursor-pointer items-center rounded-lg bg-opacity-80 px-3 py-1.5 text-sm font-bold text-white shadow-sm" style="color: {{ $guarantee->guaranteeCase->colour }}; border: 1px solid {{ $guarantee->guaranteeCase->colour }};">
                                         <i class="fas fa-briefcase mr-2"></i>
                                         {{ $guarantee->guaranteeCase->name }}
                                     </span>

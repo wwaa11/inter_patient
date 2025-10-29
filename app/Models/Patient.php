@@ -50,6 +50,8 @@ class Patient extends Model
 
     public function guaranteeAdditionals()
     {
-        return $this->hasMany(PatientAdditionalHeader::class, 'hn', 'hn');
+        // return $this->hasMany(PatientAdditionalHeader::class, 'hn', 'hn');
+        return $this->hasMany(PatientAdditionalHeader::class, 'hn', 'hn')
+            ->orderByRaw('CASE WHEN CAST(GETDATE() AS DATE) BETWEEN cover_start_date AND cover_end_date THEN 1 ELSE 0 END DESC');
     }
 }
