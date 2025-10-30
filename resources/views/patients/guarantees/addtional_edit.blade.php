@@ -294,7 +294,7 @@
                                         <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">
                                             <i class="fas fa-calendar mr-2 text-purple-500"></i>Use Date (Optional)
                                         </label>
-                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" type="date" value="{{ old("use_date", date("Y-m-d", strtotime($detail->use_date))) }}" name="use_date" placeholder="Use date">
+                                        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100" class="text-center" type="date" @if ($detail->use_date !== null) value="{{ date("Y-m-d", strtotime($detail->use_date)) }}" @endif name="use_date" placeholder="Use date">
                                     </div>
 
                                     <!-- Detail -->
@@ -366,7 +366,7 @@
                                         @endif
                                     @endforeach
                                 @else
-                                    <div class="text-center">
+                                    <div>
                                         <i class="fas fa-file-upload mb-3 text-4xl text-gray-400"></i>
                                         <p class="text-gray-500 dark:text-slate-400">No file selected</p>
                                         <p class="mt-1 text-sm text-gray-400 dark:text-slate-500">Upload a file to see preview</p>

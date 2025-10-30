@@ -154,7 +154,7 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td class="px-6 py-4" colspan="2">
+                                <td class="px-6 py-4" colspan="3">
                                     @if ($item->details)
                                         <div class="mb-3 max-w-xs">
                                             <p class="text-wrap text-sm text-slate-700 dark:text-slate-300" title="{{ $item->details }}">
@@ -170,19 +170,12 @@
                                         </div>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex justify-end space-x-3">
-                                        @if ($item->amount)
-                                            <div class="flex items-center">
-                                                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ $item->amount }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </td>
+
                                 <td class="px-6 py-4">
                                     <div class="flex justify-end space-x-3">
                                         @if ($item->price)
                                             <div class="flex items-center">
+                                                <span class="mr-1 text-sm font-medium text-blue-700 dark:text-blue-300">{{ $item->amount }} : </span>
                                                 <span class="mr-1 text-emerald-600">฿</span>
                                                 <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">{{ number_format($item->price) }} </span>
                                             </div>
