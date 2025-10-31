@@ -46,7 +46,7 @@
                 <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-800">
                     @foreach ($patient->guaranteeAdditionals as $guarantee)
                         <!-- Guarantee Header Row -->
-                        <tr class="@if (!$guarantee->isInCoverPeriod() && $guarantee->coverPeriod() !== "N/A") grayscale opacity-50 @endif bg-slate-50 dark:bg-slate-700">
+                        <tr class="@if ($guarantee->isInCoverPeriod() == "Expired" && $guarantee->coverPeriod() !== "N/A") grayscale opacity-50 @endif bg-slate-50 dark:bg-slate-700">
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-white shadow-sm" style="background-color: {{ $guarantee->additionalType->colour }};">
                                     <i class="fas fa-tag mr-2"></i>
@@ -63,24 +63,36 @@
                                         </div>
                                     </div>
                                 @else
-                                    <span class="italic text-slate-400">N/A</span>
+                                    <span class="italic text-slate-400">Non Specified</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">
                                 @if ($guarantee->coverPeriod() !== "N/A")
-                                    @if ($guarantee->isInCoverPeriod())
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1.5 text-xs font-medium text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>
-                                            Valid
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1.5 text-xs font-medium text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>
-                                            Invalid
-                                        </span>
-                                    @endif
+                                    @php
+                                        switch ($guarantee->isInCoverPeriod()) {
+                                            case "Valid":
+                                                $icon = "fa-check-circle";
+                                                $class = "bg-green-100 text-green-800";
+                                                break;
+                                            case "Upcoming":
+                                                $icon = "fa-clock";
+                                                $class = "bg-yellow-100 text-yellow-800";
+                                                break;
+                                            case "Expired":
+                                                $icon = "fa-exclamation-circle";
+                                                $class = "bg-red-100 text-red-800";
+                                                break;
+                                            default:
+                                                # code...
+                                                break;
+                                        }
+                                    @endphp
+                                    <span class="{{ $class }} inline-flex items-center rounded-full px-2.5 py-1.5 text-xs font-medium">
+                                        <i class="fas {{ $icon }} mr-1"></i>
+                                        {{ $guarantee->isInCoverPeriod() }}
+                                    </span>
                                 @else
-                                    <span class="italic text-slate-400">N/A</span>
+                                    <span class="italic text-slate-400">Non Specified</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">

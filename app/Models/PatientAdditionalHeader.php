@@ -62,10 +62,12 @@ class PatientAdditionalHeader extends Model
         $today      = now();
         $coverStart = \Carbon\Carbon::parse($this->cover_start_date);
         $coverEnd   = \Carbon\Carbon::parse($this->cover_end_date);
-        if ($coverStart && $coverEnd) {
-            return $today->between($coverStart, $coverEnd);
+        if ($today <= $coverStart) {
+            return 'Upcoming';
+        } else if ($today >= $coverStart && $today <= $coverEnd) {
+            return 'Valid';
         } else {
-            return 'N/A';
+            return 'Expired';
         }
     }
 }
