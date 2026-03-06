@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                @if (auth()->user()->role === "admin")
+                @if (auth()->user()->isAdmin())
                     <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
                         <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
                     </a>
@@ -38,7 +38,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Embassy Ref/MB</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Files</th>
-                        @if (auth()->user()->role === "admin")
+                        @if (auth()->user()->isAdmin())
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                         @endif
                     </tr>
@@ -121,7 +121,7 @@
                                     <span class="text-sm italic text-slate-400">No files</span>
                                 @endif
                             </td>
-                            @if (auth()->user()->role === "admin")
+                            @if (auth()->user()->isAdmin())
                                 <td class="w-0 px-6 py-4">
                                     <div class="flex-col items-center justify-between">
                                         <div class="text-center text-sm text-slate-400">{{ $guarantee->details->count() }} {{ Str::plural("detail", $guarantee->details->count()) }}</div>
@@ -158,7 +158,7 @@
                                             ใช้งานแล้ว: {{ $item->use_date->format("d/m/Y") }}
                                         </div>
                                     @else
-                                        @if (auth()->user()->role === "admin")
+                                        @if (auth()->user()->isAdmin())
                                             <button class="mt-2 inline-flex items-center rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors duration-200 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900" onclick="openUseDateModal({{ $item->id }})">
                                                 <i class="fa-solid fa-arrow-left mr-1"></i>
                                                 ใช้งาน
@@ -194,7 +194,7 @@
                                         @endif
                                     </div>
                                 </td>
-                                @if (auth()->user()->role === "admin")
+                                @if (auth()->user()->isAdmin())
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <button class="inline-flex items-center rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900" onclick="editAdditionalDetail({{ $item->id }})">
@@ -222,7 +222,7 @@
             </div>
             <h3 class="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">No Additional Guarantees</h3>
             <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">This patient doesn't have any additional guarantees on record.</p>
-            @if (auth()->user()->role === "admin")
+            @if (auth()->user()->isAdmin())
                 <a class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700" href="{{ route("patients.guarantees.additional.create", $patient->hn) }}">
                     <i class="fa-solid fa-plus mr-1"></i>Additional Guarantee
                 </a>
@@ -287,7 +287,7 @@
                 // Create a form and submit it
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', id);
+                form.action = '{{ route("patients.guarantees.additional.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', id) + '/delete';
 
                 // Add CSRF token
                 const csrfToken = document.createElement('input');
@@ -295,13 +295,6 @@
                 csrfToken.name = '_token';
                 csrfToken.value = '{{ csrf_token() }}';
                 form.appendChild(csrfToken);
-
-                // Add method override for DELETE
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                form.appendChild(methodInput);
 
                 // Submit the form
                 document.body.appendChild(form);

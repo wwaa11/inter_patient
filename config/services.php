@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'ssb' => [
+        'key' => env('API_SSB_KEY'),
+    ],
+
 ];

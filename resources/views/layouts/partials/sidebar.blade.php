@@ -1,10 +1,11 @@
 <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
-    <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <div
+        class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <!-- Logo -->
         <div class="flex h-16 shrink-0 items-center">
             <div class="flex items-center space-x-3">
                 <div class="flex h-8 items-center justify-center rounded-lg">
-                    <img class="h-8" src="{{ asset("images/logo.ico") }}" alt="logo">
+                    <img class="h-8" src="{{ asset('images/logo.ico') }}" alt="logo">
                 </div>
                 <span class="text-lg font-bold text-slate-900 dark:text-white">GOP Management</span>
             </div>
@@ -15,26 +16,46 @@
             <ul class="flex flex-1 flex-col gap-y-7" role="list">
                 <li>
                     <ul class="-mx-2 space-y-1" role="list">
+                        <li>
+                            <a class="{{ request()->routeIs('dashboard') ? 'nav-active text-emerald-700 dark:text-emerald-500' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                href="{{ route('dashboard') }}">
+                                <i class="fa-solid fa-chart-pie h-6 w-6 text-lg"></i>
+                                Dashboard
+                            </a>
+                        </li>
                         <!-- Patients -->
                         <li>
-                            <a class="{{ request()->routeIs("patients*") ? "nav-active text-emerald-700 dark:text-emerald-500" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("patients") }}">
+                            <a class="{{ request()->routeIs('patients*') ? 'nav-active text-emerald-700 dark:text-emerald-500' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                href="{{ route('patients') }}">
                                 <i class="fa-solid fa-user h-6 w-6 text-lg"></i>
                                 Patients
                             </a>
                         </li>
 
-                        <!-- Dashboard -->
-                        {{-- <li>
-                            <a class="{{ request()->routeIs("dashboard") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("dashboard") }}">
-                                <i class="fa-solid fa-house h-6 w-6 text-lg"></i>
-                                Dashboard
+                        <li>
+                            <a class="{{ request()->routeIs('preauth*') ? 'nav-active text-emerald-700 dark:text-emerald-500' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                href="{{ route('preauth.index') }}">
+                                <i class="fa-solid fa-id-card h-6 w-6 text-lg"></i>
+                                Pre Authorization
                             </a>
-                        </li> --}}
+                        </li>
 
-                        @if (auth()->user()->role === "admin")
+                        <li>
+                            <a class="{{ request()->routeIs('admissions*') ? 'nav-active text-emerald-700 dark:text-emerald-500' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                href="{{ route('admissions.index') }}">
+                                <i class="fa-solid fa-bed-pulse h-6 w-6 text-lg"></i>
+                                Admission
+                            </a>
+                        </li>
+
+                        @if (auth()->user()->isAdmin())
                             <!-- User Management -->
+                            <li class="border-b border-slate-200 dark:border-slate-700 nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300 cursor-default">
+                                Settings
+                            </li>
                             <li>
-                                <a class="{{ request()->routeIs("users*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("users.index") }}">
+                                <a class="{{ request()->routeIs('users*') ? 'nav-active text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    href="{{ route('users.index') }}">
                                     <i class="fa-solid fa-users h-6 w-6 text-lg"></i>
                                     User Management
                                 </a>
@@ -42,9 +63,32 @@
 
                             <!-- Settings -->
                             <li>
-                                <a class="{{ request()->routeIs("settings*") ? "nav-active text-emerald-700 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700" }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6" href="{{ route("settings.index") }}">
+                                <a class="{{ request()->routeIs('settings*') ? 'nav-active text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    href="{{ route('settings.index') }}">
                                     <i class="fa-solid fa-cog h-6 w-6 text-lg"></i>
-                                    Settings
+                                    Guarantee Cases
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="{{ request()->routeIs('providers*') ? 'nav-active text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    href="{{ route('providers.index') }}">
+                                    <i class="fa-solid fa-building-shield h-6 w-6 text-lg"></i>
+                                    Providers
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('service-types*') ? 'nav-active text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    href="{{ route('service-types.index') }}">
+                                    <i class="fa-solid fa-list h-6 w-6 text-lg"></i>
+                                    Service Types
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('notifiers*') ? 'nav-active text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-700' }} nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    href="{{ route('notifiers.index') }}">
+                                    <i class="fa-solid fa-bell h-6 w-6 text-lg"></i>
+                                    Notifiers
                                 </a>
                             </li>
                         @endif

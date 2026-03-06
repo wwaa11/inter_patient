@@ -47,7 +47,6 @@
 
             <form id="updateForm" action="{{ route("patients.guarantees.additional.update", [$patient->hn, $detail->id]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
                 {{-- Information Content --}}
                 <div class="mb-6 rounded-lg bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="space-y-6">

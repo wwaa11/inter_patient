@@ -5,35 +5,45 @@
         <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="mb-8">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                     <div>
                         <h1 class="text-3xl font-bold text-slate-900 dark:text-white">User Management</h1>
                         <p class="mt-2 text-slate-600 dark:text-slate-400">Manage system users and their roles</p>
                     </div>
-                    <button class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700" onclick="openCreateModal()">
-                        <i class="fa-solid fa-plus mr-2"></i>
-                        Add User
-                    </button>
+                    <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-x-3 sm:space-y-0">
+                        <!-- Search -->
+                        <form action="{{ route('users.index') }}" method="GET" class="relative">
+                            <input type="text" name="search" value="{{ $request->search ?? '' }}"
+                                placeholder="Search by User ID or Name..."
+                                class="w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white sm:w-64">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                            </div>
+                        </form>
+
+                        <button class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700" onclick="openCreateModal()">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Add User
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Success/Error Messages -->
-            @if (session("success"))
-                <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-check-circle mr-3 text-emerald-600 dark:text-emerald-400"></i>
-                        <span class="text-emerald-800 dark:text-emerald-200">{{ session("success") }}</span>
-                    </div>
-                </div>
-            @endif
-
-            @if (session("error"))
-                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-exclamation-circle mr-3 text-red-600 dark:text-red-400"></i>
-                        <span class="text-red-800 dark:text-red-200">{{ session("error") }}</span>
-                    </div>
-                </div>
+            <!-- Success/Error Messages (handled by SweetAlert now, but keeping for session compatibility) -->
+            @if (session("success") || session("error"))
+                <script>
+                    window.onload = function() {
+                        Swal.fire({
+                            icon: '{{ session("success") ? "success" : "error" }}',
+                            title: '{{ session("success") ?: session("error") }}',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    };
+                </script>
             @endif
 
             <!-- Users Table -->
@@ -71,8 +81,8 @@
                                         {{ $user->division }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4">
-                                        <span class="{{ $user->role === "admin" ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" : "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200" }} inline-flex rounded-full px-2 py-1 text-xs font-semibold">
-                                            <i class="fa-solid {{ $user->role === "admin" ? "fa-crown" : "fa-user" }} mr-1"></i>
+                                        <span class="{{ $user->isAdmin() ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" : "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200" }} inline-flex rounded-full px-2 py-1 text-xs font-semibold">
+                                            <i class="fa-solid {{ $user->isAdmin() ? "fa-crown" : "fa-user" }} mr-1"></i>
                                             {{ ucfirst($user->role) }}
                                         </span>
                                     </td>
@@ -85,7 +95,7 @@
                                                 <i class="fa-solid fa-user-cog mr-1"></i> Edit Role
                                             </button>
                                             @if ($user->id !== auth()->id())
-                                                <form class="inline" action="{{ route("users.destroy", $user) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                                <form class="inline" action="{{ route("users.destroy", $user) . '/delete' }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
                                                     @csrf
                                                     <button class="font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" type="submit">
                                                         <i class="fa-solid fa-trash mr-1"></i> Delete
@@ -139,6 +149,7 @@
                             <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="createRole" name="role" required>
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
+                                <option value="superadmin">Super Admin</option>
                             </select>
                         </div>
                     </div>
@@ -174,6 +185,7 @@
                             <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white" id="modalRole" name="role">
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
+                                <option value="superadmin">Super Admin</option>
                             </select>
                         </div>
                     </div>
@@ -210,6 +222,22 @@
 
         function closeRoleModal() {
             document.getElementById('roleModal').classList.add('hidden');
+        }
+
+        function confirmDelete(userId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + userId).submit();
+                }
+            })
         }
 
         // Close modals when clicking outside

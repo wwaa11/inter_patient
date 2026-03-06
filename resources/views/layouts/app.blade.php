@@ -18,7 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Styles / Scripts -->
-    @vite(["resources/css/app.css", "resources/js/app.js"])
+    @vite(["resources/css/app.css", "resources/js/app.js", "resources/js/preauth-forms.js", "resources/js/admission-forms.js"])
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -26,6 +26,26 @@
     <style>
         .skiptranslate {
             display: flex;
+        }
+
+        /* Hide Google Translate original text and feedback */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-gadget-icon,
+        #goog-gt-tt,
+        .goog-te-balloon-frame,
+        .goog-tooltip,
+        .goog-tooltip:hover {
+            display: none !important;
+        }
+
+        .goog-text-highlight {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        body {
+            top: 0 !important;
         }
     </style>
     @stack("styles")
@@ -101,6 +121,7 @@
                 pageLanguage: 'en',
                 includedLanguages: 'en,th',
                 layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+                autoDisplay: false
             }, 'google_translate_element');
         }
 

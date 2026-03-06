@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                @if (auth()->user()->role === "admin")
+                @if (auth()->user()->isAdmin())
                     <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
                         <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
                     </a>
@@ -40,7 +40,7 @@
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Case</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Valid</th>
                         <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Files</th>
-                        @if (auth()->user()->role === "admin")
+                        @if (auth()->user()->isAdmin())
                             <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                         @endif
                     </tr>
@@ -123,7 +123,7 @@
                                     <span class="text-sm italic text-slate-400">No files</span>
                                 @endif
                             </td>
-                            @if (auth()->user()->role === "admin")
+                            @if (auth()->user()->isAdmin())
                                 <td class="px-3 py-4">
                                     <div class="flex space-x-2">
                                         <button class="inline-flex items-center rounded-lg bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900" onclick="openExtendMainGuaranteeModal({{ $guarantee->id }}, '{{ $guarantee->embassy_ref }}')" title="Extend Guarantee">
@@ -153,7 +153,7 @@
             </div>
             <h3 class="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">No Main Guarantees</h3>
             <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">This patient doesn't have any main guarantees on record.</p>
-            @if (auth()->user()->role === "admin")
+            @if (auth()->user()->isAdmin())
                 <a class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700" href="{{ route("patients.guarantees.main.create", $patient->hn) }}">
                     <i class="fa-solid fa-plus mr-1"></i>Main Guarantee
                 </a>

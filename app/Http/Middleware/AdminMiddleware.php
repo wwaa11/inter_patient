@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -14,8 +15,8 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! auth()->check() || auth()->user()->role !== 'admin') {
-            abort(403, 'Access denied. Admin privileges required.');
+        if (! auth()->check() || ! auth()->user()->isAdmin()) {
+            abort(403, 'Access denied. Admin or Super Admin privileges required.');
         }
 
         return $next($request);

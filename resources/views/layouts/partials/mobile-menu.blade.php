@@ -59,7 +59,7 @@
                             <span>Reports</span>
                         </div>
                     </a>
-                    @if (auth()->user()->role === "admin")
+                    @if (auth()->user()->isAdmin())
                         <a class="{{ request()->routeIs("settings*") ? "bg-emerald-50 dark:bg-emerald-900/20" : "" }} -mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50 dark:text-white dark:hover:bg-slate-700" href="{{ route("settings.index") }}">
                             <div class="flex items-center space-x-3">
                                 <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

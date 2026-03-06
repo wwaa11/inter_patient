@@ -11,14 +11,14 @@
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">View patient information for {{ $patient->name }}</p>
             </div>
             <div class="mt-4 flex space-x-2 sm:mt-0">
-                @if (auth()->user()->role === "admin")
+                @if (auth()->user()->isAdmin())
                     <a class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" href="{{ route("patients.edit", $patient->hn) }}">
                         <i class="fa-solid fa-edit mr-2"></i>
                         Edit Patient
                     </a>
                     <form class="inline" id="delete-patient-form" method="POST" action="{{ route("patients.destroy", $patient->hn) }}">
                         @csrf
-                        <button class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" type="button" onclick="deletePatient(event)" type="submit">
+                        <button class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" type="button" onclick="deletePatient(event)">
                             <i class="fa-solid fa-trash mr-2"></i>
                             Delete Patient
                         </button>
@@ -108,7 +108,7 @@
                                 <p class="mt-1 text-sm text-slate-900 dark:text-white">{{ $patient->location ?? "N/A" }}</p>
                             </div>
 
-                            @if ($latestPassport && auth()->user()->role === "admin")
+                            @if ($latestPassport && auth()->user()->isAdmin())
                                 <div class="sm:col-span-2">
                                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Latest Passport</label>
                                     <div class="mt-1 flex items-center gap-3">
@@ -136,7 +136,7 @@
             <div class="px-6 py-6">
                 <div class="mb-4 flex items-center justify-between">
                     <h3 class="text-lg font-medium text-slate-900 dark:text-white">Patient Notes</h3>
-                    @if (auth()->user()->role === "admin")
+                    @if (auth()->user()->isAdmin())
                         <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddNoteModal()">
                             <i class="fa-solid fa-plus"></i>
                         </button>
@@ -163,7 +163,7 @@
                                             </div>
                                         @endif
                                     </div>
-                                    @if (auth()->user()->role === "admin")
+                                    @if (auth()->user()->isAdmin())
                                         <div class="flex-shrink-0">
                                             <button class="rounded-lg bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700" onclick="deleteNote('{{ $patient->hn }}', '{{ $note->id }}')">
                                                 <i class="fa-solid fa-trash"></i>
@@ -190,13 +190,13 @@
 
         <!-- Additional Information -->
         <div class="flex gap-6">
-            @if (auth()->user()->role === "admin")
+            @if (auth()->user()->isAdmin())
                 <!-- Patient Passports -->
                 <div class="flex-1 rounded-lg bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
                     <div class="px-6 py-6">
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-medium text-slate-900 dark:text-white">Passports</h3>
-                            @if (auth()->user()->role === "admin")
+                            @if (auth()->user()->isAdmin())
                                 <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddPassportModal()">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
@@ -234,7 +234,7 @@
                                                 <button class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700" onclick="viewFile('{{ $patient->hn }}', '{{ $passport->file }}')">
                                                     <i class="fa-solid fa-eye mr-1"></i>View
                                                 </button>
-                                                @if (auth()->user()->role === "admin")
+                                                @if (auth()->user()->isAdmin())
                                                     <button class="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700" onclick="deletePassport('{{ $patient->hn }}', '{{ $passport->id }}')">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
@@ -256,7 +256,7 @@
                 <div class="px-6 py-6">
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-medium text-slate-900 dark:text-white">Medical Reports</h3>
-                        @if (auth()->user()->role === "admin")
+                        @if (auth()->user()->isAdmin())
                             <button class="text-blue-600 hover:text-blue-800 dark:text-white" onclick="openAddMedicalReportModal()">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
@@ -279,7 +279,7 @@
                                             <button class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700" onclick="viewFile('{{ $patient->hn }}', '{{ $report->file }}')">
                                                 <i class="fa-solid fa-eye mr-1"></i>View
                                             </button>
-                                            @if (auth()->user()->role === "admin")
+                                            @if (auth()->user()->isAdmin())
                                                 <button class="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700" onclick="deleteMedicalReport('{{ $patient->hn }}', '{{ $report->id }}')">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
@@ -742,7 +742,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId))
+                    axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId) + '/delete')
                         .then(response => {
                             location.reload();
                         })
@@ -766,7 +766,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId))
+                    axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId) + '/delete')
                         .then(response => {
                             location.reload();
                         })
@@ -790,7 +790,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId))
+                    axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId) + '/delete')
                         .then(response => {
                             location.reload();
                         })
@@ -814,7 +814,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
+                    axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId) + '/delete')
                         .then(response => {
                             location.reload();
                         })

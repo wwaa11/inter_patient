@@ -38,7 +38,7 @@
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage all patient records and information</p>
             </div>
             <div class="mt-4 sm:mt-0">
-                @if (auth()->user()->role === "admin")
+                @if (auth()->user()->isAdmin())
                     <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" href="{{ route("patients.create") }}">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Add New Patient
@@ -147,7 +147,7 @@
                                     <i class="fa-solid fa-users mb-4 text-4xl text-slate-400"></i>
                                     <h3 class="mb-2 text-lg font-medium text-slate-900 dark:text-white">No patients found</h3>
                                     <p class="mb-4 text-slate-500 dark:text-slate-400">Get started by adding your first patient.</p>
-                                    @if (auth()->user()->role === "admin")
+                                    @if (auth()->user()->isAdmin())
                                         <a class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-emerald-700 hover:to-teal-700" href="{{ route("patients.create") }}">
                                             <i class="fa-solid fa-plus mr-2"></i>
                                             Add Patient

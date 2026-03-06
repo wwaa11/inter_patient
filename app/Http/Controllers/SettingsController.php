@@ -1,57 +1,60 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEmbassyRequest;
+use App\Http\Requests\StoreGuaranteeCaseRequest;
+use App\Http\Requests\UpdateEmbassyRequest;
+use App\Http\Requests\UpdateGuaranteeCaseRequest;
 use App\Models\Embassy;
 use App\Models\GuaranteeCase;
-use Illuminate\Http\Request;
+use App\Traits\HasRandomColor;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class SettingsController extends Controller
 {
-    private function randomHexColour()
-    {
-        return '#' . substr(str_shuffle('0123456789abcdef'), 0, 6);
-    }
+    use HasRandomColor;
 
-    public function index()
+    /**
+     * Display settings index.
+     */
+    public function index(): View
     {
-        $embassies      = Embassy::all();
+        $embassies = Embassy::all();
         $guaranteeCases = GuaranteeCase::all();
 
         return view('settings.index', compact('embassies', 'guaranteeCases'));
     }
 
-    // Embassy CRUD methods
-    public function storeEmbassy(Request $request)
+    /**
+     * Store a new embassy.
+     */
+    public function storeEmbassy(StoreEmbassyRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
         Embassy::create([
-            'name'   => $request->name,
-            'colour' => $this->randomHexColour(),
+            'name' => $request->name,
+            'colour' => $this->randomHexColor(),
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Embassy added successfully!');
     }
 
-    public function updateEmbassy(Request $request, $id)
+    /**
+     * Update an embassy.
+     */
+    public function updateEmbassy(UpdateEmbassyRequest $request, int $id): RedirectResponse
     {
-        $request->validate([
-            'name'   => 'required|string|max:255',
-            'colour' => 'nullable|string|max:255',
-        ]);
-
         $embassy = Embassy::findOrFail($id);
-        $embassy->update([
-            'name'   => $request->name,
-            'colour' => $request->colour,
-        ]);
+        $embassy->update($request->validated());
 
         return redirect()->route('settings.index')->with('success', 'Embassy updated successfully!');
     }
 
-    public function destroyEmbassy($id)
+    /**
+     * Delete an embassy.
+     */
+    public function destroyEmbassy(int $id): RedirectResponse
     {
         $embassy = Embassy::findOrFail($id);
         $embassy->delete();
@@ -59,42 +62,39 @@ class SettingsController extends Controller
         return redirect()->route('settings.index')->with('success', 'Embassy deleted successfully!');
     }
 
-    // Guarantee Case CRUD methods
-    public function storeGuaranteeCase(Request $request)
+    /**
+     * Store a new guarantee case.
+     */
+    public function storeGuaranteeCase(StoreGuaranteeCaseRequest $request): RedirectResponse
     {
-        $request->validate([
-            'case'       => 'required|string|max:255',
-            'definition' => 'nullable|string|max:255',
-        ]);
-
         GuaranteeCase::create([
-            'name'       => $request->case,
+            'name' => $request->case,
             'definition' => $request->definition,
-            'colour'     => $this->randomHexColour(),
+            'colour' => $this->randomHexColor(),
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case added successfully!');
     }
 
-    public function updateGuaranteeCase(Request $request, $id)
+    /**
+     * Update a guarantee case.
+     */
+    public function updateGuaranteeCase(UpdateGuaranteeCaseRequest $request, int $id): RedirectResponse
     {
-        $request->validate([
-            'case'       => 'required|string|max:255',
-            'definition' => 'nullable|string|max:255',
-            'colour'     => 'nullable|string|max:255',
-        ]);
-
         $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->update([
-            'name'       => $request->case,
+            'name' => $request->case,
             'definition' => $request->definition,
-            'colour'     => $request->colour,
+            'colour' => $request->colour,
         ]);
 
         return redirect()->route('settings.index')->with('success', 'Guarantee case updated successfully!');
     }
 
-    public function destroyGuaranteeCase($id)
+    /**
+     * Delete a guarantee case.
+     */
+    public function destroyGuaranteeCase(int $id): RedirectResponse
     {
         $guaranteeCase = GuaranteeCase::findOrFail($id);
         $guaranteeCase->delete();
