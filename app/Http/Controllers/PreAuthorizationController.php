@@ -63,7 +63,7 @@ class PreAuthorizationController extends Controller
             $query->where('case_status', $request->case_status);
         }
 
-        $preAuthorizations = $query->latest()->get();
+        $preAuthorizations = $query->latest()->paginate(10);
 
         return view('preauth.index', compact('preAuthorizations'));
     }

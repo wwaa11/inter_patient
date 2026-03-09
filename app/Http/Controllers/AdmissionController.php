@@ -60,7 +60,7 @@ class AdmissionController extends Controller
             $query->where('case_status', $request->case_status);
         }
 
-        $admissions = $query->latest('admission_date')->latest()->get();
+        $admissions = $query->latest('admission_date')->latest()->paginate(10);
 
         return view('admissions.index', compact('admissions'));
     }
@@ -130,6 +130,11 @@ class AdmissionController extends Controller
                 'patient_name' => $p->patient_name,
                 'provider_id' => $p->provider_id,
                 'provider_name' => $p->provider->name ?? '',
+                'diagnosis' => '', // Diagnosis isn't in PreAuthorization, but we keep the key for completeness or logic
+                'procedure' => $p->operations_procedures,
+                'gop_status' => $p->coverage_decision,
+                'init_gop_date' => $p->gop_receiving_date?->format('Y-m-d'),
+                'gop_ref' => $p->gop_reference_number,
             ])
             ->values();
 
