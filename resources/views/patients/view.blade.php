@@ -742,7 +742,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId) + '/delete')
+                    axios.post('{{ route("patients.notes.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', noteId))
                         .then(response => {
                             location.reload();
                         })
@@ -766,7 +766,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId) + '/delete')
+                    axios.post('{{ route("patients.passports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', passportId))
                         .then(response => {
                             location.reload();
                         })
@@ -790,7 +790,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId) + '/delete')
+                    axios.post('{{ route("patients.medical-reports.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', reportId))
                         .then(response => {
                             location.reload();
                         })
@@ -814,7 +814,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId) + '/delete')
+                    axios.post('{{ route("patients.guarantees.main.destroy", ["hn" => $patient->hn, "id" => "__ID__"]) }}'.replace('__ID__', guaranteeId))
                         .then(response => {
                             location.reload();
                         })
