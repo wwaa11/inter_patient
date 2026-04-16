@@ -95,6 +95,11 @@ class PreAuthorization extends Model
         return $this->hasMany(Admission::class);
     }
 
+    public function notes(): HasMany
+    {
+        return $this->hasMany(PreAuthorizationNote::class)->latest();
+    }
+
     public static function caseStatusOptions(): array
     {
         return [

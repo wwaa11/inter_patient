@@ -169,7 +169,7 @@
                         <!-- Information Section -->
                         <div
                             class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                            <h2 class="mb-6 text-xl font-bold text-slate-900 dark:text-white">Information</h2>
+                            <h2 class="mb-6 text-xl font-bold text-slate-900 dark:text-white"> Patient's Information</h2>
                             <div class="grid grid-cols-1 gap-6">
                                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <div>

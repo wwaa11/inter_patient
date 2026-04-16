@@ -31,7 +31,7 @@ class PatientController extends Controller
                 });
             })
             ->orderBy('hn', 'asc')
-            ->paginate(50);
+            ->paginate(10);
 
         $nationalities = Patient::distinct('nationality')->pluck('nationality');
 

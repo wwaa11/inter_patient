@@ -36,19 +36,19 @@ Route::middleware(['auth'])->group(function () {
     // Secure File Viewing
     Route::get('/files/{hn}/{filename}', [PatientFileController::class, 'view'])->name('files.view');
 
-            // Pre Authorization: list, show, and view/download attachments
-            Route::get('/preauth', [PreAuthorizationController::class, 'index'])->name('preauth.index');
-            Route::get('/preauth/create', [PreAuthorizationController::class, 'create'])->name('preauth.create')->middleware('admin');
-            Route::get('/preauth/{preauth}', [PreAuthorizationController::class, 'show'])->name('preauth.show');
-            Route::get('/preauth/{preauth}/attachments/{attachment}/download', [PreAuthorizationController::class, 'downloadAttachment'])->name('preauth.attachments.download');
-            Route::get('/preauth/{preauth}/attachments/{attachment}/view', [PreAuthorizationController::class, 'viewAttachment'])->name('preauth.attachments.view');
+    // Pre Authorization: list, show, and view/download attachments
+    Route::get('/preauth', [PreAuthorizationController::class, 'index'])->name('preauth.index');
+    Route::get('/preauth/create', [PreAuthorizationController::class, 'create'])->name('preauth.create')->middleware('admin');
+    Route::get('/preauth/{preauth}', [PreAuthorizationController::class, 'show'])->name('preauth.show');
+    Route::get('/preauth/{preauth}/attachments/{attachment}/download', [PreAuthorizationController::class, 'downloadAttachment'])->name('preauth.attachments.download');
+    Route::get('/preauth/{preauth}/attachments/{attachment}/view', [PreAuthorizationController::class, 'viewAttachment'])->name('preauth.attachments.view');
 
-            // Admissions: list and show for all roles
-            Route::get('/admissions', [AdmissionController::class, 'index'])->name('admissions.index');
-            Route::get('/admissions/create', [AdmissionController::class, 'create'])->name('admissions.create')->middleware('admin');
-            Route::get('/admissions/{admission}', [AdmissionController::class, 'show'])->name('admissions.show');
-            Route::get('/admissions/{admission}/attachments/{attachment}/download', [AdmissionController::class, 'downloadAttachment'])->name('admissions.attachments.download');
-            Route::get('/admissions/{admission}/attachments/{attachment}/view', [AdmissionController::class, 'viewAttachment'])->name('admissions.attachments.view');
+    // Admissions: list and show for all roles
+    Route::get('/admissions', [AdmissionController::class, 'index'])->name('admissions.index');
+    Route::get('/admissions/create', [AdmissionController::class, 'create'])->name('admissions.create')->middleware('admin');
+    Route::get('/admissions/{admission}', [AdmissionController::class, 'show'])->name('admissions.show');
+    Route::get('/admissions/{admission}/attachments/{attachment}/download', [AdmissionController::class, 'downloadAttachment'])->name('admissions.attachments.download');
+    Route::get('/admissions/{admission}/attachments/{attachment}/view', [AdmissionController::class, 'viewAttachment'])->name('admissions.attachments.view');
 
     // Admin-Only Routes
     Route::middleware(['admin'])->group(function () {
@@ -130,6 +130,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/preauth/{preauth}/delete', [PreAuthorizationController::class, 'destroy'])->name('preauth.destroy');
         Route::post('/preauth/{preauth}/attachments', [PreAuthorizationController::class, 'storeAttachment'])->name('preauth.attachments.store');
         Route::post('/preauth/{preauth}/attachments/{attachment}/delete', [PreAuthorizationController::class, 'destroyAttachment'])->name('preauth.attachments.destroy');
+        Route::post('/preauth/{preauth}/notes', [PreAuthorizationController::class, 'storeNote'])->name('preauth.notes.store');
+        Route::post('/preauth/{preauth}/notes/{note}/delete', [PreAuthorizationController::class, 'destroyNote'])->name('preauth.notes.destroy');
 
         // Admissions CRUD
         Route::post('/admissions', [AdmissionController::class, 'store'])->name('admissions.store');
@@ -137,6 +139,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/admissions/{admission}/delete', [AdmissionController::class, 'destroy'])->name('admissions.destroy');
         Route::post('/admissions/{admission}/attachments', [AdmissionController::class, 'storeAttachment'])->name('admissions.attachments.store');
         Route::post('/admissions/{admission}/attachments/{attachment}/delete', [AdmissionController::class, 'destroyAttachment'])->name('admissions.attachments.destroy');
+        Route::post('/admissions/{admission}/notes', [AdmissionController::class, 'storeNote'])->name('admissions.notes.store');
+        Route::post('/admissions/{admission}/notes/{note}/delete', [AdmissionController::class, 'destroyNote'])->name('admissions.notes.destroy');
 
         // Service Types
         Route::get('/service-types', [ServiceTypeController::class, 'index'])->name('service-types.index');

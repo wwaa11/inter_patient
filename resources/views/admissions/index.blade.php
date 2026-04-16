@@ -39,22 +39,24 @@
                 class="mb-6 flex flex-wrap items-end gap-x-4 gap-y-6 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
                 <div class="min-w-0 flex-1 sm:w-48">
                     <label for="hn" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Search by
-                        HN</label>
+                        HN / Name</label>
                     <input type="text" name="hn" id="hn" value="{{ request('hn') }}" placeholder="HN..."
                         class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white sm:text-sm">
                 </div>
-                <div class="min-w-0 flex-1 sm:w-56">
-                    <label for="case_status" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Case
-                        Status</label>
-                    <select name="case_status" id="case_status"
-                        class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white sm:text-sm">
-                        <option value="">All</option>
-                        @foreach (\App\Models\Admission::caseStatusOptions() as $opt)
-                            <option value="{{ $opt }}" {{ request('case_status') === $opt ? 'selected' : '' }}>
-                                {{ $opt }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if (auth()->user()->isAdmin())
+                    <div class="min-w-0 flex-1 sm:w-56">
+                        <label for="case_status" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Case
+                            Status</label>
+                        <select name="case_status" id="case_status" onchange="this.form.submit()"
+                            class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white sm:text-sm">
+                            <option value="">All</option>
+                            @foreach (\App\Models\Admission::caseStatusOptions() as $opt)
+                                <option value="{{ $opt }}" {{ request('case_status') === $opt ? 'selected' : '' }}>
+                                    {{ $opt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
                 <div class="flex gap-2">
                     <button type="submit"
                         class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
@@ -100,7 +102,17 @@
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-800">
                             @forelse ($admissions as $adm)
-                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700">
+                                @php
+                                    $badgeClass = match ($adm->case_status) {
+                                        'Close'
+                                            => 'bg-emerald-100/50 text-emerald-800/50 dark:bg-emerald-900 dark:text-emerald-200',
+                                        'Opening'
+                                            => 'bg-amber-100/50 text-amber-800/50 dark:bg-amber-900 dark:text-amber-200',
+                                        default 
+                                            => 'bg-white hover:bg-slate-50/50 dark:hover:bg-slate-700/50',
+                                    };
+                                @endphp
+                                <tr class="{{ $badgeClass }}">
                                     <td
                                         class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
                                         {{ $adm->hn }}</td>

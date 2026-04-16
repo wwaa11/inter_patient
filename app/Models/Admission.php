@@ -136,4 +136,9 @@ class Admission extends Model
             self::GOP_STATUS_PAY_AND_CLAIM,
         ];
     }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(AdmissionNote::class)->latest();
+    }
 }

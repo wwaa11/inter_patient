@@ -105,7 +105,7 @@
                         class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div
                             class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-700 dark:bg-slate-800/50">
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Information</h2>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white"> Patient's Information</h2>
                         </div>
                         <div class="p-6">
                             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -391,7 +391,7 @@
                                 class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/50">
                                 <h3
                                     class="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                    Information</h3>
+                                    Patient's Information</h3>
                                 <div class="grid gap-6">
                                     <div class="grid gap-6 sm:grid-cols-2">
                                         <div>
@@ -653,6 +653,69 @@
                 </div>
             @endif
 
+            <div
+                class="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div
+                    class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-700 dark:bg-slate-800/50">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Internal notes</h2>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Additional notes for this admission.</p>
+                </div>
+                <div class="p-6">
+                    @if ($admission->notes->isEmpty())
+                        <p class="text-sm text-slate-500 dark:text-slate-400">No notes yet.</p>
+                    @else
+                        <ul class="flex flex-col gap-4" role="list">
+                            @foreach ($admission->notes as $note)
+                                <li
+                                    class="rounded-lg border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-600 dark:bg-slate-900/50">
+                                    <div class="flex flex-wrap items-start justify-between gap-2">
+                                        <div
+                                            class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                                            <span
+                                                class="font-medium text-slate-700 dark:text-slate-300">{{ $note->created_by }}</span>
+                                            <time
+                                                datetime="{{ $note->created_at->toIso8601String() }}">{{ $note->created_at->format('Y-m-d H:i') }}</time>
+                                        </div>
+                                        @if (auth()->user()->isAdmin())
+                                            <form action="{{ route('admissions.notes.destroy', [$admission, $note]) }}"
+                                                method="POST" class="shrink-0 delete-admission-note-form">
+                                                @csrf
+                                                <button type="button"
+                                                    class="delete-admission-note-btn inline-flex items-center justify-center rounded-lg bg-red-50 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                                                    title="Remove note">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                    <p class="mt-2 whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100">
+                                        {{ $note->note }}</p>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @if (auth()->user()->isAdmin())
+                        <form action="{{ route('admissions.notes.store', $admission) }}" method="POST"
+                            class="mt-6 border-t border-slate-100 pt-6 dark:border-slate-700">
+                            @csrf
+                            <label for="admission_admin_note"
+                                class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Add note</label>
+                            <textarea name="note" id="admission_admin_note" rows="4" required maxlength="5000"
+                                class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                                placeholder="Write an internal note…">{{ old('note') }}</textarea>
+                            @error('note')
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                            <div class="mt-3">
+                                <button type="submit"
+                                    class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">Save
+                                    note</button>
+                            </div>
+                        </form>
+                    @endif
+                </div>
+            </div>
+
             <!-- Attachments Section -->
             <div
                 class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 mt-8">
@@ -852,6 +915,23 @@
                         var form = $(this).closest('form');
                         Swal.fire({
                                 title: 'Remove attachment?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: 'Yes, remove'
+                            })
+                            .then(function(result) {
+                                if (result.isConfirmed) form.submit();
+                            });
+                    });
+
+                    $('.delete-admission-note-btn').on('click', function(e) {
+                        e.preventDefault();
+                        var form = $(this).closest('form');
+                        Swal.fire({
+                                title: 'Remove this note?',
+                                text: 'It will be hidden from the list but kept in the database.',
                                 icon: 'warning',
                                 showCancelButton: true,
                                 confirmButtonColor: '#d33',

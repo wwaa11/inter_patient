@@ -59,7 +59,7 @@
                 <!-- Information Section -->
                 <div
                     class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                    <h2 class="mb-6 text-xl font-semibold text-slate-900 dark:text-white">Information</h2>
+                    <h2 class="mb-6 text-xl font-semibold text-slate-900 dark:text-white">Patient's Information</h2>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <dt class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400">HN</dt>
@@ -202,7 +202,7 @@
                         <div class="space-y-6">
                             <h3
                                 class="text-lg font-medium text-slate-900 dark:text-white border-b border-slate-100 pb-2 dark:border-slate-700">
-                                Information</h3>
+                                Patient's Information</h3>
                             <div class="grid gap-6 sm:grid-cols-2">
                                 <div>
                                     <label for="hn"
@@ -459,6 +459,62 @@
                 </div>
             @endif
 
+            <div
+                class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <h2 class="mb-2 text-xl font-semibold text-slate-900 dark:text-white">Internal notes</h2>
+                <p class="mb-6 text-sm text-slate-500 dark:text-slate-400">Additional notes for this pre-authorization.</p>
+                @if ($preauth->notes->isEmpty())
+                    <p class="text-sm text-slate-500 dark:text-slate-400">No notes yet.</p>
+                @else
+                    <ul class="flex flex-col gap-4" role="list">
+                        @foreach ($preauth->notes as $note)
+                            <li
+                                class="rounded-lg border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-600 dark:bg-slate-900/50">
+                                <div class="flex flex-wrap items-start justify-between gap-2">
+                                    <div
+                                        class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                                        <span
+                                            class="font-medium text-slate-700 dark:text-slate-300">{{ $note->created_by }}</span>
+                                        <time
+                                            datetime="{{ $note->created_at->toIso8601String() }}">{{ $note->created_at->format('Y-m-d H:i') }}</time>
+                                    </div>
+                                    @if (auth()->user()->isAdmin())
+                                        <form action="{{ route('preauth.notes.destroy', [$preauth, $note]) }}" method="POST"
+                                            class="shrink-0 delete-preauth-note-form">
+                                            @csrf
+                                            <button type="button"
+                                                class="delete-preauth-note-btn inline-flex items-center justify-center rounded-lg bg-red-50 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                                                title="Remove note">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                                <p class="mt-2 whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100">{{ $note->note }}</p>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if (auth()->user()->isAdmin())
+                    <form action="{{ route('preauth.notes.store', $preauth) }}" method="POST" class="mt-6 border-t border-slate-200 pt-6 dark:border-slate-700">
+                        @csrf
+                        <label for="preauth_admin_note" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Add
+                            note</label>
+                        <textarea name="note" id="preauth_admin_note" rows="4" required maxlength="5000"
+                            class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                            placeholder="Write an internal note…">{{ old('note') }}</textarea>
+                        @error('note')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <div class="mt-3">
+                            <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">Save
+                                note</button>
+                        </div>
+                    </form>
+                @endif
+            </div>
+
             <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 <h2 class="mb-6 text-xl font-semibold text-slate-900 dark:text-white">Attachments</h2>
                 @if ($preauth->attachments->isEmpty())
@@ -628,6 +684,22 @@
                 var form = $(this).closest('form');
                 Swal.fire({
                     title: 'Remove attachment?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove'
+                }).then(function(result) {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+
+            $('.delete-preauth-note-btn').on('click', function(e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Remove this note?',
+                    text: 'It will be hidden from the list but kept in the database.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',

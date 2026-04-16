@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DestroyInternalNoteRequest;
+use App\Http\Requests\StoreAdmissionNoteRequest;
 use App\Http\Requests\StoreAdmissionRequest;
 use App\Http\Requests\UpdateAdmissionRequest;
 use App\Models\Admission;
 use App\Models\AdmissionAttachment;
+use App\Models\AdmissionNote;
 use App\Models\PreAuthorization;
 use App\Models\Provider;
 use App\Models\User;
@@ -55,6 +58,7 @@ class AdmissionController extends Controller
 
         if ($request->filled('hn')) {
             $query->where('hn', 'like', '%'.$request->hn.'%');
+            $query->orWhere('name', 'like', '%'.$request->hn.'%');
         }
         if ($request->filled('case_status')) {
             $query->where('case_status', $request->case_status);
@@ -115,7 +119,7 @@ class AdmissionController extends Controller
     public function show(Admission $admission): View
     {
         $admission->load([
-            'preAuthorization.provider', 'contactProviders', 'handlingUsers', 'gopTranslators', 'attachments',
+            'preAuthorization.provider', 'contactProviders', 'handlingUsers', 'gopTranslators', 'attachments', 'notes',
         ]);
         $providers = Provider::query()->orderBy('name')->get();
         $adminUsers = User::query()->where('role', 'admin')->orderBy('name')->get();
@@ -139,6 +143,29 @@ class AdmissionController extends Controller
             ->values();
 
         return view('admissions.show', compact('admission', 'providers', 'adminUsers', 'preAuthList'));
+    }
+
+    public function storeNote(StoreAdmissionNoteRequest $request, Admission $admission): RedirectResponse
+    {
+        $admission->notes()->create([
+            'note' => $request->validated('note'),
+            'created_by' => $request->user()->name,
+        ]);
+
+        return redirect()->route('admissions.show', $admission)
+            ->with('success', 'Note added.');
+    }
+
+    public function destroyNote(DestroyInternalNoteRequest $request, Admission $admission, AdmissionNote $note): RedirectResponse
+    {
+        if ((int) $note->admission_id !== (int) $admission->id) {
+            abort(404);
+        }
+
+        $note->delete();
+
+        return redirect()->route('admissions.show', $admission)
+            ->with('success', 'Note removed.');
     }
 
     public function update(UpdateAdmissionRequest $request, Admission $admission): RedirectResponse

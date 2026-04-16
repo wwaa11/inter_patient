@@ -50,7 +50,7 @@
                         {{-- Information Section --}}
                         <div>
                             <h3 class="mb-4 border-b pb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                                Information
+                                Patient's Information
                             </h3>
                             <div class="grid gap-6">
                                 <div class="grid gap-6 sm:grid-cols-2">

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DestroyInternalNoteRequest;
+use App\Http\Requests\StorePreAuthorizationNoteRequest;
 use App\Http\Requests\StorePreAuthorizationRequest;
 use App\Http\Requests\UpdatePreAuthorizationRequest;
 use App\Models\Notifier;
 use App\Models\PreAuthorization;
 use App\Models\PreAuthorizationAttachment;
+use App\Models\PreAuthorizationNote;
 use App\Models\Provider;
 use App\Models\ServiceType;
 use App\Models\User;
@@ -55,24 +58,35 @@ class PreAuthorizationController extends Controller
     {
         $query = PreAuthorization::query()
             ->with(['serviceType', 'provider', 'notifier', 'handlingStaffs']);
+        $serviceTypes = ServiceType::query()->orderBy('name')->get();
+        $adminUsers = User::query()->where('role', 'admin')->orderBy('name')->get();
 
         if ($request->filled('hn')) {
             $query->where('hn', 'like', '%'.$request->hn.'%');
+            $query->orWhere('patient_name', 'like', '%'.$request->hn.'%');
+        }
+        if ($request->filled('service_type_id')) {
+            $query->where('service_type_id', $request->service_type_id);
         }
         if ($request->filled('case_status')) {
             $query->where('case_status', $request->case_status);
         }
+        if ($request->filled('handling_staff_id')) {
+            $query->whereHas('handlingStaffs', function ($query) use ($request) {
+                $query->where('users.id', $request->handling_staff_id);
+            });
+        }
 
         $preAuthorizations = $query->latest()->paginate(10);
 
-        return view('preauth.index', compact('preAuthorizations'));
+        return view('preauth.index', compact('preAuthorizations', 'serviceTypes', 'adminUsers'));
     }
 
     public function show(PreAuthorization $preauth): View
     {
         $preauth->load([
             'serviceType', 'provider', 'notifier', 'handlingStaffs',
-            'gopTranslateByUser', 'attachments',
+            'gopTranslateByUser', 'attachments', 'notes',
         ]);
         $serviceTypes = ServiceType::query()->orderBy('name')->get();
         $providers = Provider::query()->orderBy('name')->get();
@@ -80,6 +94,29 @@ class PreAuthorizationController extends Controller
         $adminUsers = User::query()->where('role', 'admin')->orderBy('name')->get();
 
         return view('preauth.show', compact('preauth', 'serviceTypes', 'providers', 'notifiers', 'adminUsers'));
+    }
+
+    public function storeNote(StorePreAuthorizationNoteRequest $request, PreAuthorization $preauth): RedirectResponse
+    {
+        $preauth->notes()->create([
+            'note' => $request->validated('note'),
+            'created_by' => $request->user()->name,
+        ]);
+
+        return redirect()->route('preauth.show', $preauth)
+            ->with('success', 'Note added.');
+    }
+
+    public function destroyNote(DestroyInternalNoteRequest $request, PreAuthorization $preauth, PreAuthorizationNote $note): RedirectResponse
+    {
+        if ((int) $note->pre_authorization_id !== (int) $preauth->id) {
+            abort(404);
+        }
+
+        $note->delete();
+
+        return redirect()->route('preauth.show', $preauth)
+            ->with('success', 'Note removed.');
     }
 
     public function create(): View
