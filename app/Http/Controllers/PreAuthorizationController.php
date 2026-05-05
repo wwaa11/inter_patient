@@ -58,6 +58,7 @@ class PreAuthorizationController extends Controller
     {
         $query = PreAuthorization::query()
             ->with(['serviceType', 'provider', 'notifier', 'handlingStaffs']);
+
         $serviceTypes = ServiceType::query()->orderBy('name')->get();
         $adminUsers = User::query()->where('role', 'admin')->orderBy('name')->get();
 
@@ -77,7 +78,13 @@ class PreAuthorizationController extends Controller
             });
         }
 
-        $preAuthorizations = $query->latest()->paginate(10);
+        $preAuthorizations = $query
+            ->orderByRaw("CASE WHEN case_status = '".PreAuthorization::CASE_STATUS_DELETED."' THEN 1 ELSE 0 END")
+            ->orderByRaw("CASE WHEN case_status = '".PreAuthorization::CASE_STATUS_IN_PROGRESS."' THEN 0 ELSE 1 END")
+            ->orderByRaw("CASE WHEN case_status = '".PreAuthorization::CASE_STATUS_COMPLETE."' THEN 1 ELSE 0 END")
+            ->orderBy('created_at', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('preauth.index', compact('preAuthorizations', 'serviceTypes', 'adminUsers'));
     }

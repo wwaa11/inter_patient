@@ -3,154 +3,586 @@
 @section('title', 'Pre-Authorization Dashboard')
 
 @section('content')
-    <div class="min-h-screen bg-slate-50 py-8 dark:bg-slate-900">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Pre-Authorization Dashboard</h1>
+    @php
+        $dailyCountsList = collect($dailyCases)->pluck('count');
+        $daysInMonth = count($dailyCases);
+        $dailyMaxCount = $daysInMonth ? (int) $dailyCountsList->max() : 0;
+        $dailyAvgPerDay = $daysInMonth ? round($dailyCountsList->sum() / $daysInMonth, 1) : 0;
+        $dailyActiveDays = $daysInMonth ? $dailyCountsList->filter(fn ($c) => $c > 0)->count() : 0;
+        $peakDayRow = $daysInMonth ? collect($dailyCases)->sortByDesc('count')->first() : null;
+        $maxProviderVolume = count($providersSortedHighToLow) > 0 ? $providerTotalsForPivot->max() : 0;
+        $providerPeriodSum = $providerTotalsForPivot->sum();
+    @endphp
 
-                <form action="{{ route('dashboard.preauth') }}" method="GET"
-                    class="flex items-center gap-4 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center gap-2">
-                        <label for="start_date" class="text-sm font-medium text-slate-600 dark:text-slate-400">From:</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ $startDate }}"
-                            class="rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label for="end_date" class="text-sm font-medium text-slate-600 dark:text-slate-400">To:</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ $endDate }}"
-                            class="rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
-                    </div>
-                    <button type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
-                        Filter
-                    </button>
-                </form>
-            </div>
+    <div class="min-h-screen bg-slate-100/90 pb-16 pt-8 dark:bg-slate-950 dark:pb-20">
+        <div class="mx-auto max-w-7xl space-y-10 px-4 sm:px-6 lg:px-8">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Coverage Decisions Summary -->
-                @foreach ($coverageDecisions as $decision)
-                    <div
-                        class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                            {{ $decision->coverage_decision ?? 'Unknown' }}</h3>
-                        <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ $decision->count }}</p>
+            {{-- Page toolbar --}}
+            <header
+                class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80 sm:p-8">
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                    <div class="min-w-0 space-y-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                Dashboard</p>
+                            <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                                Pre-authorization</h1>
+                        </div>
+                        <p class="max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                            Metrics use <span class="font-medium text-slate-800 dark:text-slate-200">requested date</span>
+                            inside the range below unless noted (e.g. outstanding queues are live backlog).
+                        </p>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span
+                                class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                <span class="tabular-nums">{{ $startDate }}</span>
+                                <span class="mx-1.5 text-slate-400">→</span>
+                                <span class="tabular-nums">{{ $endDate }}</span>
+                            </span>
+                        </div>
+                        <nav class="flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-100 pt-4 text-xs font-medium dark:border-slate-800">
+                            <a href="#overview"
+                                class="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400">Overview</a>
+                            <a href="#daily-volume"
+                                class="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400">Daily
+                                volume</a>
+                            <a href="#staff"
+                                class="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400">Handling
+                                staff</a>
+                            <a href="#providers"
+                                class="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400">Providers</a>
+                            <a href="#attention"
+                                class="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400">Attention</a>
+                        </nav>
                     </div>
-                @endforeach
-            </div>
+                    <form action="{{ route('dashboard.preauth') }}" method="GET"
+                        class="flex shrink-0 flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row sm:flex-wrap sm:items-end">
+                        <div class="flex flex-col gap-1">
+                            <label for="month"
+                                class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Month</label>
+                            <select name="month" id="month"
+                                class="rounded-lg border-slate-300 bg-white text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                                @for ($m = 1; $m <= 12; $m++)
+                                    <option value="{{ $m }}" @selected((int) $month === $m)>
+                                        {{ \Carbon\Carbon::createFromDate(2000, $m, 1)->format('F') }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="year"
+                                class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Year</label>
+                            <select name="year" id="year"
+                                class="rounded-lg border-slate-300 bg-white text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                                @for ($y = now()->year + 1; $y >= 2020; $y--)
+                                    <option value="{{ $y }}" @selected((int) $year === $y)>{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <button type="submit"
+                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">
+                                Apply
+                            </button>
+                            <button type="submit" name="export" value="1" formaction="{{ route('dashboard.preauth.export') }}"
+                                formmethod="get"
+                                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:focus:ring-offset-slate-900"
+                                title="UTF-8 CSV for Raw Data (same month/year as selected)">
+                                Export CSV (Raw Data)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Providers Distribution -->
+            {{-- Overview --}}
+            <section id="overview" class="scroll-mt-6">
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="h-7 w-1 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                    <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Overview</h2>
+                </div>
                 <div
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Top Providers</h3>
-                    <div class="h-64 relative">
-                        <canvas id="providersChart"></canvas>
+                    class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80">
+                    <div class="grid gap-px bg-slate-200 dark:bg-slate-700 sm:grid-cols-3">
+                        <div class="bg-white p-6 dark:bg-slate-900">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                Total cases</p>
+                            <p class="mt-2 text-3xl font-bold tabular-nums text-slate-900 dark:text-white">{{ $totalCases }}
+                            </p>
+                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">In selected month</p>
+                        </div>
+                        <div class="bg-amber-50/90 p-6 dark:bg-amber-950/25">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-amber-900 dark:text-amber-200">Pending
+                                &gt; 7 days</p>
+                            <p class="mt-2 text-3xl font-bold tabular-nums text-amber-950 dark:text-amber-100">
+                                {{ $pendingOver7Days->count() }}</p>
+                            <p class="mt-2 text-xs text-amber-800/90 dark:text-amber-200/80">Sent out, no GOP (live)</p>
+                        </div>
+                        <div class="bg-red-50/90 p-6 dark:bg-red-950/25">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-red-900 dark:text-red-200">Pending
+                                &gt; 10 days</p>
+                            <p class="mt-2 text-3xl font-bold tabular-nums text-red-950 dark:text-red-100">
+                                {{ $pendingOver10Days->count() }}</p>
+                            <p class="mt-2 text-xs text-red-800/90 dark:text-red-200/80">Sent out, no GOP (live)</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 p-6 dark:border-slate-800">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Case
+                            status</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @forelse ($caseStatusCounts as $cs)
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                    <span class="font-medium text-slate-800 dark:text-slate-200">{{ $cs->case_status ?? '—' }}</span>
+                                    <span class="tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{{ $cs->count }}</span>
+                                </span>
+                            @empty
+                                <span class="text-sm text-slate-500 dark:text-slate-400">No data for this period.</span>
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 p-6 dark:border-slate-800">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Coverage
+                            decision</p>
+                        <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                            @foreach ($coverageDecisions as $decision)
+                                <div
+                                    class="rounded-xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                        {{ $decision->coverage_decision ?? 'Unknown' }}</p>
+                                    <p class="mt-1 text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+                                        {{ $decision->count }}</p>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Service Types Distribution -->
+            {{-- Daily volume --}}
+            <section id="daily-volume" class="scroll-mt-6">
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="h-7 w-1 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                    <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Daily volume</h2>
+                </div>
                 <div
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Service Types</h3>
-                    <div class="h-64 relative">
-                        <canvas id="serviceTypesChart"></canvas>
+                    class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80">
+                    <div class="border-b border-slate-100 px-6 py-5 dark:border-slate-800 sm:px-8">
+                        <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">Cases per calendar day by
+                            <span class="font-medium text-slate-800 dark:text-slate-200">requested date</span>.</p>
+                        <dl class="mt-4 flex flex-wrap gap-3">
+                            <div
+                                class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                    Month total</dt>
+                                <dd class="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{{ $totalCases }}
+                                </dd>
+                            </div>
+                            <div
+                                class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                    Daily avg</dt>
+                                <dd class="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{{ $dailyAvgPerDay }}
+                                </dd>
+                            </div>
+                            <div
+                                class="rounded-xl border border-emerald-100 bg-emerald-50/80 px-3 py-2 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+                                <dt
+                                    class="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                                    Peak day</dt>
+                                <dd class="text-lg font-bold tabular-nums text-emerald-950 dark:text-emerald-100">
+                                    @if ($peakDayRow && $dailyMaxCount > 0)
+                                        <span class="whitespace-nowrap">{{ $peakDayRow['date']->format('D j M') }}</span>
+                                        <span class="text-base font-semibold text-emerald-600 dark:text-emerald-400">({{ $dailyMaxCount }})</span>
+                                    @else
+                                        —
+                                    @endif
+                                </dd>
+                            </div>
+                            <div
+                                class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                    Active days</dt>
+                                <dd class="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{{ $dailyActiveDays }}
+                                    <span class="text-sm font-normal text-slate-500">/ {{ $daysInMonth }}</span></dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="px-4 pb-2 pt-6 sm:px-8">
+                        <div class="relative h-56 w-full sm:h-64 lg:h-72">
+                            <canvas id="dailyCasesChart" aria-label="Cases per day chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 dark:border-slate-800">
+                        <div class="px-6 py-3 dark:bg-slate-900/50 sm:px-8">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Day-by-day
+                                detail</span>
+                        </div>
+                        <div class="overflow-x-auto max-h-64 overflow-y-auto px-2 pb-4 sm:px-6">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 bg-slate-50/90 dark:border-slate-700 dark:bg-slate-800/80">
+                                        <th scope="col"
+                                            class="py-3 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                            Date</th>
+                                        <th scope="col"
+                                            class="py-3 px-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">
+                                            Cases</th>
+                                        <th scope="col"
+                                            class="hidden py-3 pl-3 pr-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums sm:table-cell">
+                                            Share</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    @foreach ($dailyCases as $dayRow)
+                                        @php
+                                            $sharePct =
+                                                $totalCases > 0
+                                                    ? round((100 * $dayRow['count']) / $totalCases, 1)
+                                                    : 0;
+                                            $isPeak =
+                                                $dailyMaxCount > 0 && (int) $dayRow['count'] === (int) $dailyMaxCount;
+                                        @endphp
+                                        <tr
+                                            class="{{ $isPeak ? 'bg-emerald-50/80 dark:bg-emerald-950/20' : 'even:bg-slate-50/40 dark:even:bg-slate-800/20' }}">
+                                            <td class="py-2.5 pl-4 pr-3 text-slate-800 dark:text-slate-200">
+                                                <span class="font-medium">{{ $dayRow['date']->format('l') }}</span>
+                                                <span
+                                                    class="mt-0.5 block text-xs text-slate-500 dark:text-slate-400 sm:ml-2 sm:mt-0 sm:inline sm:text-sm">{{ $dayRow['date']->format('j M Y') }}</span>
+                                            </td>
+                                            <td
+                                                class="py-2.5 px-3 text-right text-sm font-semibold tabular-nums text-slate-900 dark:text-white">
+                                                {{ $dayRow['count'] }}</td>
+                                            <td
+                                                class="hidden py-2.5 pl-3 pr-4 text-right text-sm tabular-nums text-slate-600 dark:text-slate-400 sm:table-cell">
+                                                {{ $sharePct }}%</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Handling Staff Percentage -->
+            {{-- Handling staff --}}
+            <section id="staff" class="scroll-mt-6">
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="h-7 w-1 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                    <div>
+                        <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Handling staff</h2>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Send-out → GOP performance for assigned
+                            cases</p>
+                    </div>
+                </div>
                 <div
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Handling Staffs Percentage</h3>
+                    class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80">
+                    <div class="border-b border-slate-100 px-6 py-4 dark:border-slate-800 sm:px-8">
+                        <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"><span
+                                class="font-medium text-slate-800 dark:text-slate-200">Total cases</span> counts each
+                            assignment on the case. Other columns focus on send-out and GOP.</p>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                            <thead>
+                        <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                            <thead class="bg-slate-50 dark:bg-slate-800/90">
                                 <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        Staff Name</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        Cases</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        Percentage</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap py-3 pl-6 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 sm:pl-8">
+                                        Staff</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">
+                                        Total</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">
+                                        Sent out</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">
+                                        Avg days</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">
+                                        Response</th>
+                                    <th scope="col"
+                                        class="whitespace-nowrap py-3 pl-3 pr-6 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums sm:pr-8">
+                                        Send-out %</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                @foreach ($staffCases as $staff)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                                            {{ $staff->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                            {{ $staff->count }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                                    <div class="bg-emerald-500 h-2 rounded-full"
-                                                        style="width: {{ $staff->percentage }}%"></div>
-                                                </div>
-                                                <span
-                                                    class="text-xs text-slate-600 dark:text-slate-400">{{ $staff->percentage }}%</span>
-                                            </div>
-                                        </td>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                @forelse ($staffResponseKpis as $row)
+                                    <tr class="even:bg-slate-50/50 dark:even:bg-slate-800/30">
+                                        <td class="whitespace-nowrap py-3 pl-6 pr-3 font-medium text-slate-900 dark:text-white sm:pl-8">
+                                            {{ $row->name }}</td>
+                                        <td class="whitespace-nowrap px-3 py-3 text-right tabular-nums text-slate-900 dark:text-white">
+                                            {{ $row->total_cases }}</td>
+                                        <td class="whitespace-nowrap px-3 py-3 text-right tabular-nums text-slate-600 dark:text-slate-300">
+                                            {{ $row->sent_out_total }}</td>
+                                        <td class="whitespace-nowrap px-3 py-3 text-right tabular-nums text-slate-600 dark:text-slate-300">
+                                            {{ $row->avg_response_days !== null ? $row->avg_response_days . ' d' : '—' }}</td>
+                                        <td class="whitespace-nowrap px-3 py-3 text-right tabular-nums text-slate-600 dark:text-slate-300">
+                                            {{ $row->response_rate }}%</td>
+                                        <td class="whitespace-nowrap py-3 pl-3 pr-6 text-right tabular-nums text-slate-600 dark:text-slate-300 sm:pr-8">
+                                            {{ $row->send_out_share_pct }}%</td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-10 text-center text-sm text-slate-500 dark:text-slate-400">
+                                            No handling staff assignments in this period.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </section>
 
-                <!-- Date Difference Analysis -->
-                <div
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">GOP Processing Time (Days)</h3>
-                    <div class="h-64 relative">
-                        <canvas id="dateDiffChart"></canvas>
+            {{-- Providers --}}
+            <section id="providers" class="scroll-mt-6">
+                <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div class="flex items-start gap-3">
+                        <span class="mt-1 h-7 w-1 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                        <div>
+                            <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Providers by
+                                volume</h2>
+                            <p class="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">Sorted by
+                                case count. <span class="font-medium text-slate-800 dark:text-slate-200">Response rate</span>
+                                is GOP received ÷ cases with send-out for that provider this month.</p>
+                        </div>
+                    </div>
+                    @if ($providerPeriodSum > 0 && count($providersSortedHighToLow) > 0)
+                        <p class="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 sm:text-sm">
+                            <span class="font-semibold text-slate-900 dark:text-white">{{ $providersSortedHighToLow[0] }}</span>
+                            leads —
+                            <span class="tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{{ $providerTotalsForPivot[$providersSortedHighToLow[0]] }}</span>
+                            cases
+                            <span class="text-slate-400">({{ round((100 * $providerTotalsForPivot[$providersSortedHighToLow[0]]) / $providerPeriodSum, 1) }}%)</span>
+                        </p>
+                    @endif
+                </div>
+
+                @if (count($providersSortedHighToLow) > 0 && count($serviceTypesForPivot) > 0)
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach ($providersSortedHighToLow as $providerName)
+                            @php
+                                $providerTotal = $providerTotalsForPivot[$providerName];
+                                $breakdown = collect($serviceTypesForPivot)
+                                    ->map(function ($st) use ($providerName, $providerServicePivot) {
+                                        return [
+                                            'name' => $st,
+                                            'count' => (int) ($providerServicePivot[$providerName][$st] ?? 0),
+                                        ];
+                                    })
+                                    ->sortByDesc('count')
+                                    ->values();
+                                $nonZero = $breakdown->filter(fn ($r) => $r['count'] > 0);
+                                $barPct =
+                                    $maxProviderVolume > 0 ? round((100 * $providerTotal) / $maxProviderVolume) : 0;
+                                $providerResponseRate = $providerResponseRates[$providerName] ?? null;
+                            @endphp
+                            <article
+                                class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-700/80">
+                                <div class="flex gap-3 border-b border-slate-100 p-4 dark:border-slate-800">
+                                    <span
+                                        class="flex h-9 min-w-9 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold tabular-nums text-slate-700 dark:bg-slate-800 dark:text-slate-200">#{{ $loop->iteration }}</span>
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="break-words font-semibold leading-snug text-slate-900 dark:text-white">
+                                            {{ $providerName }}</h3>
+                                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Relative to top provider
+                                        </p>
+                                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                                            <div class="h-full rounded-full bg-emerald-500 dark:bg-emerald-600"
+                                                style="width: {{ $barPct }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="shrink-0 space-y-2 text-right">
+                                        <div>
+                                            <p class="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+                                                {{ $providerTotal }}</p>
+                                            <p class="text-[11px] font-medium uppercase tracking-wide text-slate-400">cases</p>
+                                        </div>
+                                        @if ($providerResponseRate !== null)
+                                            <div
+                                                class="rounded-xl border border-sky-200 bg-sky-50 px-2.5 py-1.5 dark:border-sky-800 dark:bg-sky-950/50">
+                                                <p class="text-base font-bold tabular-nums text-sky-800 dark:text-sky-200">
+                                                    {{ $providerResponseRate }}<span class="text-xs font-semibold">%</span></p>
+                                                <p class="text-[10px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">
+                                                    response</p>
+                                            </div>
+                                        @else
+                                            <p class="max-w-[7rem] text-[11px] leading-snug text-slate-400 dark:text-slate-500">
+                                                No send-outs — N/A</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="flex-1 p-4 pt-3">
+                                    @if ($nonZero->isEmpty())
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">No service-type breakdown.</p>
+                                    @else
+                                        <ul class="space-y-2">
+                                            @foreach ($nonZero as $row)
+                                                @php
+                                                    $share =
+                                                        $providerTotal > 0
+                                                            ? round((100 * $row['count']) / $providerTotal)
+                                                            : 0;
+                                                @endphp
+                                                <li class="flex items-baseline justify-between gap-3 text-sm">
+                                                    <span class="truncate text-slate-700 dark:text-slate-300"
+                                                        title="{{ $row['name'] }}">{{ $row['name'] }}</span>
+                                                    <span class="flex shrink-0 items-center gap-2 tabular-nums">
+                                                        <span class="text-xs text-slate-400 dark:text-slate-500">{{ $share }}%</span>
+                                                        <span class="min-w-[2rem] text-right font-semibold text-slate-900 dark:text-white">{{ $row['count'] }}</span>
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div
+                        class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-6 py-14 text-center dark:border-slate-700 dark:bg-slate-900/40">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">No provider data for this period.</p>
+                    </div>
+                @endif
+            </section>
+
+            {{-- Attention / backlog --}}
+            <section id="attention" class="scroll-mt-6 pb-4">
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="h-7 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden="true"></span>
+                    <div>
+                        <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Needs attention</h2>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Outstanding send-outs without GOP (not
+                            limited to the month filter)</p>
                     </div>
                 </div>
-            </div>
+                <div class="flex flex-col gap-6">
+                    <div
+                        class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-amber-200/90 dark:bg-slate-900 dark:ring-amber-900/40">
+                        <div class="border-b border-amber-100 bg-amber-50/80 px-6 py-4 dark:border-amber-900/30 dark:bg-amber-950/25">
+                            <h3 class="font-semibold text-amber-950 dark:text-amber-100">Over 7 days waiting</h3>
+                            <p class="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">Days from send-out to today</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                <thead class="bg-slate-50 dark:bg-slate-800/80">
+                                    <tr>
+                                        <th scope="col"
+                                            class="py-3 pl-6 pr-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">HN</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Patient</th>
+                                        <th scope="col"
+                                            class="hidden px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 md:table-cell">Provider</th>
+                                        <th scope="col"
+                                            class="hidden px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 lg:table-cell">Service</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Sent</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">Days</th>
+                                        <th scope="col" class="py-3 pl-2 pr-6 text-right sm:pr-8"></th>
 
-            <!-- Case Status by Service Type Table -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Service Type & Case Status Matrix</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                        <thead>
-                            <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    Service Type</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    Case Status</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">
-                                    Count</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                            @foreach ($caseStatusByServiceType as $item)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                                        {{ $item->service_type }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                            {{ $item->case_status }}
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 text-right">
-                                        {{ $item->count }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    @forelse ($pendingOver7Days as $pa)
+                                        @php
+                                            $waitDays = $pa->send_out_date
+                                                ? $pa->send_out_date->diffInDays(now()->startOfDay())
+                                                : null;
+                                        @endphp
+                                        <tr class="even:bg-slate-50/40 dark:even:bg-slate-800/20">
+                                            
+                                            <td class="py-2.5 pl-6 pr-2 font-medium text-slate-900 dark:text-white">{{ $pa->hn }}</td>
+                                            <td class="max-w-[10rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300">
+                                                {{ $pa->patient_name ?? '—' }}</td>
+                                            <td class="hidden max-w-[8rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300 md:table-cell">
+                                                {{ $pa->provider?->name ?? '—' }}</td>
+                                            <td class="hidden max-w-[8rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300 lg:table-cell">
+                                                {{ $pa->serviceType?->name ?? '—' }}</td>
+                                            <td class="whitespace-nowrap px-2 py-2.5 tabular-nums text-slate-600 dark:text-slate-300">
+                                                {{ $pa->send_out_date?->format('Y-m-d') ?? '—' }}</td>
+                                            <td class="px-2 py-2.5 text-right text-sm font-semibold tabular-nums text-amber-800 dark:text-amber-200">
+                                                {{ $waitDays }}</td>
+                                                <td class="py-2.5 pl-2 pr-6 text-right sm:pr-8">
+                                                    <a href="{{ route('preauth.show', $pa) }}"
+                                                        class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">View</a>
+                                                </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="px-6 py-10 text-center text-sm text-slate-500 dark:text-slate-400">None over 7 days.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div
+                        class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-red-200/90 dark:bg-slate-900 dark:ring-red-900/40">
+                        <div class="border-b border-red-100 bg-red-50/80 px-6 py-4 dark:border-red-900/30 dark:bg-red-950/25">
+                            <h3 class="font-semibold text-red-950 dark:text-red-100">Over 10 days waiting</h3>
+                            <p class="mt-1 text-xs text-red-900/80 dark:text-red-200/80">Longest outstanding</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                <thead class="bg-slate-50 dark:bg-slate-800/80">
+                                    <tr>
+
+                                        <th scope="col"
+                                            class="py-3 pl-6 pr-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">HN</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Patient</th>
+                                        <th scope="col"
+                                            class="hidden px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 md:table-cell">Provider</th>
+                                        <th scope="col"
+                                            class="hidden px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 lg:table-cell">Service</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Sent</th>
+                                        <th scope="col"
+                                            class="px-2 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 tabular-nums">Days</th>
+                                        <th scope="col" class="py-3 pl-2 pr-6 text-right sm:pr-8"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    @forelse ($pendingOver10Days as $pa)
+                                        @php
+                                            $waitDays10 = $pa->send_out_date
+                                                ? $pa->send_out_date->diffInDays(now()->startOfDay())
+                                                : null;
+                                        @endphp
+                                        <tr class="even:bg-slate-50/40 dark:even:bg-slate-800/20">
+                                            
+                                            <td class="py-2.5 pl-6 pr-2 font-medium text-slate-900 dark:text-white">{{ $pa->hn }}</td>
+                                            <td class="max-w-[10rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300">
+                                                {{ $pa->patient_name ?? '—' }}</td>
+                                            <td class="hidden max-w-[8rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300 md:table-cell">
+                                                {{ $pa->provider?->name ?? '—' }}</td>
+                                            <td class="hidden max-w-[8rem] truncate px-2 py-2.5 text-slate-600 dark:text-slate-300 lg:table-cell">
+                                                {{ $pa->serviceType?->name ?? '—' }}</td>
+                                            <td class="whitespace-nowrap px-2 py-2.5 tabular-nums text-slate-600 dark:text-slate-300">
+                                                {{ $pa->send_out_date?->format('Y-m-d') ?? '—' }}</td>
+                                            <td class="px-2 py-2.5 text-right text-sm font-semibold tabular-nums text-red-800 dark:text-red-200">
+                                                {{ $waitDays10 }}</td>
+                                            <td class="py-2.5 pl-2 pr-6 text-right sm:pr-8">
+                                                <a href="{{ route('preauth.show', $pa) }}"
+                                                    class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">View</a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="px-6 py-10 text-center text-sm text-slate-500 dark:text-slate-400">None over 10 days.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
+
         </div>
     </div>
 @endsection
@@ -159,94 +591,88 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Providers Chart
-            new Chart(document.getElementById('providersChart'), {
+            const canvas = document.getElementById('dailyCasesChart');
+            if (!canvas)
+                return;
+
+            const labelsShort = @json(collect($dailyCases)->map(fn ($r) => $r['date']->format('j'))->values()->all());
+            const labelsFull = @json(collect($dailyCases)->map(fn ($r) => $r['date']->format('l, j M Y'))->values()->all());
+            const counts = @json(collect($dailyCases)->pluck('count')->values()->all());
+
+            const dark = document.documentElement.classList.contains('dark');
+            const gridColor = dark ? 'rgba(148, 163, 184, 0.18)' : 'rgba(148, 163, 184, 0.35)';
+            const tickColor = dark ? '#94a3b8' : '#64748b';
+
+            new Chart(canvas.getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: @json($providerServiceData->pluck('provider')),
+                    labels: labelsShort,
                     datasets: [{
-                        label: 'Cases by Provider',
-                        data: @json($providerServiceData->pluck('count')),
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        label: 'Cases',
+                        data: counts,
+                        backgroundColor: 'rgba(16, 185, 129, 0.62)',
                         borderColor: 'rgb(16, 185, 129)',
-                        borderWidth: 1
-                    }]
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        hoverBackgroundColor: 'rgba(16, 185, 129, 0.88)',
+                    }],
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
                         legend: {
-                            display: false
-                        }
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(items) {
+                                    const i = items[0].dataIndex;
+                                    return labelsFull[i];
+                                },
+                                label: function(item) {
+                                    const n = item.raw;
+                                    return n + ' case' + (n !== 1 ? 's' : '');
+                                },
+                            },
+                        },
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Service Types Chart
-            new Chart(document.getElementById('serviceTypesChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: @json($serviceTypeData->pluck('service_type')),
-                    datasets: [{
-                        data: @json($serviceTypeData->pluck('count')),
-                        backgroundColor: [
-                            '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899',
-                            '#6366f1'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Date Diff Chart
-            new Chart(document.getElementById('dateDiffChart'), {
-                type: 'line',
-                data: {
-                    labels: @json($dateDiffs->pluck('diff')->map(fn($d) => $d . ' days')),
-                    datasets: [{
-                        label: 'Case Count',
-                        data: @json($dateDiffs->pluck('count')),
-                        borderColor: '#10b981',
-                        tension: 0.1,
-                        fill: true,
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Processing Time'
-                            }
-                        }
-                    }
-                }
+                                text: 'Day of month',
+                                color: tickColor,
+                                font: {
+                                    size: 11,
+                                },
+                            },
+                            ticks: {
+                                color: tickColor,
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 18,
+                            },
+                            grid: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: tickColor,
+                                precision: 0,
+                            },
+                            grid: {
+                                color: gridColor,
+                            },
+                        },
+                    },
+                },
             });
         });
     </script>

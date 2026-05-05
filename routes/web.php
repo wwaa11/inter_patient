@@ -28,7 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [PatientController::class, 'index'])->name('patients');
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/preauth', [App\Http\Controllers\DashboardController::class, 'preauth'])->name('dashboard.preauth');
+    Route::get('/dashboard/preauth/export', [App\Http\Controllers\DashboardController::class, 'preauthExport'])->name('dashboard.preauth.export');
     Route::get('/dashboard/admissions', [App\Http\Controllers\DashboardController::class, 'admissions'])->name('dashboard.admissions');
+    Route::get('/dashboard/admissions/export', [App\Http\Controllers\DashboardController::class, 'admissionsExport'])->name('dashboard.admissions.export');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/{hn}', [PatientController::class, 'view'])->name('patients.view');
     Route::post('/patients/{hn}/notes', [PatientNoteController::class, 'store'])->name('patients.notes.store');

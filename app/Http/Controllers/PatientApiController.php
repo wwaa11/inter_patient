@@ -13,9 +13,9 @@ class PatientApiController extends Controller
         $hn = $request->hn;
 
         try {
-            $response = Http::withHeaders(['key' => config('services.ssb.key')])
+            $response = Http::withoutVerifying()->withHeaders(['Authorization' => 'Bearer '.env('API_HIS_PATIENT_KEY')])
                 ->timeout(30)
-                ->post('http://172.20.1.22/w_phr/api/patient/info', [
+                ->post('https://patienthistory.int-app.praram9.com/patienthistory/api/patient-info', [
                     'hn' => $hn,
                 ]);
 
@@ -29,13 +29,14 @@ class PatientApiController extends Controller
             $patientData = $response->json();
             if ($patientData['status'] == 'success') {
                 $patientData = $patientData['patient'];
-                $firstName = ($patientData['name']['first_en'] != '') ? $patientData['name']['first_en'] : $patientData['name']['first_th'];
-                $lastName = ($patientData['name']['last_en'] != '') ? $patientData['name']['last_en'] : $patientData['name']['last_th'];
+                $firstName = $patientData['firstname'];
+                $lastName = $patientData['lastname'];
+
                 $patientData = [
                     'name' => $firstName.' '.$lastName,
-                    'gender' => ($patientData['gender'] == 'ชาย') ? 'Male' : 'Female',
-                    'birthday' => date('Y-m-d', strtotime($patientData['brithdate'])),
-                    'nationality' => ($patientData['national'] == 'ไทย') ? 'Thai' : $patientData['national'],
+                    'gender' => $patientData['gender'],
+                    'birthday' => date('Y-m-d', strtotime($patientData['birthdate'])),
+                    'nationality' => $patientData['nationality'],
                 ];
 
                 return response()->json([

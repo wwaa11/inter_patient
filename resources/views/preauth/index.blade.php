@@ -104,9 +104,6 @@
                             <tr>
                                 <th
                                     class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                    HN</th>
-                                <th
-                                    class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     Patient</th>
                                 <th
                                     class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -116,7 +113,10 @@
                                     Payor</th>
                                 <th
                                     class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                    Date of Service</th>
+                                    Handling Staff</th>
+                                <th
+                                    class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                    Send Out Date</th>
                                 <th
                                     class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     Case Status</th>
@@ -139,16 +139,23 @@
                                 @endphp
                                 <tr class="{{ $badgeClass }}">
                                     <td
-                                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                        {{ $pa->hn }}</td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                                        {{ $pa->patient_name ?? '—' }}</td>
+                                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white max-w-48 truncate">
+                                        {{ $pa->hn }} <br>
+                                        {{ $pa->patient_name ?? '—' }}
+                                    </td>
+                                    
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         {{ $pa->serviceType?->name ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         {{ $pa->provider?->name ?? '—' }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700 dark:text-slate-300 max-w-48 truncate">
+                                        {{ $pa->handlingStaffs->pluck('name')->implode(', ') }}
+                                        </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                                        {{ $pa->date_of_service?->format('Y-m-d') ?? '—' }}</td>
+                                        {{-- {{ $pa->date_of_service?->format('Y-m-d') ?? '—' }} <br> --}}
+                                        {{ $pa->send_out_date?->format('Y-m-d') ?? '—' }} <br>
+                                        {{ $pa->send_out_date ? '(' . $pa->send_out_date->diffForHumans() . ')' : '' }}
+                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4">
                                         @php
                                             $statusClass = match ($pa->case_status) {
